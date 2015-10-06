@@ -136,26 +136,25 @@ public class GTFSRealtimePredictionAccuracyModule extends PredictionAccuracyModu
 					 {
 					
 						 	String direction=null;
-						 	
+						 	/* direction in realtime data to take precendence over static data */
 						 	if(update.getTrip().hasDirectionId())
+						 	{
 						 		direction=""+update.getTrip().getDirectionId();
-						 							 	
-							if (update.getTrip() != null) {
+						 	}
+						 	else if (update.getTrip() != null) 
+						 	{
 								Trip trip = dbConfig.getTrip(update.getTrip().getTripId());
-								if (trip != null) {
+								
+								if (trip != null) 
+								{
 									direction = trip.getDirectionId();
-								} else {
-									logger.error("Got tripTag={} but no such trip in "
-											+ "the configuration.", update.getTrip().getTripId());
+								} 
+								else 
+								{
+									logger.error("Got trip {} but no such trip in the configuration.", update.getTrip().getTripId());
 								}
-							}
-							
-							logger.info("Storing external prediction routeId={}, "
-									+ "directionId={}, tripId={}, vehicleId={}, "
-									+ "stopId={}, prediction={}, isArrival={}",
-									update.getTrip().getRouteId(), direction, update.getTrip().getTripId(), update.getVehicle().getId(), stopTime.getStopId(),
-									new Date(stopTime.getArrival().getTime()*1000), true);
-						 	
+							}							
+													 	
 						 	logger.info("Prediction in milliseonds is {} and converted is {}",stopTime.getArrival().getTime()*1000,  new Date(stopTime.getArrival().getTime()*1000));
 													 							 							 							
 						 	if(stopTime.hasArrival())
@@ -172,6 +171,13 @@ public class GTFSRealtimePredictionAccuracyModule extends PredictionAccuracyModu
 								new Boolean(false), 
 								"GTFS-rt");
 							 	
+							 	logger.info("Storing external prediction routeId={}, "
+										+ "directionId={}, tripId={}, vehicleId={}, "
+										+ "stopId={}, prediction={}, isArrival={}",
+										update.getTrip().getRouteId(), direction, update.getTrip().getTripId(), update.getVehicle().getId(), stopTime.getStopId(),
+										new Date(stopTime.getArrival().getTime()*1000), true);
+
+							 	
 							 	storePrediction(pred);
 						 	}
 						 	if(stopTime.hasDeparture())
@@ -187,7 +193,13 @@ public class GTFSRealtimePredictionAccuracyModule extends PredictionAccuracyModu
 								false,
 								new Boolean(false), 
 								"GTFS-rt");
-						 								 		 									
+						 		
+						 		logger.info("Storing external prediction routeId={}, "
+										+ "directionId={}, tripId={}, vehicleId={}, "
+										+ "stopId={}, prediction={}, isArrival={}",
+										update.getTrip().getRouteId(), direction, update.getTrip().getTripId(), update.getVehicle().getId(), stopTime.getStopId(),
+										new Date(stopTime.getDeparture().getTime()*1000), false);
+ 		 									
 								storePrediction(pred);
 						 	}						 							 	
 					 }					
