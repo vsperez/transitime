@@ -202,7 +202,7 @@ public class ServiceUtils {
 		// this date. Add or remove the special service.
 
 		List<CalendarDate> calendarDatesForNow = dbConfig.getCalendarDatesForNow();
-		logger.info("Start adding calendar dates");
+		logger.debug("Start adding calendar dates");
 
 		if (calendarDatesForNow != null) {
 			for (CalendarDate calendarDate : calendarDatesForNow) {
@@ -220,7 +220,7 @@ public class ServiceUtils {
 						epochTime, serviceIds);*/
 			}
 		}
-		logger.info("Finished adding calendar dates");
+		logger.debug("Finished adding calendar dates");
 		// Return the results
 		return serviceIds;
 	}

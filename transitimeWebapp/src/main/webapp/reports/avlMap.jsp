@@ -90,6 +90,7 @@
  		+ "<tr><td class='popupTableLabel'>Lat/Lon:</td><td>" + avl.lat + ", " + avl.lon + "</td></tr>"
   		+ "<tr><td class='popupTableLabel'>Speed:</td><td>" + speed + " kph</td></tr>"
   		+ "<tr><td class='popupTableLabel'>Heading:</td><td>" + avl.heading + "</td></tr>"
+  		+ "<tr><td class='popupTableLabel'>AVL Source:</td><td>" + avl.source + "</td></tr>"
   		+ "</table>";
 	  		
   	  L.popup(avlPopupOptions)

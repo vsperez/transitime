@@ -16,6 +16,10 @@
  */
 package org.transitime.reports;
 
+import java.text.ParseException;
+
+import org.transitime.utils.Time;
+
 /**
  * Does a query of AVL data and returns result in JSON format.
  * 
@@ -39,23 +43,32 @@ public class AvlJsonQuery {
 	public static String getJson(String agencyId, String vehicleId,
 			String startTime, String endTime) {
 		String sql = "SELECT vehicleId, time, assignmentId, lat, lon, speed, "
-				+ "heading, timeProcessed "
+				+ "heading, timeProcessed, source "
 				+ "FROM avlreports "
-				+ "WHERE time BETWEEN '" + startTime 
-				+ "' AND '" + endTime + "' ";
+				+ "WHERE time BETWEEN " + " cast(? as timestamp)"
+				+ " AND " + "cast(? as timestamp)"  + " + INTERVAL '1 day' ";
 
 		// If only want data for single vehicle then specify so in SQL
 		if (vehicleId != null && !vehicleId.isEmpty())
-			sql += "AND vehicleId='" + vehicleId + "' ";
+			sql += " AND vehicleId='" + vehicleId + "' ";
 		
 		// Make sure data is ordered by vehicleId so that can draw lines 
 		// connecting the AVL reports per vehicle properly. Also then need
 		// to order by time to make sure they are in proper order. And
 		// lastly, limit AVL reports to 5000 so that someone doesn't try
 		// to view too much data at once.
-		sql += "ORDER BY vehicleId, time LIMIT 5000";
-		
-		String json = GenericJsonQuery.getJsonString(agencyId, sql);
+		sql += " ORDER BY vehicleId, time LIMIT 5000";
+		String json=null;
+		try {
+			java.util.Date startdate = Time.parseDate(startTime);
+			
+			java.util.Date enddate = Time.parseDate(endTime);
+			
+			json = GenericJsonQuery.getJsonString(agencyId, sql,startdate, enddate);
+				
+		} catch (ParseException e) {			
+			json=e.getMessage();
+		}						
 		return json;
 	}
 	

@@ -504,6 +504,8 @@ public class DataDbLogger {
 			
 			// Close session here so that can process the objects individually
 			// using a new session.
+			
+			tx.rollback();
 			session.close();
 							
 			// Write each object individually so that the valid ones will be
