@@ -184,3 +184,8 @@ Example using UpdateTravelTimes.jar
 ````
 java -Dtransitime.configFiles=/home/scrudden/workspace/transitimeconfig/transiTimeConfig.xml -Dtransitime.logging.dir=/home/scrudden/workspace/core/logs/ -jar UpdateTravelTimes.jar 08-24-2015
 ````
+To see how much of transiTime is basing the predictions on AVL rather than Schedule you can run this query in the database. 
+
+```
+select howset, count (*)  from traveltimesforstoppaths where traveltimesrev in (select max(traveltimesrev) from traveltimesforstoppaths) group by howset; 
+```
