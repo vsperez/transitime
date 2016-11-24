@@ -20,14 +20,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitime.applications.Core;
 import org.transitime.config.IntegerConfigValue;
+import org.transitime.db.structs.Agency;
 import org.transitime.db.structs.Calendar;
 import org.transitime.db.structs.CalendarDate;
 import org.transitime.gtfs.DbConfig;
@@ -68,9 +71,11 @@ public class ServiceUtils {
 	 * @param timezoneName See http://en.wikipedia.org/wiki/List_of_tz_zones
 	 */
 	public ServiceUtils(DbConfig dbConfig) { 
-		
-		this.calendar = new GregorianCalendar();		
-		
+		Agency agency = dbConfig.getFirstAgency();
+		this.calendar =
+				agency != null ? 
+						new GregorianCalendar(agency.getTimeZone())
+						: new GregorianCalendar();
 		this.dbConfig = dbConfig;
 	}
 
@@ -161,6 +166,33 @@ public class ServiceUtils {
 		return activeCalendarList;
 	}
 	
+	Map<Date, List<String>> serviceIdsForDate = new HashMap<Date, List<String>>();
+	/**
+	 * Caching version fo getServiceIdsForDay.  Assumes epochTime can be distilled to
+	 * a serviceDate.  Note that boundary conditions may exist where serviceDate guess is wrong.
+	 * 
+	 * TODO as is this cache will grow without bounds, but the data should be small
+	 * 
+	 */
+	public List<String> getServiceIdsForDay(Date epochTime) {
+		Date serviceDate = getStartOfDay(epochTime);
+		if (serviceIdsForDate.containsKey(serviceDate)) {
+			return serviceIdsForDate.get(serviceDate);
+		}
+		List<String> serviceIds = getServiceIdsForDayNoCache(serviceDate);
+		serviceIdsForDate.put(serviceDate, serviceIds);
+		return serviceIds;
+	}
+	
+	private Date getStartOfDay(Date epochTime) {
+		java.util.Calendar c = java.util.Calendar.getInstance();
+		c.set(java.util.Calendar.HOUR, 0);
+		c.set(java.util.Calendar.MINUTE, 0);
+		c.set(java.util.Calendar.SECOND, 0);
+		c.set(java.util.Calendar.MILLISECOND, 0);
+		return c.getTime();
+	}
+
 	/**
 	 * Determines list of current service IDs for the specified time. These
 	 * service IDs designate which block assignments are currently active.
@@ -172,7 +204,7 @@ public class ServiceUtils {
 	 *            The current time that determining service IDs for
 	 * @return List of service IDs that are active for the specified time.
 	 */
-	public List<String> getServiceIdsForDay(Date epochTime) {
+	public List<String> getServiceIdsForDayNoCache(Date epochTime) {
 		List<String> serviceIds = new ArrayList<String>();
 		
 		// Make sure haven't accidentally let all calendars expire
@@ -199,10 +231,8 @@ public class ServiceUtils {
 		
 		// Go through calendar_dates to see if there is special service for 
 		// this date. Add or remove the special service.
-
 		List<CalendarDate> calendarDatesForNow = 
 				dbConfig.getCalendarDates(epochTime);
-
 		if (calendarDatesForNow != null) {
 			for (CalendarDate calendarDate : calendarDatesForNow) {
 				// Handle special service for this date
@@ -219,7 +249,7 @@ public class ServiceUtils {
 						epochTime, serviceIds);
 			}
 		}
-
+		logger.info("Finished adding calendar dates");
 		// Return the results
 		return serviceIds;
 	}

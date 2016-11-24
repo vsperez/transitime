@@ -116,16 +116,6 @@ public class SpatialMatcher {
 		// The matches to be returned
 		List<SpatialMatch> spatialMatches = new ArrayList<SpatialMatch>();
 		
-		// Looking at each stop path for a trip is pretty costly. So first
-		// see if the AVL report is even within the trip pattern. If not then
-		// can return right away.
-		Extent tripPatternExtent = trip.getTripPattern().getExtent();
-		double allowableDistance =
-				getMaxAllowableDistanceFromSegment(trip.getRoute(), matchingType);
-		if (!tripPatternExtent.isWithinDistance(avlReport.getLocation(),
-				allowableDistance))
-			return spatialMatches;
-		
 		// Start looking for matches at the beginning of the trip.
 		Indices indices = new Indices(block, block.getTripIndex(trip), 
 				0, // stopPathIndex
@@ -581,9 +571,10 @@ public class SpatialMatcher {
 			if (potentialMatchIndices.equals(startSearchSpatialMatch.getIndices())
 					&& distanceAlongSegment < 
 						startSearchSpatialMatch.getDistanceAlongSegment()) {
+				
 				// The current match would be before the starting point so
 				// adjust it.
-				logger.debug("For vehicleId={} the spatial match was before " +
+				logger.info("For vehicleId={} the spatial match was before " +
 						"the starting previous match so will use the previous " +
 						"match. original distanceAlongSegment={} and " +
 						"startSearchSpatialMatch={}",
@@ -592,8 +583,10 @@ public class SpatialMatcher {
 						startSearchSpatialMatch);
 				distanceAlongSegment = 
 						startSearchSpatialMatch.getDistanceAlongSegment();
-				distanceToSegment = 
-						startSearchSpatialMatch.getDistanceToSegment();
+				
+				// Do not set distanceToSegment to startSearchSpatialMatch value:
+				// - Need to check that it is in bounds
+				// - Need accurate comparison with next match's distance.
 			}
 		}
 		
@@ -749,7 +742,7 @@ public class SpatialMatcher {
 		Indices indices = new Indices(previousMatch);
 		spatialMatcher.setStartOfSearch(previousMatch);
 		while (!indices.pastEndOfBlock(vehicleState.getAvlReport().getTime())
-				&& distanceSearched < distanceAlongPathToSearch) {
+				&& (vehicleState.isLayover() || distanceSearched < distanceAlongPathToSearch)) {
 			spatialMatcher.processPossiblePotentialMatch(
 					vehicleState.getAvlReport(), indices, spatialMatches,
 					MatchingType.STANDARD_MATCHING);

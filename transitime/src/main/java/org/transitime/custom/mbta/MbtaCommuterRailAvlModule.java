@@ -20,6 +20,8 @@ package org.transitime.custom.mbta;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -88,7 +90,7 @@ public class MbtaCommuterRailAvlModule extends PollUrlAvlModule {
 	 * @see org.transitime.avl.AvlModule#processData(java.io.InputStream)
 	 */
 	@Override
-	protected void processData(InputStream in) throws Exception {
+	protected Collection<AvlReport> processData(InputStream in) throws Exception {
 		// Map, keyed on vehicle ID, is for keeping track of the last AVL
 		// report for each vehicle. Since GPS reports are in chronological
 		// order in the feed the element in the map represents the last
@@ -111,10 +113,10 @@ public class MbtaCommuterRailAvlModule extends PollUrlAvlModule {
 
 		// Process the last AVL report for each vehicle
 		if (shouldProcessAvl) {
-			for (AvlReport avlReport : avlReports.values()) {
-				processAvlReport(avlReport);
-			}
-		}
+			// Return all the AVL reports read in
+			return avlReports.values();
+		} else
+			return new ArrayList<AvlReport>();
 	}
 
 	/**
@@ -160,6 +162,22 @@ public class MbtaCommuterRailAvlModule extends PollUrlAvlModule {
 
 		// Assignment is OK as is so return it
 		return assignmentFromFeed;
+//		
+//		// Handle special null case
+//		if (assignmentFromFeed == null)
+//			return assignmentFromFeed;
+//		
+//		// Assignment is too short so pad it
+//		if (assignmentFromFeed.length() == 1)
+//			return "00" + assignmentFromFeed;
+//		else if (assignmentFromFeed.length() == 2)
+//			return "0" + assignmentFromFeed;
+//		else if (assignmentFromFeed.length() == 4 
+//				&& assignmentFromFeed.endsWith("00"))
+//			return assignmentFromFeed.substring(0, 2);
+//		
+//		// Assignment is OK as is so return it
+//		return assignmentFromFeed;
 	}
 
 	// The following are determining the proper place in the

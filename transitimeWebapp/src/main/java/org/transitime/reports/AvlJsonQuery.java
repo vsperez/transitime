@@ -16,10 +16,6 @@
  */
 package org.transitime.reports;
 
-import java.text.ParseException;
-
-import org.transitime.utils.Time;
-
 /**
  * Does a query of AVL data and returns result in JSON format.
  * 
@@ -63,17 +59,16 @@ public class AvlJsonQuery {
 		}
 		if (beginTime != null && !beginTime.isEmpty() 
 				&& endTime != null && !endTime.isEmpty()) {
-			timeSql = " AND time::time BETWEEN '" 
+			timeSql = " AND time(time) BETWEEN '" 
 				+ beginTime + "' AND '" + endTime + "' ";
 		}
 
 		String sql = "SELECT vehicleId, time, assignmentId, lat, lon, speed, "
 				+ "heading, timeProcessed, source "
-				+ "FROM avlreports "
-				+ "WHERE time BETWEEN " + " cast(? as timestamp)"
-				+ " AND " + "cast(? as timestamp)"  + " + INTERVAL '" + numdays + " day' "
+				+ "FROM AvlReports "
+				+ "WHERE time BETWEEN '" + beginDate + "' "
+				+ "AND TIMESTAMPADD(DAY," + numdays + ",'" + beginDate + "') "
 				+ timeSql;
-
 
 		// If only want data for single vehicle then specify so in SQL
 		if (vehicleId != null && !vehicleId.isEmpty())
@@ -84,21 +79,13 @@ public class AvlJsonQuery {
 		// to order by time to make sure they are in proper order. And
 		// lastly, limit AVL reports to 5000 so that someone doesn't try
 		// to view too much data at once.
-
 		sql += "ORDER BY vehicleId, time LIMIT " + MAX_ROWS;
-		String json=null;
-		try {
-			java.util.Date startdate = Time.parseDate(beginDate);						
-			
-			json = GenericJsonQuery.getJsonString(agencyId, sql,startdate, startdate);
-				
-		} catch (ParseException e) {			
-			json=e.getMessage();
-		}						
+		
+		String json = GenericJsonQuery.getJsonString(agencyId, sql);
 
 		return json;
 	}
-	
+
 	/**
 	 * Queries agency for AVL data and corresponding Match and Trip data. By
 	 * joining in Match and Trip data can see what the block and trip IDs, the
@@ -149,7 +136,7 @@ public class AvlJsonQuery {
 				+ "     vs.blockId, vs.tripId, vs.tripShortName, vs.routeId, "
 				+ "     vs.routeShortName, vs.schedAdhMsec, vs.schedAdh, "
 				+ "     vs.isDelayed, vs.isLayover, vs.isWaitStop  "
-				+ "FROM avlreports a "
+				+ "FROM AvlReports a "
 				+ "  LEFT JOIN vehicleStates vs "
 				+ "    ON vs.vehicleId = a.vehicleId AND vs.avlTime = a.time "
 				+ "WHERE a.time BETWEEN '" + beginDate + "' "
@@ -176,6 +163,7 @@ public class AvlJsonQuery {
 		
 		String json = GenericJsonQuery.getJsonString(agencyId, sql);
 		return json;
+
 	}
 	
 }

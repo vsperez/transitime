@@ -162,6 +162,8 @@ public class PredAccuracyRangeQuery extends PredictionAccuracyQuery {
 						+ StringUtils.oneDigitFormat(okPercentage) + "%");
 
 				rowBuilder.addRowElement(tooLatePercentage);
+				rowBuilder.addRowElement("Too Late: " + tooLate + " points, "
+				    + StringUtils.oneDigitFormat(tooLatePercentage) + "%");
 				rowBuilder.addRowElement("Later than predicted: " + tooLate + " points, "
 						+ StringUtils.oneDigitFormat(tooLatePercentage) + "%");
 			}
@@ -238,9 +240,8 @@ public class PredAccuracyRangeQuery extends PredictionAccuracyQuery {
 		String numDays = "1";
 		String beginTime = null;
 		String endTime = null;
-		String routeIds[] = {  };
+		String routeIds[] = { };
 		String source = "Transitime";
-			
 
 		String dbType = "postgresql";// "mysql";
 		String dbHost = "192.168.99.100";// "localhost";

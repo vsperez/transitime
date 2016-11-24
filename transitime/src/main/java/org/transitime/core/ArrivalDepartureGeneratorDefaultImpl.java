@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitime.applications.Core;
 import org.transitime.config.IntegerConfigValue;
+import org.transitime.configData.AgencyConfig;
 import org.transitime.configData.CoreConfig;
 import org.transitime.core.dataCache.HistoricalAverageCache;
 import org.transitime.core.dataCache.HoldingTimeCache;
@@ -40,6 +41,7 @@ import org.transitime.db.structs.Route;
 import org.transitime.db.structs.Stop;
 import org.transitime.db.structs.Trip;
 import org.transitime.db.structs.VehicleEvent;
+import org.transitime.logging.Markers;
 import org.transitime.utils.Time;
 
 /**
@@ -127,6 +129,15 @@ public class ArrivalDepartureGeneratorDefaultImpl
 					"matching. So this parameter is used to limit how many " +
 					"arrivals/departures are created between AVL reports.");
 
+	private static IntegerConfigValue allowableDifferenceBetweenAvlTimeSecs =
+			new IntegerConfigValue("transitime.arrivalsDepartures.allowableDifferenceBetweenAvlTimeSecs",
+					// Default is to only log problem if arrival time is more 
+					// than a day off
+					1 * Time.SEC_PER_DAY, 
+					"If the time of a determine arrival/departure is really "
+					+ "different from the AVL time then something must be "
+					+ "wrong and the situation will be logged.");
+	
 	/********************** Member Functions **************************/
 
 	/**
@@ -301,6 +312,33 @@ public class ArrivalDepartureGeneratorDefaultImpl
 	}
 
 	/**
+	 * For making sure that the arrival/departure time is reasonably close to
+	 * the AVL time. Otherwise this indicates there was a problem determining
+	 * the arrival/departure time.
+	 * 
+	 * @param time
+	 * @param avlReport
+	 * @return true if arrival/departure time within 30 minutes of the AVL
+	 *         report time.
+	 */
+	private boolean timeReasonable(ArrivalDeparture arrivalDeparture) {
+		long delta = Math.abs(arrivalDeparture.getAvlTime().getTime()
+				- arrivalDeparture.getDate().getTime());
+		if (delta < allowableDifferenceBetweenAvlTimeSecs.getValue() * Time.MS_PER_SEC)
+			return true;
+		else {
+			logger.error(Markers.email(), 
+					"For {} arrival or departure time of {} is more than "
+					+ "{} secs away from the AVL time of {}. Therefore not "
+					+ "storing this time. {}", 
+					AgencyConfig.getAgencyId(), arrivalDeparture.getDate(), 
+					allowableDifferenceBetweenAvlTimeSecs.getValue(),
+					arrivalDeparture.getAvlTime(), arrivalDeparture);
+			return false;
+		}
+	}
+
+	/**
 	 * Stores the specified ArrivalDeparture object into the db
 	 * and log to the ArrivalsDeparatures log file that the
 	 * object was created. 
@@ -311,6 +349,12 @@ public class ArrivalDepartureGeneratorDefaultImpl
 	 * @param arrivalDeparture
 	 */
 	protected void storeInDbAndLog(ArrivalDeparture arrivalDeparture) {
+		// If arrival/departure time too far from the AVL time then something 
+		// must be wrong. For this situation don't store the arrival/departure 
+		// into db.
+		if (!timeReasonable(arrivalDeparture))
+			return;
+		
 		// Don't want to record arrival/departure time for last stop of a no
 		// schedule block/trip since the last stop is also the first stop of
 		// a non-schedule trip. We don't duplicate entries.
@@ -334,11 +378,13 @@ public class ArrivalDepartureGeneratorDefaultImpl
 		/*protected ArrivalDeparture(arrivalDeparture., String vehicleId, Date time, Date avlTime, Block block, 
 				int tripIndex, int stopPathIndex, boolean isArrival) {*/
 		
-		TripDataHistoryCache.getInstance().putArrivalDeparture(arrivalDeparture);
+		if (CoreConfig.getFillHistoricalCaches()) {
+		  TripDataHistoryCache.getInstance().putArrivalDeparture(arrivalDeparture);
 		
-		StopArrivalDepartureCache.getInstance().putArrivalDeparture(arrivalDeparture);
+		  StopArrivalDepartureCache.getInstance().putArrivalDeparture(arrivalDeparture);
 		
-		HistoricalAverageCache.getInstance().putArrivalDeparture(arrivalDeparture);
+		  HistoricalAverageCache.getInstance().putArrivalDeparture(arrivalDeparture);
+		}
 		
 		HoldingTime holdingTime = HoldingTimeGeneratorFactory.getInstance().generateHoldingTime(arrivalDeparture);
 		

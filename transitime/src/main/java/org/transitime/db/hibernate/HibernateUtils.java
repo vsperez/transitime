@@ -32,6 +32,7 @@ import org.hibernate.service.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitime.configData.DbSetupConfig;
+import org.hibernate.service.ServiceRegistryBuilder;
 
 /**
  * Utilities for dealing with Hibernate issues such as sessions.
@@ -43,7 +44,7 @@ public class HibernateUtils {
 
 	// Should be set to what is used in hibernate.cfg.xml where the
 	// batch_size is set, e.g. <property name="hibernate.jdbc.batch_size">25</property>
-	public static final int BATCH_SIZE = 25;
+	public static final int BATCH_SIZE = 100;
 	
 	// When Using @Column for route, stop, etc IDs don't need the default of
 	// 255 characters. Therefore can use shorter fields. 
@@ -66,6 +67,10 @@ public class HibernateUtils {
 	 * @return
 	 */
 	private static SessionFactory createSessionFactory(String dbName) 
+			throws HibernateException {
+		return createSessionFactory(dbName, false);
+	}
+	private static SessionFactory createSessionFactory(String dbName, boolean readOnly) 
 			throws HibernateException {
 		logger.debug("Creating new Hibernate SessionFactory for dbName={}", 
 				dbName);
@@ -103,18 +108,33 @@ public class HibernateUtils {
 		// Add the annotated classes so that they can be used
 		AnnotatedClassesList.addAnnotatedClasses(config);
 
-		// Set the db info for the URL, user name, and password. Use values 
-		// from CoreConfig if set. If they are not set then the values will be 
-		// obtained from the hibernate.cfg.xml 
-		// config file.
-		String dbUrl = null;
-		if (DbSetupConfig.getDbHost() != null) {
+		// Set the db info for the URL, user name, and password. Uses the 
+		// property hibernate.connection.url if it is set so that everything
+		// can be overwritten in a standard way. If that property not set then
+		// uses values from DbSetupConfig if set. If they are not set then the 
+		// values will be obtained from the hibernate.cfg.xml config file.
+		String dbUrl = config.getProperty("hibernate.connection.url");
+		if (readOnly) {
+			dbUrl = config.getProperty("hibernate.ro.connection.url");
+			// override the configured url so its picked up by the driver
+			config.setProperty("hibernate.connection.url", dbUrl);
+			logger.info("using read only connection url {}", dbUrl);
+		}
+		if (dbUrl == null || dbUrl.isEmpty()) {
 			dbUrl = "jdbc:" + DbSetupConfig.getDbType() + "://" +
 					DbSetupConfig.getDbHost() +
 					"/" + dbName;
+			
+			// If socket timeout specified then add that to the URL
+			Integer timeout = DbSetupConfig.getSocketTimeoutSec();
+			if (timeout != null && timeout != 0) {
+				// If mysql then timeout specified in msec instead of secs
+				if (DbSetupConfig.getDbType().equals("mysql"))
+					timeout *= 1000;
+				
+				dbUrl += "?connectTimeout=" + timeout + "&socketTimeout=" + timeout;
+			}
 			config.setProperty("hibernate.connection.url", dbUrl);			
-		} else {
-			dbUrl = config.getProperty("hibernate.connection.url");
 		}
 		
 		String dbUserName = DbSetupConfig.getDbUserName();
@@ -130,14 +150,13 @@ public class HibernateUtils {
 		
 		// Log info, but don't log password. This can just be debug logging
 		// even though it is important because the C3P0 connector logs the info.
-		logger.debug("For Hibernate factory project dbName={} " +
+		logger.info("For Hibernate factory project dbName={} " +
 				"using url={} username={}, and configured password",
 				dbName, dbUrl, dbUserName);
 		
 		// Get the session factory for persistence
 		Properties properties = config.getProperties();
-		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
-				.applySettings(properties).build();
+		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(properties).build();
 		SessionFactory sessionFactory = 
 				config.buildSessionFactory(serviceRegistry);
 
@@ -151,10 +170,15 @@ public class HibernateUtils {
 	 * 
 	 * @param agencyId
 	 *            Used as the database name if the property
-	 *            transitime.core.dbName is not set
+	 *            transitime.db.dbName is not set
 	 * @return
 	 */
 	public static SessionFactory getSessionFactory(String agencyId) 
+			throws HibernateException{
+		return getSessionFactory(agencyId, false);
+	}
+	
+	public static SessionFactory getSessionFactory(String agencyId, boolean readOnly) 
 			throws HibernateException{
 		// Determine the database name to use. Will usually use the
 		// projectId since each project has a database. But this might
@@ -163,14 +187,18 @@ public class HibernateUtils {
 		if (dbName == null)
 			dbName = agencyId;
 		
+		if (readOnly) {
+			dbName = dbName + "-ro";
+		}
 		SessionFactory factory;
 		
 		synchronized(sessionFactoryCache) {
 			factory = sessionFactoryCache.get(dbName);
 			// If factory not yet created for this projectId then create it
-			if (factory == null) {
+			if (factory == null || factory.isClosed()) {
 				try {
-					factory = createSessionFactory(dbName);
+				  logger.info("creating new session factory with readOnly={}", readOnly);
+					factory = createSessionFactory(dbName, readOnly);
 					sessionFactoryCache.put(dbName, factory);
 				} catch (Exception e) {
 					logger.error("Could not create SessionFactory for "
@@ -213,10 +241,13 @@ public class HibernateUtils {
 	 *         gets limited number of open sessions.
 	 * @throws HibernateException
 	 */
-	public static Session getSession(String agencyId) 
-		throws HibernateException {
-		SessionFactory sessionFactory = 
-				HibernateUtils.getSessionFactory(agencyId);
+	public static Session getSession(String agencyId) throws HibernateException {
+		return getSession(agencyId, false);
+	}
+
+	public static Session getSession(String agencyId, boolean readOnly) throws HibernateException {
+		SessionFactory sessionFactory =
+				HibernateUtils.getSessionFactory(agencyId, readOnly);
 		Session session = sessionFactory.openSession();
 		return session;
 	}
@@ -233,8 +264,12 @@ public class HibernateUtils {
 	 *         gets limited number of open sessions.
 	 */
 	public static Session getSession() {
+		return getSession(false);
+	}
+	
+	public static Session getSession(boolean readOnly) {
 		SessionFactory sessionFactory = 
-				HibernateUtils.getSessionFactory(DbSetupConfig.getDbName());
+				HibernateUtils.getSessionFactory(DbSetupConfig.getDbName(), readOnly);
 		Session session = sessionFactory.openSession();
 		return session;
 	}
@@ -262,5 +297,21 @@ public class HibernateUtils {
 		}
 
 	    return byteOutputStream.toByteArray().length;
+	}
+	
+	/**
+	 * Recursively finds the root cause of the throwable. Useful for complicated
+	 * inconsistent exceptions like what one gets with JDBC drivers.
+	 * 
+	 * @param t
+	 *            The throwable to get the root cause of
+	 * @return The root cause of the throwable passed in
+	 */
+	public static Throwable getRootCause(Throwable t) {
+		Throwable subcause = t.getCause();
+		if (subcause == null || subcause == t)
+			return t;
+		else
+			return getRootCause(subcause);
 	}
 }

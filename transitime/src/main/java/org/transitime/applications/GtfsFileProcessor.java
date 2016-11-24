@@ -16,21 +16,7 @@
  */
 package org.transitime.applications;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitime.config.ConfigFileReader;
@@ -42,6 +28,14 @@ import org.transitime.gtfs.gtfsStructs.GtfsAgency;
 import org.transitime.gtfs.readers.GtfsAgencyReader;
 import org.transitime.utils.Time;
 import org.transitime.utils.Zip;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Reads GTFS files, validates and cleans up the data, stores the data into Java
@@ -74,6 +68,7 @@ public class GtfsFileProcessor {
 	private final double maxTravelTimeSegmentLength;
 	private final int configRev;
 	private final boolean shouldStoreNewRevs;
+	private final boolean shouldDeleteRevs;
 	private final String notes;
 	private final boolean trimPathBeforeFirstStopOfTrip;
 
@@ -92,7 +87,7 @@ public class GtfsFileProcessor {
 
 	/**
 	 * Simple constructor. Stores the configurable parameters for this class.
-	 * Declared private since only used internally by createGtfsFileProcessor().
+	 * In main project, only used by createGtfsFileProcessor().
 	 * 
 	 * @param configFile
 	 * @param notes
@@ -114,7 +109,7 @@ public class GtfsFileProcessor {
 	 *            If true then will store the new config and travel times revs
 	 *            into ActiveRevisions table in db
 	 */
-	private GtfsFileProcessor(String configFile, String notes, String gtfsUrl,
+	public GtfsFileProcessor(String configFile, String notes, String gtfsUrl,
 			String gtfsZipFileName, String unzipSubdirectory,
 			String gtfsDirectoryName, String supplementDir,
 			String regexReplaceListFileName, double pathOffsetDistance,
@@ -123,7 +118,7 @@ public class GtfsFileProcessor {
 			int defaultWaitTimeAtStopMsec, double maxSpeedKph,
 			double maxTravelTimeSegmentLength,
 			int configRev,
-			boolean shouldStoreNewRevs, boolean trimPathBeforeFirstStopOfTrip) {
+			boolean shouldStoreNewRevs, boolean shouldDeleteRevs, boolean trimPathBeforeFirstStopOfTrip) {
 		// Read in config params if command line option specified
 		if (configFile != null) {
 			try {
@@ -152,6 +147,7 @@ public class GtfsFileProcessor {
 		this.configRev = configRev;
 		this.notes = notes;
 		this.shouldStoreNewRevs = shouldStoreNewRevs;
+		this.shouldDeleteRevs = shouldDeleteRevs;
 		this.trimPathBeforeFirstStopOfTrip = trimPathBeforeFirstStopOfTrip;
 	}
 
@@ -194,8 +190,8 @@ public class GtfsFileProcessor {
 		// If URL set then should get the file from web and store it
 		if (gtfsUrl != null) {
 			gtfsZipFileName =
-					HttpGetGtfsFile
-							.getFile(AgencyConfig.getAgencyId(), gtfsUrl);
+					HttpGetGtfsFile.getFile(AgencyConfig.getAgencyId(),
+							gtfsUrl, unzipSubdirectory);
 		}
 
 		// Uncompress the GTFS zip file if need to
@@ -284,7 +280,8 @@ public class GtfsFileProcessor {
 		// Process the GTFS data
 		GtfsData gtfsData =
 				new GtfsData(configRev, notes, zipFileLastModifiedTime,
-						shouldStoreNewRevs, AgencyConfig.getAgencyId(),
+						shouldStoreNewRevs, shouldDeleteRevs,
+						AgencyConfig.getAgencyId(),
 						gtfsDirectoryName, supplementDir,
 						pathOffsetDistance, maxStopToPathDistance,
 						maxDistanceForEliminatingVertices,
@@ -402,7 +399,7 @@ public class GtfsFileProcessor {
 						commandLineArgs);
 		double maxDistanceForEliminatingVertices =
 				getDoubleCommandLineOption("maxDistanceForEliminatingVertices",
-						0.0, commandLineArgs);
+						3.0, commandLineArgs);
 		int defaultWaitTimeAtStopMsec =
 				getIntegerCommandLineOption("defaultWaitTimeAtStopMsec",
 						10 * Time.MS_PER_SEC, commandLineArgs);
@@ -416,6 +413,7 @@ public class GtfsFileProcessor {
 
 		// Handle boolean command line options
 		boolean shouldStoreNewRevs = commandLineArgs.hasOption("storeNewRevs");
+		boolean shouldDeleteRevs = !commandLineArgs.hasOption("skipDeleteRevs");
 		boolean trimPathBeforeFirstStopOfTrip =
 				commandLineArgs.hasOption("trimPathBeforeFirstStopOfTrip");
 
@@ -429,7 +427,8 @@ public class GtfsFileProcessor {
 						defaultWaitTimeAtStopMsec, maxSpeedKph,
 						maxTravelTimeSegmentLength,
 						configRev,
-						shouldStoreNewRevs, trimPathBeforeFirstStopOfTrip);
+						shouldStoreNewRevs, shouldDeleteRevs, 
+						trimPathBeforeFirstStopOfTrip);
 
 		return processor;
 	}
@@ -592,12 +591,20 @@ public class GtfsFileProcessor {
 				"Stores the config and travel time revs into ActiveRevisions "
 						+ "in database.");
 
+		options.addOption("skipDeleteRevs", false,
+				"Delete the rev to be created first just in case.");
+		
 		options.addOption(
 				"trimPathBeforeFirstStopOfTrip",
 				false,
 				"For trimming off path from shapes.txt for before the first "
 						+ "stops of trips. Useful for when the shapes have problems "
 						+ "at the beginning, which is suprisingly common.");
+
+        options.addOption(
+                "integrationTest",
+                false,
+                "Flag to indicate whether import is being run as part of integration test");
 
 		// Parse the options
 		CommandLineParser parser = new BasicParser();
@@ -640,13 +647,20 @@ public class GtfsFileProcessor {
 		// Process the data
 		try {
 			processor.process();
-		} catch (IllegalArgumentException e) {
-			logger.error(e.getMessage());
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 		}
 
 		// Found that when running on AWS that program never terminates,
 		// probably because still have db threads running. Therefore
 		// using exit() to definitely end the process.
-		System.exit(0);
+        String integrationTest = System.getProperty("transitime.core.integrationTest");
+        if(integrationTest != null){
+            logger.info("GTFS import complete for integration test");
+            System.setProperty("transitime.core.gtfsImported","true");
+        }else{
+            System.exit(0);
+        }
+
 	}
 }

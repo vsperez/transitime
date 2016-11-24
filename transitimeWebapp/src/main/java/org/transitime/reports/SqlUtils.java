@@ -16,8 +16,11 @@
  */
 package org.transitime.reports;
 
+import java.text.ParseException;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.transitime.db.webstructs.WebAgency;
 import org.transitime.utils.Time;
 
 /**
@@ -46,7 +49,7 @@ public class SqlUtils {
 		// If parameter contains a ' or a ; then throw error to 
 		// prevent possible SQL injection attack
 		if (parameter.contains("'") || parameter.contains(";"))
-			throw new RuntimeException("Parameter \"" + parameter
+			throw new IllegalArgumentException("Parameter \"" + parameter
 					+ "\" not valid.");
 		
 		// Not a problem so return parameter
@@ -111,9 +114,7 @@ public class SqlUtils {
 		if (tableAliasName != null && !tableAliasName.isEmpty())
 			tableAlias = tableAliasName + ".";
 		
-		return " AND (" + tableAlias + "routeshortname IN " 
-		+ routeIdentifiers + " OR " + tableAlias + "routeid IN " 
-		+ routeIdentifiers + ") ";
+		return " AND " + tableAlias + "routeShortName IN " + routeIdentifiers;
 	}
 	
 	/**
@@ -123,7 +124,7 @@ public class SqlUtils {
 	 * @param request
 	 *            Http request containing parameters for the query
 	 * @param timeColumnName
-	 *            name of time column that for query
+	 *            name of time column for that for query
 	 * @param maxNumDays
 	 *            maximum number of days for query. Request parameter numDays is
 	 *            limited to this value in order to make sure that query doesn't
@@ -133,17 +134,9 @@ public class SqlUtils {
 	 */
 	public static String timeRangeClause(HttpServletRequest request,
 			String timeColumnName, int maxNumDays) {
-		String beginDate = request.getParameter("beginDate");
-		throwOnSqlInjection(beginDate);
-		
-		String numDaysStr = request.getParameter("numDays");
-		throwOnSqlInjection(numDaysStr);
-		// Limit number of days to maxNumDays to prevent queries that are 
-		// too big
-		int numDays = Integer.parseInt(numDaysStr);
-		if (numDays > maxNumDays)
-			numDays = maxNumDays;
-		
+	  String agencyId = request.getParameter("a");
+	  WebAgency agency = WebAgency.getCachedWebAgency(agencyId);
+	  boolean isMysql = "mysql".equals(agency.getDbType());
 		String beginTime = request.getParameter("beginTime");
 		throwOnSqlInjection(beginTime);
 		
@@ -162,13 +155,77 @@ public class SqlUtils {
 		}
 		if (beginTime != null && !beginTime.isEmpty() 
 				&& endTime != null && !endTime.isEmpty()) {
-			timeSql = " AND " + timeColumnName + "::time BETWEEN '" 
-				+ beginTime + "' AND '" + endTime + "' ";
+		  if (isMysql) {
+        timeSql = " AND time(" + timeColumnName + ") BETWEEN '" 
+            + beginTime + "' AND '" + endTime + "' ";
+		  } else {
+        timeSql = " AND " + timeColumnName + "::time BETWEEN '" 
+            + beginTime + "' AND '" + endTime + "' ";
+		  }
 		}
 
-		return " AND " + timeColumnName + " BETWEEN '" + beginDate
-				+ "' " + " AND TIMESTAMP '" + beginDate + "' + INTERVAL '"
-				+ numDays + " day' " + timeSql + ' ';
+		String dateRange = request.getParameter("dateRange");
+		throwOnSqlInjection(dateRange);
+		if (dateRange != null) {
+			String fromToDates[] = dateRange.split(" to ");
+			String beginDateStr, endDateStr;
+			if (fromToDates.length == 1) {
+				beginDateStr = endDateStr = fromToDates[0];
+			} else {
+				beginDateStr = fromToDates[0];
+				endDateStr = fromToDates[1];
+			}
+			
+			// Make sure not running report for too many days
+			try {
+				long beginDateTime = Time.parseDate(beginDateStr).getTime();
+				long endDateTime = Time.parseDate(endDateStr).getTime();
+				if (endDateTime - beginDateTime >= maxNumDays * Time.DAY_IN_MSECS) {					
+					throw new IllegalArgumentException("Date range is limited to "
+							+ maxNumDays + " days.");
+				}
+			} catch (ParseException e) {
+				throw new IllegalArgumentException("Could not parse begin date \"" 
+						+ beginDateStr + "\" or end date \"" 
+						+ endDateStr + "\".");
+			}
+			
+			String sql = null;
+			if (isMysql) {
+			  sql = " AND " + timeColumnName + " BETWEEN '" + beginDateStr
+	          + "' " + " AND DATE_ADD(STR_TO_DATE('" + endDateStr + "', '%Y-%m-%d'), INTERVAL 1 day) " 
+	          + timeSql + ' ';
+			} else {
+			  sql = " AND " + timeColumnName + " BETWEEN '" + beginDateStr
+					+ "' " + " AND TIMESTAMP '" + endDateStr + "' + INTERVAL '1 day' " 
+					+ timeSql + ' ';
+			}
+			return sql;
+		} else { // Not using dateRange so must be using beginDate and numDays params
+			String beginDate = request.getParameter("beginDate");
+			throwOnSqlInjection(beginDate);
+			
+			String numDaysStr = request.getParameter("numDays");
+			throwOnSqlInjection(numDaysStr);
+			
+			// Limit number of days to maxNumDays to prevent queries that are 
+			// too big
+			int numDays = Integer.parseInt(numDaysStr);
+			if (numDays > maxNumDays)
+				numDays = maxNumDays;
+			String sql = null;
+			if (isMysql) {
+			  sql = " AND " + timeColumnName + " BETWEEN '" + beginDate
+	          + "' " + " AND DATE_ADD(STR_TO_DATE('" + beginDate + "', '%Y-%m-%d'), INTERVAL "
+	          + numDays + " day) " + timeSql + ' ';
+			} else {
+			sql =" AND " + timeColumnName + " BETWEEN '" + beginDate
+					+ "' " + " AND TIMESTAMP '" + beginDate + "' + INTERVAL '"
+					+ numDays + " day' " + timeSql + ' ';
+			}
+			return sql;
+		}
+
 	}
 	
 	/**

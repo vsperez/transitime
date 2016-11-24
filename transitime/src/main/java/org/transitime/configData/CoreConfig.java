@@ -602,8 +602,7 @@ public class CoreConfig {
 					"still be considered at the stop.");
 	
 	/**
-	 * How far a vehicle can be past a stop in meters and still be considered at
-	 * the stop.
+	 * Returns how long driver is expected to have a break for a stop.
 	 * 
 	 * @return
 	 */
@@ -614,8 +613,7 @@ public class CoreConfig {
 			new IntegerConfigValue(
 					"transitime.core.defaultBreakTimeSec", 
 					0,
-					"How far a vehicle can be past a stop in meters and " +
-					"still be considered at the stop.");
+					"How long driver is expected to have a break for a stop.");
 	
 	/**
 	 * How much worse it is for a vehicle to be early as opposed to late when
@@ -754,16 +752,19 @@ public class CoreConfig {
 					+ "can be used by monit to make sure that core process is "
 					+ "always running.");
 	
-	public static boolean useRouteShortNameAsId() {
-		return useRouteShortNameAsId.getValue();
+	/**
+	 * Whether historical arrival/departure caches should be filled on
+	 * Core start. These are used for some prediction generators, but
+	 * not the default.
+	 * @return
+	 */
+	public static boolean getFillHistoricalCaches() {
+	  return fillHistoricalCaches.getValue();
 	}
-	private static final BooleanConfigValue useRouteShortNameAsId = 
-			new BooleanConfigValue("transitime.core.useRouteShortNameAsId", 
-					false,
-					"For problematic agencies where route_id is not stable "
-					+ "across schedule changes but route_short_name is this "
-					+ "value should be set to true so that the GTFS "
-					+ "route_short_name is passed as the ID.");
-
-
+	private static BooleanConfigValue fillHistoricalCaches = 
+	    new BooleanConfigValue(
+	        "transitime.core.fillHistoricalCaches",
+	        false,
+	        "whether historical caches should be filled on Core start.");
+	
 }

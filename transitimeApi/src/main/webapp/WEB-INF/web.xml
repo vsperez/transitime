@@ -2,7 +2,7 @@
 <web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	version="3.0">
-	<display-name>Transitime api</display-name>
+	<display-name>transiTime api</display-name>
 
 	<context-param>
 		<param-name>transitime_config_file_location</param-name>
@@ -13,9 +13,30 @@
 	</context-param>
 
 	<!-- So that configuration parameters can be read in from file -->
+
 	<listener>
 		<listener-class>org.transitime.web.ReadConfigListener</listener-class>
 	</listener>
+
+
+	<filter>
+		<filter-name>CorsFilter</filter-name>
+		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CorsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>ApiLoggingFilter</filter-name>
+		<filter-class>org.transitime.api.utils.ApiLoggingFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>ApiLoggingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
 
 	<!-- For special Http response 416 "Requested Range Not Satisfiable" which 
 		is used for when there is no data for a request, use special error page that 
@@ -27,13 +48,6 @@
 		<location>/error/messageOnlyError.jsp</location>
 	</error-page>
 
-	<filter>
-		<filter-name>CorsFilter</filter-name>
-		<filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>CorsFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
+
 
 </web-app>

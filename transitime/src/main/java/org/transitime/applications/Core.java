@@ -120,12 +120,13 @@ public class Core {
 			// Read in config rev from ActiveRevisions table in db
 			ActiveRevisions activeRevisions = ActiveRevisions.get(agencyId);
 			
-			// If config rev not set properly then can't do anything so exit
+			// If config rev not set properly then simply log error.
+			// Originally would also exit() but found that want system to 
+			// work even without GTFS configuration so that can test AVL feed.
 			if (!activeRevisions.isValid()) {
 				logger.error("ActiveRevisions in database is not valid. The "
 						+ "configuration revs must be set to proper values. {}", 
 						activeRevisions);
-				System.exit(-1);
 			}
 			configRev = activeRevisions.getConfigRev();
 		}
@@ -210,12 +211,13 @@ public class Core {
 	}
 	
 	/**
-	 * For obtaining singleton Core object
+	 * For obtaining singleton Core object.
+	 * Synchronized to prevent race conditions if starting lots of optional modules. 
 	 * 
 	 * @returns the Core singleton object for this application, or null if it
 	 *          could not be created
 	 */
-	public static Core getInstance() {
+	public synchronized static Core getInstance() {
 		if (Core.singleton == null)
 			createCore();
 		
@@ -376,13 +378,42 @@ public class Core {
 		}
 	}
 	
+	private static void fillHistoricalCaches() {
+	  Session session = HibernateUtils.getSession();
+    
+    Date endDate=Calendar.getInstance().getTime();
+    /* populate one day at a time to avoid memory issue */
+    for(int i=0;i<CoreConfig.getDaysPopulateHistoricalCache();i++)
+    {
+      Date startDate=DateUtils.addDays(endDate, -1);
+      
+      logger.debug("Populating TripDataHistoryCache cache for period {} to {}",startDate,endDate);
+      TripDataHistoryCache.getInstance().populateCacheFromDb(session, startDate, endDate);
+      
+      endDate=startDate;
+    }
+          
+    endDate=Calendar.getInstance().getTime();
+    /* populate one day at a time to avoid memory issue */
+    for(int i=0;i<CoreConfig.getDaysPopulateHistoricalCache();i++)
+    {
+      Date startDate=DateUtils.addDays(endDate, -1);
+      
+      logger.debug("Populating StopArrivalDepartureCache cache for period {} to {}",startDate,endDate);
+      StopArrivalDepartureCache.getInstance().populateCacheFromDb(session, startDate, endDate);
+      
+      endDate=startDate;
+    }
+	}
+	
+	
 	/**
 	 * Start the RMI Servers so that clients can obtain data
 	 * on predictions, vehicles locations, etc.
 	 *  
 	 * @param agencyId
 	 */
-	private static void startRmiServers(String agencyId) {
+	public static void startRmiServers(String agencyId) {
 		// Start up all of the RMI servers
 		PredictionsServer.start(agencyId, PredictionDataCache.getInstance());
 		VehiclesServer.start(agencyId, VehicleDataCache.getInstance());
@@ -419,31 +450,8 @@ public class Core {
 			// Initialize the core now
 			createCore();
 			
-			Session session = HibernateUtils.getSession();
-			
-			Date endDate=Calendar.getInstance().getTime();
-			/* populate one day at a time to avoid memory issue */
-			for(int i=0;i<CoreConfig.getDaysPopulateHistoricalCache();i++)
-			{
-				Date startDate=DateUtils.addDays(endDate, -1);
-				
-				logger.debug("Populating TripDataHistoryCache cache for period {} to {}",startDate,endDate);
-				TripDataHistoryCache.getInstance().populateCacheFromDb(session, startDate, endDate);
-				
-				endDate=startDate;
-			}
-						
-			endDate=Calendar.getInstance().getTime();
-			/* populate one day at a time to avoid memory issue */
-			for(int i=0;i<CoreConfig.getDaysPopulateHistoricalCache();i++)
-			{
-				Date startDate=DateUtils.addDays(endDate, -1);
-				
-				logger.debug("Populating StopArrivalDepartureCache cache for period {} to {}",startDate,endDate);
-				StopArrivalDepartureCache.getInstance().populateCacheFromDb(session, startDate, endDate);
-				
-				endDate=startDate;
-			}
+			if (CoreConfig.getFillHistoricalCaches())
+			  fillHistoricalCaches();
 			
 			// Start any optional modules. 
 			List<String> optionalModuleNames = CoreConfig.getOptionalModules();

@@ -19,7 +19,10 @@ package org.transitime.avl;
 import java.io.InputStream;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.transitime.config.StringConfigValue;
+import java.util.Collection;
 import org.transitime.db.structs.AvlReport;
 import org.transitime.feed.gtfsRt.GtfsRtVehiclePositionsReader;
 import org.transitime.modules.Module;
@@ -33,11 +36,9 @@ import org.transitime.modules.Module;
  */
 public class GtfsRealtimeModule extends PollUrlAvlModule {
 
-	// If debugging feed and want to not actually process
-	// AVL reports to generate predictions and such then
-	// set shouldProcessAvl to false;
-	private static boolean shouldProcessAvl = true;
-
+  private static final Logger logger = LoggerFactory
+      .getLogger(GtfsRealtimeModule.class);
+  
 	/*********** Configurable Parameters for this module ***********/
 	public static String getGtfsRealtimeURI() {
 		return gtfsRealtimeURI.getValue();
@@ -54,48 +55,54 @@ public class GtfsRealtimeModule extends PollUrlAvlModule {
 	 */
 	public GtfsRealtimeModule(String projectId) {
 		super(projectId);
+    // GTFS-realtime is already binary so don't want to get compressed
+    // version since that would just be a waste.
+    useCompression = false;
 	}
 
 	/**
 	 * Reads and processes the data. Called by AvlModule.run().
-	 * Reading GTFS-realtime doesn't use InputStream so overriding
+	 * Reading GTFS-realtime doesn't use InputSteram so overriding
 	 * getAndProcessData().
 	 */
 	@Override
 	protected void getAndProcessData() {
-		List<AvlReport> avlReports = GtfsRtVehiclePositionsReader
-				.getAvlReports(getGtfsRealtimeURI());
-		for (AvlReport avlReport : avlReports) {
-			if (shouldProcessAvl)
-				processAvlReport(avlReport);
-			else
-				System.out.println(avlReport);
-		}
+	  
+	  String[] urls = getGtfsRealtimeURI().split(",");
+	  
+	  
+	  for (String urlStr : urls) {
+  	  try {
+    	  logger.info("reading {}", urlStr);
+    		List<AvlReport> avlReports = GtfsRtVehiclePositionsReader
+    				.getAvlReports(urlStr);
+    		logger.info("read complete");
+    		for (AvlReport avlReport : avlReports) {
+    			processAvlReport(avlReport);
+    		}
+    		logger.info("processed {} reports for feed {}", avlReports.size(), urlStr);
+  	  } catch (Exception any) {
+  	    logger.error("issues processing feed {}:{}", urlStr, any, any);
+  	  }
+  		
+	  }
+		
 	}
 
 	/* (non-Javadoc)
-	 * @see org.transitime.avl.AvlModule#getUrl()
-	 */
-	@Override
-	protected String getUrl() {
-		return getGtfsRealtimeURI();
-	}
-
-	/* Not needed since all processing for this class is done in
-	 * the overridden getAndProcessData().
-	 * (non-Javadoc)
 	 * @see org.transitime.avl.AvlModule#processData(java.io.InputStream)
 	 */
 	@Override
-	protected void processData(InputStream in) throws Exception {
+	protected Collection<AvlReport> processData(InputStream inputStream)
+			throws Exception {
+	  return null; // we've overriden getAndProcessData so this need not do anything
 	}
 
 	/**
 	 * Just for debugging
 	 */
 	public static void main(String[] args) {
-		// Create a ZonarAvlModule for testing
-		shouldProcessAvl = false;
+		// Create a GtfsRealtimeModule for testing
 		Module.start("org.transitime.avl.GtfsRealtimeModule");
 	}
 

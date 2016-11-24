@@ -114,7 +114,7 @@ public class AvlReport implements Serializable {
 	
 	// Optional text for describing the source of the AVL report
 	@Column(length=SOURCE_LENGTH)
-	private final String source;
+	private String source;
 	
 	// Can be block, trip, or route ID
 	@Column(length=HibernateUtils.DEFAULT_ID_SIZE)
@@ -306,12 +306,15 @@ public class AvlReport implements Serializable {
 	 * @param vehicleId
 	 *            ID of the vehicle
 	 * @param time
-	 *            Epoch time in msec of GPS report (not when processed)
-	 * For when speed and heading are not valid. They are set to Float.NaN .
-	 * Since not yet being processed timeProcessed is set to null.
-
+	 *            Epoch time in msec of GPS report (not when processed) For when
+	 *            speed and heading are not valid. They are set to Float.NaN .
+	 *            Since not yet being processed timeProcessed is set to null.
+	 * 
 	 * @param vehicleId
 	 * @param time
+	 *            GPS time, in number of milliseconds since the standard base
+	 *            time known as "the epoch", namely January 1, 1970, 00:00:00
+	 *            GMT.
 	 * @param lat
 	 *            Latitude in decimal degrees
 	 * @param lon
@@ -785,6 +788,13 @@ public class AvlReport implements Serializable {
 		return source;
 	}
 	
+	
+	/**
+	 * Override the source set by constructor
+	 */
+	public void setSource(String source) {
+		this.source=sized(source);
+	}
 	/**
 	 * Returns how many msec elapsed between the GPS fix was generated
 	 * to the time it was finally processed. Returns 0 if timeProcessed
