@@ -138,9 +138,9 @@
         originId varchar(60) not null,
         fareId varchar(60) not null,
         destinationId varchar(60) not null,
+        containsId varchar(60) not null,
         configRev integer not null,
-        containsId varchar(60),
-        primary key (routeId, originId, fareId, destinationId, configRev)
+        primary key (routeId, originId, fareId, destinationId, containsId, configRev)
     );
 
     create table Frequencies (
@@ -151,6 +151,20 @@
         exactTimes bit,
         headwaySecs integer,
         primary key (tripId, startTime, configRev)
+    );
+
+    create table HoldingTimes (
+        id bigint not null auto_increment,
+        arrivalPredictionUsed bit,
+        arrivalUsed bit,
+        configRev integer,
+        creationTime datetime(3),
+        holdingTime datetime(3),
+        routeId varchar(60),
+        stopId varchar(60),
+        tripId varchar(60),
+        vehicleId varchar(60),
+        primary key (id)
     );
 
     create table Matches (
@@ -210,6 +224,7 @@
         avlTime datetime(3),
         configRev integer,
         creationTime datetime(3),
+        gtfsStopSeq integer,
         isArrival bit,
         predictionTime datetime(3),
         routeId varchar(60),
@@ -250,6 +265,16 @@
         primary key (id)
     );
 
+    create table StopPath_locations (
+        StopPath_tripPatternId varchar(120) not null,
+        StopPath_stopPathId varchar(120) not null,
+        StopPath_configRev integer not null,
+        lat double precision,
+        lon double precision,
+        locations_ORDER integer not null,
+        primary key (StopPath_tripPatternId, StopPath_stopPathId, StopPath_configRev, locations_ORDER)
+    );
+
     create table StopPaths (
         tripPatternId varchar(120) not null,
         stopPathId varchar(120) not null,
@@ -258,7 +283,6 @@
         gtfsStopSeq integer,
         lastStopInTrip bit,
         layoverStop bit,
-        locations blob,
         pathLength double precision,
         routeId varchar(60),
         scheduleAdherenceStop bit,
@@ -298,7 +322,7 @@
         stopPathId varchar(120),
         stopTimeMsec integer,
         travelTimeSegmentLength float,
-        travelTimesMsec blob,
+        travelTimesMsec mediumblob,
         travelTimesRev integer,
         primary key (id)
     );
@@ -344,6 +368,16 @@
         primary key (id, configRev)
     );
 
+    create table Trip_scheduledTimesList (
+        Trip_tripId varchar(60) not null,
+        Trip_startTime integer not null,
+        Trip_configRev integer not null,
+        arrivalTime integer,
+        departureTime integer,
+        scheduledTimesList_ORDER integer not null,
+        primary key (Trip_tripId, Trip_startTime, Trip_configRev, scheduledTimesList_ORDER)
+    );
+
     create table Trips (
         tripId varchar(60) not null,
         startTime integer not null,
@@ -356,7 +390,6 @@
         noSchedule bit,
         routeId varchar(60),
         routeShortName varchar(60),
-        scheduledTimesList blob,
         serviceId varchar(60),
         shapeId varchar(60),
         tripShortName varchar(60),
@@ -422,6 +455,8 @@
 
     create index AvlReportsTimeIndex on AvlReports (time);
 
+    create index HoldingTimeIndex on HoldingTimes (creationTime);
+
     create index AvlTimeIndex on Matches (avlTime);
 
     create index MeasuredArrivalTimesIndex on MeasuredArrivalTimes (time);
@@ -432,7 +467,7 @@
 
     create index PredictionTimeIndex on Predictions (creationTime);
 
-    create index StopPathPredictionTimeIndex on StopPathPredictions (creationTime);
+    create index StopPathPredictionTimeIndex on StopPathPredictions (tripId, stopPathIndex);
 
     create index TravelTimesRevIndex on TravelTimesForTrips (travelTimesRev);
 
@@ -453,6 +488,11 @@
         foreign key (Blocks_serviceId, Blocks_configRev, Blocks_blockId) 
         references Blocks (serviceId, configRev, blockId);
 
+    alter table StopPath_locations 
+        add constraint FK_sdjt3vtd3w0cl07p0doob6khi 
+        foreign key (StopPath_tripPatternId, StopPath_stopPathId, StopPath_configRev) 
+        references StopPaths (tripPatternId, stopPathId, configRev);
+
     alter table TravelTimesForTrip_to_TravelTimesForPath_joinTable 
         add constraint FK_hh5uepurijcqj0pyc6e3h5mqw 
         foreign key (travelTimesForStopPaths_id) 
@@ -472,6 +512,11 @@
         add constraint FK_qsr8l6u1nelb5pt8rlnei08sy 
         foreign key (TripPatterns_id, TripPatterns_configRev) 
         references TripPatterns (id, configRev);
+
+    alter table Trip_scheduledTimesList 
+        add constraint FK_n5et0p70cwe1dwo4m6lq0k4h0 
+        foreign key (Trip_tripId, Trip_startTime, Trip_configRev) 
+        references Trips (tripId, startTime, configRev);
 
     alter table Trips 
         add constraint FK_p1er53449kkfsca6mbnxkdyst 
