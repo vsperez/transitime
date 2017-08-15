@@ -37,6 +37,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.config.DoubleConfigValue;
 import org.transitime.config.IntegerConfigValue;
 import org.transitime.config.StringConfigValue;
@@ -1956,7 +1957,7 @@ public class GtfsData {
 			List<CalendarDate> calendarDates) {
 		// If calendar end date is for sometime in the future then it is
 		// definitely active.
-		if (calendar.getEndDate().getTime() > System.currentTimeMillis()) 
+		if (calendar.getEndDate().getTime() > Core.currentTimeMillis()) 
 			return true;
 		
 		// End date is not in the future so see if it is being added as an
@@ -1964,7 +1965,7 @@ public class GtfsData {
 		for (CalendarDate calendarDate : calendarDates) {
 			if (calendar.getServiceId().equals(calendarDate.getServiceId())
 					&& calendarDate.addService() 
-					&& calendarDate.getDate().getTime() > System.currentTimeMillis()) {
+					&& calendarDate.getDate().getTime() > Core.currentTimeMillis()) {
 				return true;
 			}
 		}
@@ -1982,7 +1983,7 @@ public class GtfsData {
 	 * @return
 	 */
 	private static boolean isCalendarDateActiveInTheFuture(CalendarDate calendarDate) {
-		return calendarDate.getDate().getTime() > System.currentTimeMillis()
+		return calendarDate.getDate().getTime() > Core.currentTimeMillis()
 				&& calendarDate.addService();
 	}
 	
@@ -2039,7 +2040,7 @@ public class GtfsData {
 			// not clean out old dates from the calendar_dates.txt file even
 			// if they are no longer useful.			
 			if (calendarDate.getDate().getTime() + 1*Time.DAY_IN_MSECS < 
-					System.currentTimeMillis()) 
+					Core.currentTimeMillis()) 
 				continue;
 
 			// The calendar date is for in the future so store it

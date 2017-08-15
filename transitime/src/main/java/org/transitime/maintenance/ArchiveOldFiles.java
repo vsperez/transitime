@@ -21,6 +21,7 @@ import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.utils.Gzip;
 import org.transitime.utils.Time;
 import org.transitime.utils.Zip;
@@ -136,7 +137,7 @@ public class ArchiveOldFiles extends OldFileFinder {
 	public void handleOldFile(File file) {
 		logger.debug("Processing old file={} which is {} days old.",
 				file.getAbsolutePath(), 
-				(System.currentTimeMillis() - file.lastModified()) /
+				(Core.currentTimeMillis() - file.lastModified()) /
 					Time.MS_PER_DAY);
 		
 		// Only need to process files that have content and that are not

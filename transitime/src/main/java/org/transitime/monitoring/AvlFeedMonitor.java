@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.config.IntegerConfigValue;
 import org.transitime.config.StringConfigValue;
 import org.transitime.core.AvlProcessor;
@@ -82,7 +83,7 @@ public class AvlFeedMonitor extends MonitorBase {
 	private int avlFeedOutageSecs() {
 		// Determine age of AVL report
 		long lastAvlReportTime = AvlProcessor.getInstance().lastAvlReportTime();
-		long ageOfAvlReport = System.currentTimeMillis() - lastAvlReportTime;
+		long ageOfAvlReport = Core.currentTimeMillis() - lastAvlReportTime;
 		
 		logger.debug("When monitoring AVL feed last AVL report={}", 
 				AvlProcessor.getInstance().getLastAvlReport());

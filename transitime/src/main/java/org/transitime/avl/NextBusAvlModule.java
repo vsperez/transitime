@@ -24,6 +24,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.config.BooleanConfigValue;
 import org.transitime.config.IntegerConfigValue;
 import org.transitime.config.StringConfigValue;
@@ -92,7 +93,7 @@ public class NextBusAvlModule extends XmlPollingAvlModule {
 	// So can just get data since last query. Initialize so when first called
 	// get data for last 10 minutes. Definitely don't want to use t=0 because
 	// then can end up with some really old reports.
-	private long previousTime = System.currentTimeMillis() - 10*Time.MS_PER_MIN;
+	private long previousTime = Core.currentTimeMillis() - 10*Time.MS_PER_MIN;
 	
 	private static final Logger logger = 
 			LoggerFactory.getLogger(NextBusAvlModule.class);	

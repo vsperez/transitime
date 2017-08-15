@@ -321,6 +321,10 @@ public class Core {
 		return timeoutHandlerModule;
 	}
 	
+	public static long currentTimeMillis() {
+		return getInstance().getSystemTime();
+	}
+
 	/**
 	 * Processes all command line options using Apache CLI.
 	 * Further info at http://commons.apache.org/proper/commons-cli/usage.html

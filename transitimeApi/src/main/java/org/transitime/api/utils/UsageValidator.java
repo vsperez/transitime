@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.ws.rs.WebApplicationException;
 
+import org.transitime.applications.Core;
+
 /**
  * For making sure that use of API doesn't exceed limits. Intended to deal with
  * bad applications that are requesting too much data or a denial of service
@@ -89,7 +91,7 @@ public class UsageValidator {
 			String requestIpAddress = stdParameters.getRequest()
 					.getRemoteAddr();
 
-			long currentTime = System.currentTimeMillis();
+			long currentTime = Core.currentTimeMillis();
 
 			// Get the list of access times for the IP address. Can be empty.
 			LinkedList<Long> accessTimes = requestTimesPerIp

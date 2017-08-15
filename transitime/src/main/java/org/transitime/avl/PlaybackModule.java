@@ -106,7 +106,7 @@ public class PlaybackModule extends Module {
 			long playbackStartTime = Time.parse(playbackStartTimeStr).getTime();
 			
 			// If specified time is in the future then reject.
-			if (playbackStartTime > System.currentTimeMillis()) {
+			if (playbackStartTime > Core.currentTimeMillis()) {
 				logger.error("Playback start time \"{}\" specified by " +
 						"transitime.avl.playbackStartTime parameter is in " +
 						"the future and therefore invalid!",

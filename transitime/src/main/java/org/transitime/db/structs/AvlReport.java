@@ -560,7 +560,7 @@ public class AvlReport implements Serializable {
 			errorMsg += "VehicleId is empty string. ";
 			
 		// Make sure GPS time is OK
-		long currentTime = System.currentTimeMillis();
+		long currentTime = Core.currentTimeMillis();
 		if (time.getTime() < currentTime - 10 * Time.MS_PER_YEAR)
 			errorMsg += "Time of " + Time.dateTimeStr(time) + " is more than 10 years old. ";
 		if (time.getTime() > currentTime + 1 * Time.MS_PER_MIN) 
@@ -1012,7 +1012,7 @@ public class AvlReport implements Serializable {
 	 * the data was actually processed.
 	 */
 	public void setTimeProcessed() {
-		timeProcessed = new Date(System.currentTimeMillis());
+		timeProcessed = new Date(Core.currentTimeMillis());
 	}
 	
 	public String getField1Name() {

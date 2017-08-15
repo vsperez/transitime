@@ -35,6 +35,7 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.config.IntegerConfigValue;
 import org.transitime.config.StringConfigValue;
 import org.transitime.db.structs.AvlReport;
@@ -448,9 +449,9 @@ public class SfmtaApiCaller {
 	 */
 	public static void main(String args[]) {
 		AvlReport avlReport1 = new AvlReport("693",
-				System.currentTimeMillis(), 37.12345, -122.4567, null);
+				Core.currentTimeMillis(), 37.12345, -122.4567, null);
 		AvlReport avlReport2 = new AvlReport("694",
-				System.currentTimeMillis(), 37.12345, -122.4567, null);
+				Core.currentTimeMillis(), 37.12345, -122.4567, null);
 		List<AvlReport> avlReports = new ArrayList<AvlReport>();
 		avlReports.add(avlReport1);
 		avlReports.add(avlReport2);

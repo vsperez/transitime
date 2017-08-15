@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.db.structs.AvlReport;
 import org.transitime.db.structs.AvlReport.AssignmentType;
 import org.transitime.utils.IntervalTimer;
@@ -141,7 +142,7 @@ public class GtfsRtVehiclePositionsReader {
 						+ "GTFS-realtime feed so using system time, which is "
 						+ "not accurate!",
 						vehicleId);
-				gpsTime = System.currentTimeMillis();
+				gpsTime = Core.currentTimeMillis();
 			}
 			
 			// Determine the position data

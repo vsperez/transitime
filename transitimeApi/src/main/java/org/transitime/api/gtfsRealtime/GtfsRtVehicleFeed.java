@@ -26,6 +26,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitime.api.utils.AgencyTimezoneCache;
+import org.transitime.applications.Core;
 import org.transitime.ipc.clients.VehiclesInterfaceFactory;
 import org.transitime.ipc.data.IpcVehicleGtfsRealtime;
 import org.transitime.ipc.interfaces.VehiclesInterface;
@@ -160,7 +161,7 @@ public class GtfsRtVehicleFeed {
 						.setGtfsRealtimeVersion("1.0")
 						.setIncrementality(Incrementality.FULL_DATASET)
 						.setTimestamp(
-								System.currentTimeMillis() / Time.MS_PER_SEC);
+								Core.currentTimeMillis() / Time.MS_PER_SEC);
 		message.setHeader(feedheader);
 
 		for (IpcVehicleGtfsRealtime vehicle : vehicles) {

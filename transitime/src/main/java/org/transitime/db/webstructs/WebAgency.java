@@ -38,6 +38,7 @@ import org.hibernate.Transaction;
 import org.hibernate.annotations.DynamicUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.configData.DbSetupConfig;
 import org.transitime.db.hibernate.HibernateUtils;
 import org.transitime.db.structs.Agency;
@@ -287,9 +288,9 @@ public class WebAgency {
 	static private boolean updateCacheIfShould(long rereadIfOlderThanMsecs) {
 		// If haven't read in web agencies yet or in a while, do so now
 		if (webAgencyMapCache == null
-				|| System.currentTimeMillis() - webAgencyMapCacheReadTime > rereadIfOlderThanMsecs) {
+				|| Core.currentTimeMillis() - webAgencyMapCacheReadTime > rereadIfOlderThanMsecs) {
 			webAgencyMapCache = getMapFromDb();
-			webAgencyMapCacheReadTime = System.currentTimeMillis();
+			webAgencyMapCacheReadTime = Core.currentTimeMillis();
 			
 			// Read data from db so return true
 			return true;

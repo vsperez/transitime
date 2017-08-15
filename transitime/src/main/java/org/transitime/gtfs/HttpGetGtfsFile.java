@@ -17,6 +17,7 @@
  */
 package org.transitime.gtfs;
 
+import org.transitime.applications.Core;
 import org.transitime.utils.HttpGetFile;
 import org.transitime.utils.Time;
 
@@ -56,7 +57,7 @@ public class HttpGetGtfsFile extends HttpGetFile {
 	 */
 	private static String getDirectoryForStoringFile(String projectId) {		
 		return System.getProperty("user.home") + "/gtfs/" + projectId + "/" + 
-				Time.dateStr(System.currentTimeMillis()) + "/";
+				Time.dateStr(Core.currentTimeMillis()) + "/";
 	}
 	
 	/**

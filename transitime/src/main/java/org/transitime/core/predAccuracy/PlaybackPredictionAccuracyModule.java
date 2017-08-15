@@ -27,7 +27,7 @@ public class PlaybackPredictionAccuracyModule extends PredictionAccuracyModule {
 					// No need to run at startup since internal predictions won't be
 					// generated yet. So sleep a bit first.
 					
-					Time.sleep(5000);
+					Time.sleep(1000);
 					if( timer.elapsedMsec() > getTimeBetweenPollingPredictionsMsec())
 					{
 						try {

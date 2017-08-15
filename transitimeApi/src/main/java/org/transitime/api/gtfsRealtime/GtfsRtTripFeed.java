@@ -28,6 +28,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitime.api.utils.AgencyTimezoneCache;
+import org.transitime.applications.Core;
 import org.transitime.ipc.clients.PredictionsInterfaceFactory;
 import org.transitime.ipc.data.IpcPrediction;
 import org.transitime.ipc.data.IpcPredictionsForRouteStopDest;
@@ -185,7 +186,7 @@ public class GtfsRtTripFeed {
 		FeedHeader.Builder feedheader = FeedHeader.newBuilder()
 				.setGtfsRealtimeVersion("1.0")
 				.setIncrementality(Incrementality.FULL_DATASET)
-				.setTimestamp(System.currentTimeMillis() / Time.MS_PER_SEC);
+				.setTimestamp(Core.currentTimeMillis() / Time.MS_PER_SEC);
 		message.setHeader(feedheader);
 		  
 		// For each trip...

@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.configData.CoreConfig;
 import org.transitime.db.structs.Arrival;
 import org.transitime.db.structs.AvlReport;
@@ -823,7 +824,7 @@ public class VehicleState {
 	 * @return
 	 */
 	private float recentValidHeading() {
-		long maxAge = System.currentTimeMillis() - 2 * Time.MS_PER_MIN;
+		long maxAge = Core.currentTimeMillis() - 2 * Time.MS_PER_MIN;
 		
 		for (AvlReport avlReport : avlReportHistory) {
 			// If report is too old then don't use it

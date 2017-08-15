@@ -36,6 +36,7 @@ import org.hibernate.exception.JDBCConnectionException;
 import org.hibernate.exception.SQLGrammarException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitime.applications.Core;
 import org.transitime.db.structs.AvlReport;
 import org.transitime.logging.Markers;
 import org.transitime.utils.IntervalTimer;
@@ -626,7 +627,7 @@ public class DataDbLogger {
 	public static void main(String[] args) {
 		DataDbLogger logger = getDataDbLogger("test", false, false);
 
-		long initialTime = (System.currentTimeMillis()  / 1000) * 1000;
+		long initialTime = (Core.currentTimeMillis()  / 1000) * 1000;
 
 		for (int i=0; i<25; ++i)
 			logger.add(new AvlReport("test", initialTime + i, 1.23, 4.56, null));
