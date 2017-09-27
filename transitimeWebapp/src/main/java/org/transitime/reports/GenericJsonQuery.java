@@ -40,7 +40,7 @@ public class GenericJsonQuery extends GenericQuery {
 	 * @param agencyId
 	 * @throws SQLException
 	 */
-	private GenericJsonQuery(String agencyId) throws SQLException {
+	protected GenericJsonQuery(String agencyId) throws SQLException {
 		super(agencyId);
 	}
 
