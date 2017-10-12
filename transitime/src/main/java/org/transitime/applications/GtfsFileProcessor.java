@@ -76,6 +76,9 @@ public class GtfsFileProcessor {
 	private final boolean shouldStoreNewRevs;
 	private final String notes;
 	private final boolean trimPathBeforeFirstStopOfTrip;
+	
+	private final boolean createBareFootMapFile;
+	private final String barefootMapFilePath;
 
 	// Read in configuration files. This should be done statically before
 	// the logback LoggerFactory.getLogger() is called so that logback can
@@ -113,6 +116,8 @@ public class GtfsFileProcessor {
 	 * @param shouldStoreNewRevs
 	 *            If true then will store the new config and travel times revs
 	 *            into ActiveRevisions table in db
+	 * @param barefootMapFilePath 
+	 * @param createBareFootMapFile 
 	 */
 	public GtfsFileProcessor(String configFile, String notes, String gtfsUrl,
 			String gtfsZipFileName, String unzipSubdirectory,
@@ -123,7 +128,7 @@ public class GtfsFileProcessor {
 			int defaultWaitTimeAtStopMsec, double maxSpeedKph,
 			double maxTravelTimeSegmentLength,
 			int configRev,
-			boolean shouldStoreNewRevs, boolean trimPathBeforeFirstStopOfTrip) {
+			boolean shouldStoreNewRevs, boolean trimPathBeforeFirstStopOfTrip, boolean createBareFootMapFile, String barefootMapFilePath) {
 		// Read in config params if command line option specified
 		
 			if (configFile != null) {
@@ -158,6 +163,9 @@ public class GtfsFileProcessor {
 		this.notes = notes;
 		this.shouldStoreNewRevs = shouldStoreNewRevs;
 		this.trimPathBeforeFirstStopOfTrip = trimPathBeforeFirstStopOfTrip;
+		
+		this.createBareFootMapFile = createBareFootMapFile;
+		this.barefootMapFilePath = barefootMapFilePath; 
 	}
 
 	/********************** Member Functions **************************/
@@ -300,6 +308,9 @@ public class GtfsFileProcessor {
 		
 		gtfsData.processData();
 		
+		if(this.createBareFootMapFile)
+			gtfsData.createBareFootMap(barefootMapFilePath);
+		
 		// Log possibly useful info
 		titleFormatter.logRegexesThatDidNotMakeDifference();
 
@@ -425,6 +436,12 @@ public class GtfsFileProcessor {
 		boolean shouldStoreNewRevs = commandLineArgs.hasOption("storeNewRevs");
 		boolean trimPathBeforeFirstStopOfTrip =
 				commandLineArgs.hasOption("trimPathBeforeFirstStopOfTrip");
+		
+		// This is to say if you want a barefoot map file created, so it can be used for map matching.		
+		boolean createBareFootMapFile =  commandLineArgs.hasOption("barefoot");
+		
+		String barefootMapFilePath =  commandLineArgs.getOptionValue("barefoot");
+		
 
 		// Create the processor and set all the options
 		GtfsFileProcessor processor =
@@ -436,7 +453,7 @@ public class GtfsFileProcessor {
 						defaultWaitTimeAtStopMsec, maxSpeedKph,
 						maxTravelTimeSegmentLength,
 						configRev,
-						shouldStoreNewRevs, trimPathBeforeFirstStopOfTrip);
+						shouldStoreNewRevs, trimPathBeforeFirstStopOfTrip, createBareFootMapFile, barefootMapFilePath );
 
 		return processor;
 	}
@@ -605,6 +622,8 @@ public class GtfsFileProcessor {
 				"For trimming off path from shapes.txt for before the first "
 						+ "stops of trips. Useful for when the shapes have problems "
 						+ "at the beginning, which is suprisingly common.");
+		
+		options.addOption("barefoot", true, "Location for a barefoot map file.");
 
 		// Parse the options
 		CommandLineParser parser = new BasicParser();

@@ -233,4 +233,11 @@ public class AvlConfig {
 			new BooleanConfigValue("transitime.avl.shouldLogToStdOut", false,
 					"For debugging. Logs each AVL report to stdout if set "
 					+ "to true. Default is false.");
+
+	private static BooleanConfigValue sendToBarefoot = new BooleanConfigValue("transitime.avl.sendToBareFoot", true,
+			"Sends all AVL report to a barefoot server so they can be mathced to route shapes.");
+	
+	public static boolean sendToBarefoot() {	
+		return sendToBarefoot.getValue();
+	}
 }

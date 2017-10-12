@@ -1875,6 +1875,17 @@ public class GtfsData {
 						maxDistanceForEliminatingVertices,
 						trimPathBeforeFirstStopOfTrip);
 		pathProcessor.processPathSegments();
+		
+		BareFootProcessor barefootProcessor = new BareFootProcessor(
+				Collections.unmodifiableCollection(gtfsShapes), 
+				Collections.unmodifiableMap(stopsMap), 
+				Collections.unmodifiableCollection(tripPatternMap.values()),
+				pathOffsetDistance,
+				maxStopToPathDistance, 
+				maxDistanceForEliminatingVertices,
+				trimPathBeforeFirstStopOfTrip);
+		
+		barefootProcessor.processPathSegments();
 						
 		// Let user know what is going on
 		logger.info("Finished processing shapes.txt data. Took {} msec.",
@@ -2728,5 +2739,92 @@ public class GtfsData {
 //		for (Route r : getRoutes()) {
 //			System.err.println("  " + r);
 //		}
+	}
+
+	public void createBareFootMap(String barefootMapFilePath) {
+		// Make sure needed data is already read in. This method 
+		// converts the shapes into Paths such that each path ends
+		// at a stop. Therefore need to have read in stop info first.
+		if (stopsMap == null || stopsMap.isEmpty()) {
+			logger.error("processStopData() must be called before " + 
+					"GtfsData.createBareFootMap() is. Exiting.");
+			System.exit(-1);
+		}
+
+		// For logging how long things take
+		IntervalTimer timer = new IntervalTimer();
+
+		// Let user know what is going on
+		logger.info("Processing shapes.txt data...");
+		
+		// Read in the shapes.txt GTFS data from file
+		GtfsShapesReader shapesReader = new GtfsShapesReader(gtfsDirectoryName);
+		Collection<GtfsShape> gtfsShapes = shapesReader.get();
+		
+		// Handle possible supplemental shapes.txt file.
+		// Match the supplemental data to the main data using both
+		// shape_id and shape_pt_sequence.
+		if (supplementDir != null) {
+			GtfsShapesSupplementReader shapesSupplementReader =
+					new GtfsShapesSupplementReader(supplementDir);
+			List<GtfsShape> shapesSupplement = shapesSupplementReader.get();
+
+			if (shapesSupplement.size() > 0) {
+				// Put original shapes into map for quick searching
+				Map<MapKey, GtfsShape> map = new HashMap<MapKey, GtfsShape>();
+				for (GtfsShape gtfsShape : gtfsShapes) {
+					MapKey key =
+							new MapKey(gtfsShape.getShapeId(),
+									gtfsShape.getShapePtSequence());
+					map.put(key, gtfsShape);
+				}
+					
+				// Modify main GtfsShape objects using supplemental data. 
+				for (GtfsShape shapeSupplement : shapesSupplement) {
+					MapKey key =
+							new MapKey(shapeSupplement.getShapeId(),
+									shapeSupplement.getShapePtSequence());
+
+					// Handle depending on whether the supplemental data 
+					// indicates the point is to be deleted, added, or modified
+					if (shapeSupplement.shouldDelete()) {
+						// The supplemental shape indicates that the point 
+						// should be deleted
+						GtfsShape oldShape = map.remove(key);
+						if (oldShape == null) {
+							logger.error("Supplement shapes.txt file for "
+									+ "shape_id={} and shape_pt_sequence={} "
+									+ "specifies that the shape point should "
+									+ "be removed but it is not actually "
+									+ "configured in the regular shapes.txt "
+									+ "file",
+									shapeSupplement.getShapeId(), 
+									shapeSupplement.getShapePtSequence());
+						}
+					} else if (map.get(key) != null) {
+						// The shape point is already in map so modify it
+						GtfsShape combinedShape =
+								new GtfsShape(map.get(key), shapeSupplement);
+						map.put(key, combinedShape);
+					} else {
+						// The shape point is not already in map so add it
+						map.put(key, shapeSupplement);
+					}
+				}
+				
+				// Use the new combined shapes
+				gtfsShapes = map.values();
+			}
+		}
+		BareFootProcessor barefootProcessor = new BareFootProcessor(
+				Collections.unmodifiableCollection(gtfsShapes), 
+				Collections.unmodifiableMap(stopsMap), 
+				Collections.unmodifiableCollection(tripPatternMap.values()),
+				pathOffsetDistance,
+				maxStopToPathDistance, 
+				maxDistanceForEliminatingVertices,
+				trimPathBeforeFirstStopOfTrip);
+		
+		barefootProcessor.processPathSegments(barefootMapFilePath);
 	}
 }

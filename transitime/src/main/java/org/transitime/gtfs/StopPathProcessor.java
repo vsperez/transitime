@@ -44,9 +44,9 @@ import org.transitime.utils.IntervalTimer;
 public class StopPathProcessor {
 
 	// Data passed in to constructor
-	private final Map<String, List<GtfsShape>> gtfsShapesMap;  // Keyed on shapeId
+	protected final Map<String, List<GtfsShape>> gtfsShapesMap;  // Keyed on shapeId
 	private final Map<String, Stop> stopsMap;
-	private final Collection<TripPattern> tripPatterns;
+	protected final Collection<TripPattern> tripPatterns;
 	private final double offsetDistance;
 	private final double maxStopToPathDistance;
 	private final double maxDistanceForEliminatingVertices;
