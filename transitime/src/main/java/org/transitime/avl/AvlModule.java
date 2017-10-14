@@ -16,17 +16,15 @@
  */
 package org.transitime.avl;
 
-import static org.junit.Assert.assertEquals;
+
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Properties;
