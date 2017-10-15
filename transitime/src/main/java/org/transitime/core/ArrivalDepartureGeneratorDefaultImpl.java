@@ -28,9 +28,10 @@ import org.transitime.configData.CoreConfig;
 import org.transitime.core.dataCache.ArrivalDeparturesToProcessHoldingTimesFor;
 import org.transitime.core.dataCache.HoldingTimeCache;
 import org.transitime.core.dataCache.HoldingTimeCacheKey;
-import org.transitime.core.dataCache.StopArrivalDepartureCache;
+import org.transitime.core.dataCache.StopArrivalDepartureCacheFactory;
 import org.transitime.core.dataCache.TripDataHistoryCache;
 import org.transitime.core.dataCache.VehicleStateManager;
+import org.transitime.core.dataCache.ehcache.StopArrivalDepartureCache;
 import org.transitime.core.dataCache.frequency.FrequencyBasedHistoricalAverageCache;
 import org.transitime.core.dataCache.scheduled.ScheduleBasedHistoricalAverageCache;
 import org.transitime.core.holdingmethod.HoldingTimeGeneratorFactory;
@@ -340,8 +341,10 @@ public class ArrivalDepartureGeneratorDefaultImpl
 		if(TripDataHistoryCache.getInstance()!=null)
 			TripDataHistoryCache.getInstance().putArrivalDeparture(arrivalDeparture);
 		
-		if(StopArrivalDepartureCache.getInstance()!=null)
-			StopArrivalDepartureCache.getInstance().putArrivalDeparture(arrivalDeparture);		
+		if(StopArrivalDepartureCacheFactory.getInstance()!=null)
+		{			
+			StopArrivalDepartureCacheFactory.getInstance().putArrivalDeparture(arrivalDeparture);
+		}
 		 
 		if(ScheduleBasedHistoricalAverageCache.getInstance()!=null)
 			ScheduleBasedHistoricalAverageCache.getInstance().putArrivalDeparture(arrivalDeparture);
