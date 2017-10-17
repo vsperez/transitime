@@ -91,6 +91,18 @@ public class AvlReport implements Serializable {
 	@Embedded
 	private final Location location;
 	
+	
+	@Transient
+	private Location adjustedLocation;
+	
+	public Location getAdjustedLocation() {
+		return adjustedLocation;
+	}
+
+	public void setAdjustedLocation(Location adjustedLocation) {
+		this.adjustedLocation = adjustedLocation;
+	}
+
 	// Speed of vehicle in m/s.
 	// Speed is an optional element since not always available
 	// in an AVL feed. Internally it needs to be a Float and
@@ -733,7 +745,16 @@ public class AvlReport implements Serializable {
 	}
 	
 	public Location getLocation() {
+		if(adjustedLocation!=null)
+			return adjustedLocation;
 		return location;
+	}
+	
+	public Location getLocation(boolean adjusted) {
+		if(adjustedLocation!=null&&adjusted==true)
+			return adjustedLocation;
+		else
+			return location;
 	}
 	
 	public double getLat() {
@@ -1109,5 +1130,7 @@ public class AvlReport implements Serializable {
 			session.close();
 		}
 	}
+
+	
 
 }

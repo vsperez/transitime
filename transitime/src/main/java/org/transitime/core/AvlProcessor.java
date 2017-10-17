@@ -16,15 +16,30 @@
  */
 package org.transitime.core;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitime.applications.Core;
+import org.transitime.avl.mapmatch.MapMatchFactory;
 import org.transitime.config.BooleanConfigValue;
 import org.transitime.config.DoubleConfigValue;
 import org.transitime.config.IntegerConfigValue;
@@ -49,6 +64,15 @@ import org.transitime.utils.Geo;
 import org.transitime.utils.IntervalTimer;
 import org.transitime.utils.StringUtils;
 import org.transitime.utils.Time;
+
+import com.bmwcarit.barefoot.matcher.MatcherFactory;
+import com.bmwcarit.barefoot.matcher.MatcherKState;
+import com.bmwcarit.barefoot.tracker.TrackerControl;
+import com.esri.core.geometry.GeometryEngine;
+import com.esri.core.geometry.Point;
+import com.esri.core.geometry.WktImportFlags;
+import com.esri.core.geometry.Geometry;
+import com.esri.core.geometry.Geometry.Type;
 
 /**
  * This is a very important high-level class. It takes the AVL data and
@@ -1271,7 +1295,7 @@ public class AvlProcessor {
 		// Store the schedule adherence with the vehicle
 		vehicleState.setRealTimeSchedAdh(scheduleAdherence);		
 	}
-	
+
 	/**
 	 * Processes the AVL report by matching to the assignment and generating
 	 * predictions and such. Sets VehicleState for the vehicle based on the
@@ -1290,7 +1314,14 @@ public class AvlProcessor {
 		String vehicleId = avlReport.getVehicleId();
 		VehicleState vehicleState = VehicleStateManager.getInstance()
 				.getVehicleState(vehicleId);
-
+		
+		if(MapMatchFactory.getInstance()!=null)
+		{
+			Location adjustedLocation=MapMatchFactory.getInstance().getAdjustedLocation(vehicleId);
+			avlReport.setAdjustedLocation(adjustedLocation);
+		}
+		
+			
 		// Since modifying the VehicleState should synchronize in case another
 		// thread simultaneously processes data for the same vehicle. This
 		// would be extremely rare but need to be safe.
@@ -1495,7 +1526,10 @@ public class AvlProcessor {
 	 */
 	public void processAvlReport(AvlReport avlReport) {
 		IntervalTimer timer = new IntervalTimer(); 
-
+	
+		if(MapMatchFactory.getInstance()!=null)
+			MapMatchFactory.getInstance().sendUpdate(avlReport);
+		
 		// Handle special case where want to not use assignment from AVL
 		// report, most likely because want to test automatic assignment
 		// capability
