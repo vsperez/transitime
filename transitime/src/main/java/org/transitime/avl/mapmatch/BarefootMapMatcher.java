@@ -51,7 +51,7 @@ public class BarefootMapMatcher extends MapMatch {
 	private static IntegerConfigValue barefootPortNumber = new IntegerConfigValue("transitime.core.avl.barefoot.port",
 			1234, "Specifies the port to talk to the barefoot server on.");
 
-	private static final Logger logger = LoggerFactory.getLogger(AvlProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(BarefootMapMatcher.class);
 
 	@Override
 	public Location getAdjustedLocation(String vehicleId) {
