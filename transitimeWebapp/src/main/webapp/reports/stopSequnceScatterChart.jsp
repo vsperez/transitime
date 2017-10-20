@@ -19,24 +19,15 @@ if (routeIds != null && !routeIds[0].isEmpty()) {
  }
 }
 
-String sourceParam = request.getParameter("source");
-String source = (sourceParam != null && !sourceParam.isEmpty()) ? 
-		", " + sourceParam + " predictions" : "";
 
 String beginDate = request.getParameter("beginDate");
 String numDays = request.getParameter("numDays");
 String beginTime = request.getParameter("beginTime");
 String endTime = request.getParameter("endTime");
 
-String chartTitle = "Prediction Accuracy for " 
-	+ WebAgency.getCachedWebAgency(agencyId).getAgencyName()    
-	+ titleRoutes 
-	+ source 
-	+ ", " + beginDate + " for " + numDays + " day" + (Integer.parseInt(numDays) > 1 ? "s" : "");
+String chartTitle = "Vehicle events for vehicle: "+request.getParameter("v");
 
-if ((beginTime != null && !beginTime.isEmpty()) || (endTime != null && !endTime.isEmpty())) {
-	chartTitle += ", " + beginTime + " to " + endTime;
-}
+
 
 %>
 <html>
@@ -107,6 +98,7 @@ if ((beginTime != null && !beginTime.isEmpty()) || (endTime != null && !endTime.
           async: false,
           success: function(jsonData) {
             globalDataTable = new google.visualization.DataTable(jsonData);
+           
             },
           error: function(request, status, error) {
           	$("#errorMessage").html(request.responseText +
@@ -114,61 +106,22 @@ if ((beginTime != null && !beginTime.isEmpty()) || (endTime != null && !endTime.
 			$("#errorMessage").fadeIn("slow");
             },
           }).responseJSON;
+        
       }
 
       /* Actualy draws the chart */
       function drawChart() {
 
         var chartOptions = {
-          title: '<%= chartTitle %>',
-          titleTextStyle: {fontSize: 28},
+          title: '<%= chartTitle %>',          
           // Could use html tooltips so can format them but for now using regular ones
           // FIXME tooltip: {isHtml: false},
-          vAxis: {
-        	  title: 'Stop Sequence', 
-        	  minValue: 0, 
-        	  maxValue: 900, 
-        	  ticks: [
-        	          {v:1, f:'1'},
-        	          {v:2, f:'2'},
-        	          {v:3, f:'3'},
-        	          {v:4, f:'4'},
-        	          {v:5, f:'5'},
-        	          {v:6, f:'6'},
-        	          {v:7, f:'7'},
-        	          {v:8, f:'8'},
-        	          {v:9, f:'9'},
-        	          {v:10, f:'10'},
-        	          {v:11, f:'11'},
-        	          {v:12, f:'12'},
-        	          {v:13, f:'13'},
-        	          {v:14, f:'14'},
-        	          {v:15, f:'15'}]
-               },
-          hAxis: {title: 'Arrival time'
+          vAxis: {title: 'GTFS Stop Sequence' 
+      	  },
+          hAxis: {title: 'Time (epoch)'
           },
-          // Usually will first be displaying Transitime predictions and 
-          // those will get the first color. If both Transitime and Tther
-          // predictions shown then the Other ones will get the second color.
-          // But want color for the Other predictions to be consistent 
-          // whether only Other predictions or both Other and Transitime ones
-          // are shown. Therefore do something fancy here for consistency.
-          series: [{'color': '<%= (source==null || !source.equals("Other")) ? "blue" : "red" %>'},{'color': 'red'}],
-          legend: 'none',
-          // Use small points since have lots of them
-          pointSize: 2,
-          // Draw a trendline for data series 0
-          //trendlines: { 
-          //  0: {
-          //    color: 'purple',
-          //    lineWidth: 5,
-          //    opacity: 0.5,
-          //  } 
-          //},
-          // Need to not use 100% or else labels won't appear
-          chartArea: {width:'90%', height:'80%', backgroundColor: '#f2f2f2'},
-          // Allow zooming
-          //explorer: { actions: ['dragToZoom', 'rightClickToReset'] }
+          legend : 'none'
+         
         };
 
         var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));

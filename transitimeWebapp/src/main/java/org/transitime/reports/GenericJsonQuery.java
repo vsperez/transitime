@@ -171,7 +171,7 @@ public class GenericJsonQuery extends GenericQuery {
 	public static void main(String[] args) {
 		String agencyId = "sfmta";
 		
-		String sql = "SELECT * FROM avlreports ORDER BY time DESC LIMIT 5";
+		String sql = "SELECT date, gtfsstopseq FROM avlreports ORDER BY time DESC LIMIT 5";
 		String str = GenericJsonQuery.getJsonString(agencyId, sql);
 		System.out.println(str);
 	}

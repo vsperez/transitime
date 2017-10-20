@@ -5,7 +5,7 @@
 <%
     // Get params from the query string
     String agencyId = request.getParameter("a");
-	String beginDate = request.getParameter("beginDate");   
+	String beginDate = request.getParameter("dateRange");   
     String beginTime = request.getParameter("beginTime");
     String endTime = request.getParameter("endTime");
     String vehicleId = request.getParameter("v");

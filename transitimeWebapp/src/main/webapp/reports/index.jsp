@@ -72,7 +72,16 @@ finding specific issues with predictions.">
     title="Displays the last time each vehicle reported its GPS position over the last 24 hours.">
       Last GPS Report by Vehicle</a></li>
 </ul>
+<div id="subtitle">Event Reports</div>
 
+	<ul class="choicesList">
+	  <li><a href="stopSequenceParams.jsp?a=<%= agencyId %>"
+	    title="Check that all arrival departures are captured.">
+	      Arrival Departure for vehicle</a></li>
+	  
+	</ul>
+
+</div>
 <div id="subtitle">Miscellaneous Reports</div>
 <ul class="choicesList">
   <li><a href="scheduleHorizStopsParams.jsp?a=<%= agencyId %>"
@@ -84,5 +93,6 @@ finding specific issues with predictions.">
       Schedule for Route (vertical stops)</a></li>
 </ul>
 </div>
+
 </body>
 </html>

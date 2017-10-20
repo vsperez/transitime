@@ -36,18 +36,21 @@ import org.transitime.statistics.Statistics;
  */
 public class StopSequenceQuery extends GenericJsonQuery {
 
-
-	public StopSequenceQuery(String agencyId) throws SQLException {
-		super(agencyId);		
+	String agencyId;
+	public StopSequenceQuery(String agencyId) throws SQLException {		
+		super(agencyId);
+		this.agencyId=agencyId;
 	}
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(StopSequenceQuery.class);
 
-	public String getJsonString(String beginDate, String beginTime, String endTime, String vehicleId)
+	public String getJsonString(String beginDate, String beginTime, String endTime, String vehicleId) throws SQLException
 	{
-		return null;
-		
+		String sql = "select extract ('epoch' from time), gtfsstopseq   from arrivalsdepartures where vehicleid='"+vehicleId+"'";
+		String result= ChartGenericJsonQuery.getJsonString(agencyId, sql);
+		return result;
+	
 	}
 	
 }
