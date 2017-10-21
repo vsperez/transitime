@@ -1,7 +1,7 @@
-<%@ page import="org.transitime.reports.StopSequenceQuery" %>
 <%@ page import="java.util.Arrays" %>
 <%@ page import="java.text.ParseException" %>
-
+<%@ page import="org.transitime.utils.Time" %>
+<%@ page import="org.transitime.reports.ChartGenericJsonQuery" %>
 <%
     // Get params from the query string
     String agencyId = request.getParameter("a");
@@ -11,17 +11,30 @@
     String vehicleId = request.getParameter("v");
 
    
-    if (agencyId == null || beginDate == null || vehicleId == null || endTime == null) {
+    if (agencyId == null || beginDate == null || vehicleId == null ) {
 		response.getWriter().write("For stopSequenceData.jsp must "
-			+ "specify parameters 'a' (agencyId), 'beginDate', 'beginTime', 'endTime' "
+			+ "specify parameters 'a' (agencyId), 'beginDate' "
 			+ "and 'vehicle'."); 
 		return;
     }
 	
     try {
-		// Perform the query and convert results of query to a JSON string
-		StopSequenceQuery query = new StopSequenceQuery(agencyId);
-		String jsonString = query.getJsonString(beginDate, beginTime, endTime, vehicleId);
+    	
+    	String timeSql="";
+    	if (beginTime != null && !beginTime.isEmpty())
+    	{
+    			timeSql = " AND time::time BETWEEN '" 
+    						+ beginTime + "' AND '" + endTime + "' ";
+    	}
+    	
+		
+		String sql="select extract(minute from time)+ extract(hour from time) * 60 as minutes, gtfsstopseq from arrivalsdepartures where vehicleid='"+vehicleId+"'"
+				+		"AND time BETWEEN cast(? as timestamp) " 
+				+     	" AND cast(? as timestamp)" + " + INTERVAL '1 day' "
+	
+		+ timeSql;
+			
+		String jsonString = ChartGenericJsonQuery.getJsonString(agencyId, sql, Time.parseDate(beginDate), Time.parseDate(beginDate));
 
 		// If no data then return error status with an error message
 		if (jsonString == null || jsonString.isEmpty()) {

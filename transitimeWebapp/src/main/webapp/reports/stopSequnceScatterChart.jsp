@@ -1,4 +1,5 @@
 <%@ page import="org.transitime.utils.web.WebUtils" %>
+<%@ page import="org.transitime.utils.Time" %>
 <%@page import="org.transitime.db.webstructs.WebAgency"%>
 <%
 // Create title for chart
@@ -20,13 +21,12 @@ if (routeIds != null && !routeIds[0].isEmpty()) {
 }
 
 
-String beginDate = request.getParameter("beginDate");
+String beginDate = request.getParameter("dateRange");
 String numDays = request.getParameter("numDays");
 String beginTime = request.getParameter("beginTime");
 String endTime = request.getParameter("endTime");
 
-String chartTitle = "Vehicle events for vehicle: "+request.getParameter("v");
-
+String chartTitle = "Vehicle events for vehicle "+request.getParameter("v") + " on "+ Time.parseDate(beginDate) + " between "+beginTime +" and "+endTime;
 
 
 %>
@@ -118,7 +118,7 @@ String chartTitle = "Vehicle events for vehicle: "+request.getParameter("v");
           // FIXME tooltip: {isHtml: false},
           vAxis: {title: 'GTFS Stop Sequence' 
       	  },
-          hAxis: {title: 'Time (epoch)'
+          hAxis: {title: 'Time (minutes from midnight)'
           },
           legend : 'none'
          
