@@ -49,6 +49,8 @@
     create table AvlReports (
         vehicleId varchar2(60 char) not null,
         time timestamp not null,
+        lat_adjusted double precision,
+        lon_adjusted double precision,
         assignmentId varchar2(60 char),
         assignmentType varchar2(40 char),
         driverId varchar2(60 char),

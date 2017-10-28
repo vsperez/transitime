@@ -49,6 +49,8 @@
     create table AvlReports (
         vehicleId varchar(60) not null,
         time timestamp not null,
+        lat_adjusted float8,
+        lon_adjusted float8,
         assignmentId varchar(60),
         assignmentType varchar(40),
         driverId varchar(60),
