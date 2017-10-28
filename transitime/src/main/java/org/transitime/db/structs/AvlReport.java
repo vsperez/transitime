@@ -21,6 +21,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -92,16 +94,20 @@ public class AvlReport implements Serializable {
 	private final Location location;
 	
 	
-	@Transient
+	// This is to store location once adjusted by a map matcher.
+	@Embedded
+	@AttributeOverrides( {
+          @AttributeOverride(name="lat", column = @Column(name="lat_adjusted") ),
+          @AttributeOverride(name="lon", column = @Column(name="lon_adjusted") )
+	} )
 	private Location adjustedLocation;
+	
 	
 	public Location getAdjustedLocation() {
 		return adjustedLocation;
 	}
 
-	public void setAdjustedLocation(Location adjustedLocation) {
-		this.adjustedLocation = adjustedLocation;
-	}
+	
 
 	// Speed of vehicle in m/s.
 	// Speed is an optional element since not always available
@@ -224,6 +230,7 @@ public class AvlReport implements Serializable {
 		passengerFullness = null;
 		field1Name = null;
 		field1Value = null;
+		adjustedLocation = null;
 	}
 	
 	/**
@@ -269,6 +276,8 @@ public class AvlReport implements Serializable {
 		
 		// Don't yet know when processed so set timeProcessed to null
 		this.timeProcessed = null;
+		
+		this.adjustedLocation = null;
 	}
 	
 	/**
@@ -312,6 +321,7 @@ public class AvlReport implements Serializable {
 		
 		// Don't yet know when processed so set timeProcessed to null
 		this.timeProcessed = null;
+		this.adjustedLocation = null;
 	}
 
 	/**
@@ -356,6 +366,7 @@ public class AvlReport implements Serializable {
 
 		// Don't yet know when processed so set timeProcessed to null
 		this.timeProcessed = null;
+		this.adjustedLocation = null;
 	}
 
 	/**
@@ -390,6 +401,8 @@ public class AvlReport implements Serializable {
 		
 		// Don't yet know when processed so set timeProcessed to null
 		timeProcessed = null;
+		
+		this.adjustedLocation = null;
 	}
 
 	/**
@@ -453,6 +466,8 @@ public class AvlReport implements Serializable {
 		
 		// Don't yet know when processed so set timeProcessed to null
 		this.timeProcessed = null;
+		
+		this.adjustedLocation = null;
 	}
 
 	/**
@@ -479,6 +494,7 @@ public class AvlReport implements Serializable {
 		
 		// Don't yet know when processed so set timeProcessed to null
 		this.timeProcessed = null;
+		this.adjustedLocation = null;
 	}
 	
 	/**
@@ -508,6 +524,7 @@ public class AvlReport implements Serializable {
 		this.passengerFullness = toCopy.passengerFullness;
 		this.field1Name = toCopy.field1Name;
 		this.field1Value = toCopy.field1Value;
+		this.adjustedLocation = toCopy.adjustedLocation;
 	}
 	
 	/**
@@ -540,8 +557,13 @@ public class AvlReport implements Serializable {
 		this.passengerFullness = toCopy.passengerFullness;
 		this.field1Name = toCopy.field1Name;
 		this.field1Value = toCopy.field1Value;
+		this.adjustedLocation = toCopy.adjustedLocation;
 	}
 	
+	public void setAdjustedLocation(Location adjustedLocation) {
+		this.adjustedLocation = adjustedLocation;
+	}
+
 	/**
 	 * For truncating the source member to size allowed in db. This way don't
 	 * later get an exception when trying to write an AvlReport to the db.

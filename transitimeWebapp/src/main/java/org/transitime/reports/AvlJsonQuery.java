@@ -67,7 +67,7 @@ public class AvlJsonQuery {
 				+ beginTime + "' AND '" + endTime + "' ";
 		}
 
-		String sql = "SELECT vehicleId, time, assignmentId, lat, lon, speed, "
+		String sql = "SELECT vehicleId, time, assignmentId, lat, lon, lat_adjusted, lon_adjusted, speed, "
 				+ "heading, timeProcessed, source "
 				+ "FROM avlreports "
 				+ "WHERE time BETWEEN " + " cast(? as timestamp)"
@@ -144,7 +144,7 @@ public class AvlJsonQuery {
 		}
 
 		String sql = 
-				"SELECT a.vehicleId, a.time, a.assignmentId, a.lat, a.lon, "
+				"SELECT a.vehicleId, a.time, a.assignmentId, a.lat, a.lon, lat_adjusted, lon_adjusted, "
 				+ "     a.speed, a.heading, a.timeProcessed, "
 				+ "     vs.blockId, vs.tripId, vs.tripShortName, vs.routeId, "
 				+ "     vs.routeShortName, vs.schedAdhMsec, vs.schedAdh, "

@@ -34,7 +34,16 @@
       width:7px;
       height:7px;
     }
-    
+        /* For the AVL points */
+    div.avlMarkerAdjusted {
+      background-color: #ff7800;
+      border-color: black;
+      border-radius: 4px;
+      border-style: solid;
+      border-width: 1px;
+      width:7px;
+      height:7px;
+    }
     .popupTable {
     	border-spacing: 0px;
     	line-height: 1.2;
@@ -52,6 +61,13 @@
   /* For drawing the route and stops */
   var routeOptions = {
 			color: '#00ee00',
+			weight: 5,
+			opacity: 0.4,
+			lineJoin: 'round',
+			clickable: false
+		};
+  var adjustedLineOptions = {
+			color: '#00ff00',
 			weight: 5,
 			opacity: 0.4,
 			lineJoin: 'round',
@@ -131,6 +147,29 @@
     for (var i=0; i<jsonData.data.length; ++i) {
     	var avl = jsonData.data[i];
     	var latLng = L.latLng(avl.lat, avl.lon);
+    	    	    	
+    	// Add 
+    	if(!avl.lat_adjusted && !avl.lon_adjusted)
+    	{    		    		
+    		var latLngsForAdjustedLine = [];
+        	
+        	latLngsForAdjustedLine.push(latLng);
+    	
+    		var adjusted_latLng = L.latlng(avl.lat_adjusted, avl.lon_adjusted);
+    		
+    		latLngsForAdjustedLine.push(adjusted_latLng);
+    		
+    		var avlMarker = L.marker(adjusted_latLng, {
+                icon: L.divIcon({
+                    className: 'avlMarkerAdjusted',
+                    iconSize: [7, 7]
+                }),
+                title: tooltip
+            }).addTo(map);
+    		    		    	
+    		L.polyline(latLngsForAdjustedLine, adjustedLineOptions).addTo(map); //.bringToBack();
+    	}
+    	
     	
     	// If getting data for new vehicle then need to draw out polyline 
     	// for the old vehicle
@@ -153,6 +192,10 @@
             }),
             title: tooltip
         }).addTo(map);
+    	
+    	
+    	
+    	
     	
   		// Store the AVL data with the marker so can popup detailed info
     	avlMarker.avl = avl;
