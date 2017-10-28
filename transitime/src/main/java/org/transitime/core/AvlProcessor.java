@@ -16,7 +16,7 @@
  */
 package org.transitime.core;
 
-import static org.junit.Assert.assertEquals;
+
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
