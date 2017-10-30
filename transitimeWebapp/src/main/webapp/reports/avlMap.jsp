@@ -26,7 +26,7 @@
     
     /* For the AVL points */
     div.avlMarker {
-      background-color: #ff7800;
+      background-color: #ff0000;
       border-color: black;
       border-radius: 4px;
       border-style: solid;
@@ -36,7 +36,7 @@
     }
         /* For the AVL points */
     div.avlMarkerAdjusted {
-      background-color: #ff7800;
+      background-color: #3a5f8b;
       border-color: black;
       border-radius: 4px;
       border-style: solid;
@@ -67,8 +67,8 @@
 			clickable: false
 		};
   var adjustedLineOptions = {
-			color: '#00ff00',
-			weight: 5,
+			color: '#3a5f8b',			
+			weight: 2,
 			opacity: 0.4,
 			lineJoin: 'round',
 			clickable: false
@@ -149,13 +149,13 @@
     	var latLng = L.latLng(avl.lat, avl.lon);
     	    	    	
     	// Add 
-    	if(!avl.lat_adjusted && !avl.lon_adjusted)
+    	if(avl.lat_adjusted && avl.lon_adjusted)
     	{    		    		
     		var latLngsForAdjustedLine = [];
         	
         	latLngsForAdjustedLine.push(latLng);
     	
-    		var adjusted_latLng = L.latlng(avl.lat_adjusted, avl.lon_adjusted);
+    		var adjusted_latLng = L.latLng(avl.lat_adjusted, avl.lon_adjusted);
     		
     		latLngsForAdjustedLine.push(adjusted_latLng);
     		
