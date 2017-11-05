@@ -60,6 +60,17 @@ finding specific issues with predictions.">
       Schedule Adherence by how Early/Late</a></li>
 </ul>
 
+<div id="subtitle">Headway Variation Reports</div>
+<ul class="choicesList">
+ <li><a href="headwayVarianceByRouteHistoricalParams.jsp?a=<%= agencyId %>"
+    title="Displays historic headway variance by route in a chart.">
+      Historical Headway Variance</a></li>
+  <li><a href="headwayVarianceByRouteRealtimeParams.jsp?a=<%= agencyId %>"
+    title="Displays headway variance of a route in realtime.">
+      Realtime Headway Variance</a></li>
+</ul>
+
+
 <div id="subtitle">AVL Reports</div>
 <ul class="choicesList">
   <li><a href="avlMapByRouteParams.jsp?a=<%= agencyId %>"
