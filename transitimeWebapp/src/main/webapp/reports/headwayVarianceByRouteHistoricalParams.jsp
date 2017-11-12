@@ -20,12 +20,12 @@
 </div>
 
 <div id="mainDiv">
-<form action="schAdhByRouteChart.jsp" method="POST">
+<form action="headwayVarianceByRouteHistoricalChart.jsp" method="POST">
    <%-- For passing agency param to the report --%>
    <input type="hidden" name="a" value="<%= request.getParameter("a")%>">
    
    <jsp:include page="params/routeSingle.jsp" />   
-        
+    <jsp:include page="params/fromToDateTime.jsp" />
     <jsp:include page="params/submitReport.jsp" />
   </form>
 </div>

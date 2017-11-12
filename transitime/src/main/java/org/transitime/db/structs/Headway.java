@@ -49,9 +49,21 @@ public class Headway implements Serializable {
 	
 	@Column 
 	private double coefficientOfVariation;
-	
+	// This is the num_vehicles considered in calculation. They are included if the vehicleState has a headway value set.
 	@Column
 	private int numVehicles;
+	
+	// This is the total number of vehicles on the route regardless of headway being set of not.
+	@Column 
+	private int numVehiclesOnRoute;
+
+	public int getNumVehiclesOnRoute() {
+		return numVehiclesOnRoute;
+	}
+
+	public void setNumVehiclesOnRoute(int numVehiclesOnRoute) {
+		this.numVehiclesOnRoute = numVehiclesOnRoute;
+	}
 
 	// The time the AVL data was processed and the headway was created.
 	@Column	

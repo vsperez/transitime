@@ -1,10 +1,10 @@
 package org.transitime.core.headwaygenerator;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.transitime.applications.Core;
 import org.transitime.core.HeadwayGenerator;
 import org.transitime.core.VehicleState;
 import org.transitime.core.dataCache.StopArrivalDepartureCache;
@@ -66,7 +66,7 @@ public class LastArrivalsHeadwayGenerator implements HeadwayGenerator {
 	
 					Headway headway=new Headway(headwayTime, new Date(date), vehicleId, stopList.get(previousVehicleArrivalIndex).getVehicleId(), stopId, vehicleState.getTrip().getId(), vehicleState.getTrip().getRouteId(), new Date(stopList.get(lastStopArrivalIndex).getTime()), new Date(stopList.get(previousVehicleArrivalIndex).getTime()));
 					// TODO Core.getInstance().getDbLogger().add(headway);
-					setSystemVariance(headway);
+					setRouteHeadwayVariance(headway);
 					return headway;
 				}
 			}
@@ -76,25 +76,40 @@ public class LastArrivalsHeadwayGenerator implements HeadwayGenerator {
 		}		
 		return null;		
 	}
-	private void setSystemVariance(Headway headway)
+	private void setRouteHeadwayVariance(Headway headway)
 	{
+		
+		Collection<IpcVehicleComplete> vehicles = VehicleDataCache.getInstance().getVehiclesForRoute(headway.getRouteId());
+						
 		ArrayList<Headway> headways=new ArrayList<Headway>();
-		for(IpcVehicleComplete currentVehicle:VehicleDataCache.getInstance().getVehicles())
+		for(IpcVehicleComplete currentVehicle:vehicles)
 		{
 			VehicleState vehicleState = VehicleStateManager.getInstance().getVehicleState(currentVehicle.getId());
-			if(vehicleState.getHeadway()!=null)
+			
+			if(vehicleState.getHeadway()!=null )
 			{
 				headways.add(vehicleState.getHeadway());
 			}
 		}
-		// ONLY SET IF HAVE VALES FOR ALL VEHICLES ON ROUTE.
-		if(VehicleDataCache.getInstance().getVehicles().size()==headways.size())
+		
+		int numberVehiclesOnRoute=getNumberOfVehiclesOnRoute(headway.getRouteId());
+		headway.setNumVehicles(headways.size());
+		headway.setNumVehiclesOnRoute(numberVehiclesOnRoute);		
+		// TODO What do we do when we do not have a headway for all vehicles??? Ask Simon.
+		if(headways.size()>1)
 		{
 			headway.setAverage(average(headways));
 			headway.setVariance(variance(headways));
-			headway.setCoefficientOfVariation(coefficientOfVariance(headways));
-			headway.setNumVehicles(headways.size());
+			headway.setCoefficientOfVariation(coefficientOfVariance(headways));			
 		}
+	}
+	private int getNumberOfVehiclesOnRoute(String routeId) {
+		Collection<IpcVehicleComplete> vehicles = VehicleDataCache.getInstance().getVehiclesForRoute(routeId);
+		if(vehicles!=null)
+			return vehicles.size();
+		else
+			return 0;
+		
 	}
 	private double average(List<Headway> headways)
 	{

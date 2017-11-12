@@ -64,10 +64,7 @@ finding specific issues with predictions.">
 <ul class="choicesList">
  <li><a href="headwayVarianceByRouteHistoricalParams.jsp?a=<%= agencyId %>"
     title="Displays historic headway variance by route in a chart.">
-      Historical Headway Variance</a></li>
-  <li><a href="headwayVarianceByRouteRealtimeParams.jsp?a=<%= agencyId %>"
-    title="Displays headway variance of a route in realtime.">
-      Realtime Headway Variance</a></li>
+      Headway Variance by Route</a></li> 
 </ul>
 
 

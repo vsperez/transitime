@@ -27,6 +27,9 @@ if (agencyId == null || agencyId.isEmpty()) {
   <li><a href="../maps/schAdhMap.jsp?a=<%= agencyId %>"
     title="Shows current real-time schedule adherence of vehicles in map">
       Schedule Adherence Map</a></li>
+  <li><a href="../reports/headwayVarianceByRouteRealtimeParams.jsp?a=<%= agencyId %>"
+    title="Displays headway variance of a route in realtime.">
+      Headway Variance</a></li>
   <li><a href="serverStatus.jsp?a=<%= agencyId %>"
     title="Shows how well system is running, including the AVL feed">
       Server Status</a></li>
