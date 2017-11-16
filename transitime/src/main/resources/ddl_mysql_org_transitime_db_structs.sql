@@ -163,6 +163,7 @@
         firstDeparture datetime(3),
         headway double precision,
         numVehicles integer,
+        numVehiclesOnRoute integer,
         otherVehicleId varchar(60),
         routeId varchar(60),
         secondDeparture datetime(3),

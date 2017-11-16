@@ -163,6 +163,7 @@
         firstDeparture timestamp,
         headway float8,
         numVehicles int4,
+        numVehiclesOnRoute int4,
         otherVehicleId varchar(60),
         routeId varchar(60),
         secondDeparture timestamp,

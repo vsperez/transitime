@@ -163,6 +163,7 @@
         firstDeparture timestamp,
         headway double precision,
         numVehicles number(10,0),
+        numVehiclesOnRoute number(10,0),
         otherVehicleId varchar2(60 char),
         routeId varchar2(60 char),
         secondDeparture timestamp,
