@@ -10,7 +10,7 @@ String agencyId = request.getParameter("a");
 String routeIds[] = request.getParameterValues("r");
 String titleRoutes = "";
 if (routeIds != null && !routeIds[0].isEmpty()) {
- titleRoutes += ", route ";
+ titleRoutes += " route ";
  if (routeIds.length > 1) 
      titleRoutes += "s";
  titleRoutes += routeIds[0];
@@ -26,7 +26,7 @@ String numDays = request.getParameter("numDays");
 String beginTime = request.getParameter("beginTime");
 String endTime = request.getParameter("endTime");
 
-String chartTitle = "Vehicle events for vehicle "+request.getParameter("v") + " on "+ Time.parseDate(beginDate) + " between "+beginTime +" and "+endTime;
+String chartTitle = "Headway variance for "+ titleRoutes; 
 
 
 %>
@@ -97,6 +97,7 @@ String chartTitle = "Vehicle events for vehicle "+request.getParameter("v") + " 
           dataType:"json",
           async: false,
           success: function(jsonData) {
+        	
             globalDataTable = new google.visualization.DataTable(jsonData);
            
             },
@@ -116,7 +117,7 @@ String chartTitle = "Vehicle events for vehicle "+request.getParameter("v") + " 
           title: '<%= chartTitle %>',          
           // Could use html tooltips so can format them but for now using regular ones
           // FIXME tooltip: {isHtml: false},
-          vAxis: {title: 'GTFS Stop Sequence' 
+          vAxis: {title: 'Coefficient of variation of headways' 
       	  },
           hAxis: {title: 'Time (minutes from midnight)'
           },
@@ -124,7 +125,7 @@ String chartTitle = "Vehicle events for vehicle "+request.getParameter("v") + " 
          
         };
 
-        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
 
         chart.draw(globalDataTable, chartOptions);
       }
