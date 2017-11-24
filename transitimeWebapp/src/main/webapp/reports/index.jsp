@@ -60,11 +60,14 @@ finding specific issues with predictions.">
       Schedule Adherence by how Early/Late</a></li>
 </ul>
 
-<div id="subtitle">Headway Variation Reports</div>
+<div id="subtitle">Headway Reports</div>
 <ul class="choicesList">
  <li><a href="headwayVarianceByRouteHistoricalParams.jsp?a=<%= agencyId %>"
     title="Displays historic headway variance by route in a chart.">
-      Headway Variance by Route</a></li> 
+      Headway Variance by Route</a></li>
+  <li><a href="headwayDistributionByStopParams.jsp?a=<%= agencyId %>"
+    title="Displays distribution of headways at a single stop.">
+      Headway Distribution by Stop</a></li>  
 </ul>
 
 
