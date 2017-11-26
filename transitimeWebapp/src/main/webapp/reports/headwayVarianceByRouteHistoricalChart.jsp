@@ -120,12 +120,13 @@ String chartTitle = "Headway variance for "+ titleRoutes;
           vAxis: {title: 'Coefficient of variation of headways' 
       	  },
           hAxis: {title: 'Time (minutes from midnight)'
+        	
           },
           legend : 'none'
          
         };
 
-        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
 
         chart.draw(globalDataTable, chartOptions);
       }
