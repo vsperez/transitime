@@ -117,8 +117,8 @@ String chartTitle = "Headway variance for "+ titleRoutes;
           title: '<%= chartTitle %>',          
           // Could use html tooltips so can format them but for now using regular ones
           // FIXME tooltip: {isHtml: false},
-          vAxis: {title: 'Coefficient of variation of headways' 
-      	  },
+          vAxis: {title: 'Coefficient of variation of headways',
+        	  format:'decimal'},
           hAxis: {title: 'Time (minutes from midnight)'
         	
           },
@@ -126,7 +126,7 @@ String chartTitle = "Headway variance for "+ titleRoutes;
          
         };
 
-        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
 
         chart.draw(globalDataTable, chartOptions);
       }
