@@ -76,7 +76,56 @@ String chartTitle = "Headway distribution for "+ stopId;
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     
     <script type="text/javascript">
-
+    var globalDataTable;
+    var globalChartOptions;
+    function drawChart() {
+        // Actually create the chart
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(globalDataTable, globalChartOptions);    
+    }
+    function createDataTableAndDrawChart(jsonData) {
+        // Initialize the data array with the header that describes the columns
+    	var dataArray = [[
+    		'Early/Late', 
+    		'Stops', 
+    		{ role: 'style' }, 
+    		{ role: 'annotation' }, 
+    		{ role: 'tooltip' }
+    	]];
+    	globalDataTable = google.visualization.arrayToDataTable(dataArray);
+    	
+    	// The options for the chart
+        globalChartOptions = {
+              animation: {
+              	 startup: true,
+              	 duration: 500, 
+              	 easing: 'out'
+              },
+              chartArea: {top:10, width: '86%', height: '90%'},
+              vAxis: {
+            	  minValue: 0,
+            	  title: "Number of stops per time interval",
+            	  textStyle: {fontSize: 12},
+            	  },
+              hAxis: { 
+            	  
+            	  title: "Minutes vehicle late (negative) or early (positive)",
+            	  // The chart always draws the baseline at value 0 over the chart.
+            	  // Since the baseline isn't true zero, since using bars and 
+            	  // putting tick marks at the edges of the bars, don't want this
+            	  // the line to be so visible. Only thing that we can do is to
+            	  // make it the same color as the bar, which which will be
+            	  // the ontime color, or the early color if allowable early is
+            	  // set to zero.
+            	 
+            	  },
+              bar: {groupWidth: "100%"},
+              legend: { position: 'none' },
+              annotations: {
+            	    textStyle: {fontSize: 10}},
+        };
+    	
+    };
       // Updates chart when page is resized. But only does so at most
       // every 200 msec so that don't bog system down trying to repeatedly
       // update the chart.
@@ -85,8 +134,7 @@ String chartTitle = "Headway distribution for "+ stopId;
                    clearTimeout(globalTimer);
                    globalTimer = setTimeout(drawChart, 100)
                  };
-
-      var globalDataTable = null;
+    
 
       function getDataTable() {
         var jsonTextData = $.ajax({
@@ -97,11 +145,7 @@ String chartTitle = "Headway distribution for "+ stopId;
           traditional: true,
           dataType:"json",
           async: false,
-          success: function(jsonData) {
-        	
-            globalDataTable = new google.visualization.DataTable(jsonData.data[0]);
-           
-            },
+          success: createDataTableAndDrawChart,
           error: function(request, status, error) {
           	$("#errorMessage").html(request.responseText +
 			  "<br/><br/>Hit back button to try other parameters.")
@@ -109,31 +153,9 @@ String chartTitle = "Headway distribution for "+ stopId;
             },
           }).responseJSON;
         
-      }
+      };
 
-      /* Actualy draws the chart */
-      function drawChart() {
-
-        var chartOptions = {
-          title: '<%= chartTitle %>',          
-          // Could use html tooltips so can format them but for now using regular ones
-          // FIXME tooltip: {isHtml: false},
-          vAxis: {title: 'vertical axis' 
-      	  },
-          hAxis: {title: 'horizonatal axis'
-          },
-          // Don't want lots of space between bars
-          bar: { groupWidth: '95%' },
-          legend : 'none',
-          bars: 'horizontal',
-          isStacked: 'percent',
-         
-        };
-
-        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
-
-        chart.draw(globalDataTable, chartOptions);
-      }
+    
 
       function getDataAndDrawChart() {
         getDataTable();
@@ -142,7 +164,7 @@ String chartTitle = "Headway distribution for "+ stopId;
 
         // Now that chart has been drawn faceout the loading image
         $("#loading").fadeOut("slow");
-      }
+      };
 
       // Start visualization after the body created so that the
       // page loading image will be displayed right away

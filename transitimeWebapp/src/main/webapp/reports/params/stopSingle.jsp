@@ -50,29 +50,41 @@ $.getJSON(apiUrlPrefix + "/command/routes",
  	
 function getDirections(route)
 {
-	$.getJSON(apiUrlPrefix + "/command/stops?r="+route, 
+	$.getJSON(apiUrlPrefix + "/command/stops?r="+route.params.data.id, 
 	 		function(stops) {
-			   var stopSelectorData = [];
+			  
+			   
 			   var directionSelectorData = [];
 			   
 				for (var i in stops.direction) {
 		 			var direction = stops.direction[i];
-		 			directionSelectorData.push({id: direction.id, text: direction.title})
+		 			directionSelectorData.push({id: direction.id, text: direction.title});
+		 					 			
 		 		}
 			   
 			   $("#direction").select2({
 	 				data : directionSelectorData}).
 	 				on("select2:select", function(e) {
 	 	 				var configuredTitle = $( "#route" ).attr("title");
-	 	 				getStops(route, e);
-	 	 				$( "#select2-route-container" ).tooltip({ content: configuredTitle,
-	 	 						position: { my: "left+10 center", at: "right center" } });
+	 	 				 var stopSelectorData = [];
+	 	 				for(var stop in stops.direction[e.params.data.id].stop)
+	 	 				{	 	 					
+	 	 					var stopid=stops.direction[e.params.data.id].stop[stop].id;
+	 	 					var stopname=stops.direction[e.params.data.id].stop[stop].name;
+	 	 					stopSelectorData.push({id: stopid, text: stopname});
+	 	 				}
+	 	 				
+	 	 				$("#stop").select2({
+	 	 					data: stopSelectorData});
 	 	 			});
-			   $("#stop").select2({
-	 				data : stopSelectorData})
+			   
+			   
+			   
 	 		   	 	
 	 	});
 };
+
+
 </script>
  	<div id="routesDiv"  class="param">
       <label for="route">Route:</label>
@@ -81,7 +93,7 @@ function getDirections(route)
     </div>
      <div id="directionsDiv"  class="param">    
       <label for="direction">Direction:</label>
-      <select id="direction" name="s" style="width: 380px" 
+      <select id="direction" name="d" style="width: 380px" 
       	title="Select which direction you want data for. " ></select>
     </div>
     <div id="stopsDiv"  class="param">    
