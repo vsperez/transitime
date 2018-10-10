@@ -135,6 +135,7 @@ class Sinoptico
 		this.buses=null;
 		this.stops=null;
 		this.resized=false;
+		this.distFinger=null;
 		this.onVehiClick=params.onVehiClick;
 		if(params.predictionFunction!=undefined)
 			this.predictionFunction=params.predictionFunction;
@@ -143,6 +144,11 @@ class Sinoptico
 		this.textSeparation=6;
 		this.maxBusLabelWidth=0;
 		this.__mouseWheelHandler = this.__mouseWheelHandler.bind(this);
+		this.__touchendHandler = this.__touchendHandler.bind(this);
+		this.__touchstartHandler = this.__touchstartHandler.bind(this);
+		this.__touchmoveHandler=this.__touchmoveHandler.bind(this);
+		this.__onlongtouch=this.__onlongtouch.bind(this);
+		this.initTouchEvent=null;
 	}
 	init()
 	{
@@ -152,6 +158,11 @@ class Sinoptico
 		this.canvas.addEventListener('contextmenu', this.__handleMouseEvent);
 		this.canvas.addEventListener('mousemove',this.__handleMouseEvent);
 		this.canvas.addEventListener('wheel',this.__mouseWheelHandler);
+		this.canvas.addEventListener('touchend',this.__touchendHandler);
+		this.canvas.addEventListener('touchmove',this.__touchmoveHandler);
+		this.canvas.addEventListener('touchstart',this.__touchstartHandler);
+		this.canvas.addEventListener('gestureend',this.__gestureendHandler);
+		//this.canvas.addEventListener('touchstart', function(e){ alert(e); e.preventDefault();});
 		this.stopImg.onload = this.resize;
 		//It has to be here for the first time it loads the image.
 		this.stopImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz\nAAALEwAACxMBAJqcGAAAAPVJREFUOI2Vkl1qwlAQhT/z1GQpNYRQ29XUJYkiqOiDS7GldBENFUSx\ne2jjy/XhnluHGPJzYEgyOTNz5gfu8QRsgD1wkX0DayCv4f8jAbaAa7ENENcFf4rwC0yk5EE2AqbA\nnzgf1SSh8gl4bFCZAmdx17bnULkp2CYpFZOjnpxkd8VMMSvw03ZSYlEdnsWzfAX4NTn8sLomSOQr\nox6yaxEBR70Pe8QF7iEC3vTxWiENKmYx1nMHfhUOfyRph+oZtzVmwRlWeW5JkgE/4i7tjxh/nkHJ\nDL+qRPYCzE3ld+63RmyUNNmyLtgix19YoYol8AUsbM8BV0fAV591YB1RAAAAAElFTkSuQmCC\n';
@@ -194,7 +205,7 @@ class Sinoptico
 		}
 		for(var m=0;m<this.stops.length;m++)
 		{
-			if(this.stops[m].posX<=x && this.stops[m].posY<=y && this.stops[m].posX+5>=x &&  this.stops[m].posY+5>=y  )
+			if(this.stops[m].posX<=x && this.stops[m].posY<=y && this.stops[m].posX+10>=x &&  this.stops[m].posY+10>=y  )
 				elements.push(this.stops[m]);
 		}
 		return elements;
@@ -380,6 +391,7 @@ class Sinoptico
 		this.__showContexMenu([event.target.element],{  top,  left});
 		
 	}
+	 
 	__showContexMenu(elements,{ top, left })
 	{
 	
@@ -483,6 +495,165 @@ class Sinoptico
 			this.zoomFactor-=0.1;
 		this.resize();
 		this.__hideContexMenu();
+	}
+	__gestureendHandler(event)
+	{
+		alert("zoom "+event.scale);
+	}
+	__onlongtouch()
+	{
+		
+
+		var rect = this.canvas.getBoundingClientRect();	
+		 var touchobj = this.initTouchEvent.changedTouches[0];//first touch event
+		var x= touchobj.clientX-rect.left;
+		var y=  touchobj.clientY-rect.top;
+		var elements=this.getElements(x,y);
+		
+		
+		
+			this.__hideTooltip();
+			if(elements!=undefined && elements.length>0)
+			{
+
+				const origin = {
+						left: x,
+						top: y
+				};
+				this.menuIsShown=true;
+				this.__showContexMenu(elements,origin);
+				
+			return;
+			
+		}
+	}
+	__touchstartHandler(event)
+	{
+		//alert("a");
+		this.__hideContexMenu();
+		this.menuIsShown=false;
+		this.initTouchEvent=null;
+		this.initTouchEventMove=event;
+		this.timer = setTimeout(__onlongtouch, 500); 
+		
+		
+		
+		if(event.changedTouches.length>1)
+		{
+			alert("a");
+			
+		}
+		else
+		{
+			
+		}
+		event.preventDefault();
+	}
+	__touchendHandler(event)
+	{
+		if (this.timer!=undefined)
+	        clearTimeout(timer);
+		event.preventDefault();
+		
+		if(this.menuIsShown!=undefined && this.menuIsShown)
+			return;
+		var rect = this.canvas.getBoundingClientRect();	
+		 var touchobj = event.changedTouches[0];//first touch event
+		var x= touchobj.clientX-rect.left;
+		var y=  touchobj.clientY-rect.top;
+		var elements=this.getElements(x,y);
+		
+	//alert(x,y)
+		
+
+			if(elements!=undefined && elements.length>0)
+			{
+				const origin = {
+						left: elements[0].posX,
+						top: elements[0].posY
+				};
+				//console.log(origin);
+				this.__showTooltip(elements,origin);
+			}
+			else
+				this.__hideTooltip();
+			this.initTouchEvent=null;
+		
+	}
+	
+	__touchmoveHandler(event)
+	{
+		
+	//	alert(( event.changedTouches.length>1 && this.initTouchEvent!=null))
+		
+		if( event.changedTouches.length>1 && this.initTouchEvent==null)
+		{
+			//alert("Move init");
+			this.initTouchEvent=event;
+			this.distFinger= Math.hypot(
+					event.changedTouches[0].pageX - event.changedTouches[1].pageX,
+					event.changedTouches[0].pageY - event.changedTouches[1].pageY);
+			//alert(this.distFinger);
+			
+		}
+		else if( event.changedTouches.length>1 && this.initTouchEvent!=null)
+		{
+			var deltaxd1=event.changedTouches[0].clientX-this.initTouchEvent.changedTouches[0].clientX;//Dedo 1
+			var deltaxd2=event.changedTouches[1].clientX-this.initTouchEvent.changedTouches[1].clientX;
+			var deltayd1=event.changedTouches[0].clientY-this.initTouchEvent.changedTouches[0].clientY;//Dedo 1
+			var deltayd2=event.changedTouches[1].clientY-this.initTouchEvent.changedTouches[1].clientY;
+	//	alert((deltayd1)+ " delta dedo1 "+deltayd2)
+			
+			var dist = Math.hypot(
+					event.changedTouches[0].pageX - event.changedTouches[1].pageX,
+					event.changedTouches[0].pageY - event.changedTouches[1].pageY);
+			if(this.distFinger-dist<0 )
+				this.__zoomIn();
+			else
+				this.__zoomOut();
+			this.distFinger=dist;
+			//this.initTouchEvent=null;	
+			event.preventDefault();
+			return;
+			
+		}	
+	
+		//alert(event.changedTouches.length);
+		var rect = this.canvas.getBoundingClientRect();	
+		 var touchobj = event.changedTouches[0];//first touch event
+		var x= touchobj.clientX-rect.left;
+		var y=  touchobj.clientY-rect.top;
+	//alert(x,y)
+			var elements=this.getElements(x,y);
+
+			if(elements!=undefined && elements.length>0)
+			{
+				const origin = {
+						left: elements[0].posX,
+						top: elements[0].posY
+				};
+				//console.log(origin);
+				this.__showTooltip(elements,origin);
+			}
+			else
+			{	
+				//leftScroll=this.container.scrollLeft;
+				if(this.container.scrollLeft!=undefined && this.initTouchEventMove!=undefined && this.initTouchEventMove!=null)
+					{
+					this.container.scrollLeft+=(this.initTouchEventMove.changedTouches[0].clientX-touchobj.clientX);
+					
+					}
+			//	document.body.scrollTop=500;
+			//	alert(document.documentElement.scrollTop);
+		//		alert(document.body.scrollTop);
+				if(document.documentElement.scrollTop !=undefined && this.initTouchEventMove!=undefined && this.initTouchEventMove!=null)
+					document.documentElement.scrollTop+=(this.initTouchEventMove.changedTouches[0].clientY-touchobj.clientY);
+				this.__hideTooltip();
+			}
+			this.initTouchEventMove=event;
+			//this.initTouchEvent=null;
+			event.preventDefault();
+
 	}
 	__handleMouseEvent(event)
 	{
