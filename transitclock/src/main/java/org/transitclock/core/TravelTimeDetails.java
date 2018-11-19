@@ -13,7 +13,7 @@ public class TravelTimeDetails {
 	private static final IntegerConfigValue maxTravelTime = 
 			new IntegerConfigValue(
 					"transitclock.core.maxTravelTime",
-					10 * Time.MS_PER_MIN,
+					30 * Time.MS_PER_MIN,
 					"This is a maximum allowed for travel between two stops. Used as a sanity check for cache and predictions.");
 	
 	private static final Logger logger = LoggerFactory
@@ -53,7 +53,7 @@ public class TravelTimeDetails {
 		{
 			long travelTime=this.arrival.getTime()-this.getDeparture().getTime();
 		
-			if(travelTime<0||travelTime>maxTravelTime.getValue())
+			if(travelTime<=0||travelTime>maxTravelTime.getValue())
 			{
 				return false;
 			}else

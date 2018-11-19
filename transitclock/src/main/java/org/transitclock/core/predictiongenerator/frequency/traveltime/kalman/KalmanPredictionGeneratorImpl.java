@@ -1,6 +1,5 @@
-package org.transitclock.core.predictiongenerator.kalman;
+package org.transitclock.core.predictiongenerator.frequency.traveltime.kalman;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -12,11 +11,8 @@ import org.transitclock.applications.Core;
 import org.transitclock.config.BooleanConfigValue;
 import org.transitclock.config.DoubleConfigValue;
 import org.transitclock.config.IntegerConfigValue;
-import org.transitclock.core.HeadwayDetails;
 import org.transitclock.core.Indices;
-import org.transitclock.core.PredictionGeneratorDefaultImpl;
 import org.transitclock.core.SpatialMatch;
-import org.transitclock.core.TemporalDifference;
 import org.transitclock.core.TravelTimeDetails;
 import org.transitclock.core.VehicleState;
 import org.transitclock.core.dataCache.ErrorCache;
@@ -26,22 +22,25 @@ import org.transitclock.core.dataCache.StopPathPredictionCache;
 import org.transitclock.core.dataCache.TripDataHistoryCacheFactory;
 import org.transitclock.core.dataCache.TripDataHistoryCacheInterface;
 import org.transitclock.core.dataCache.VehicleStateManager;
-import org.transitclock.core.dataCache.ehcache.TripDataHistoryCache;
-import org.transitclock.core.dataCache.jcs.KalmanErrorCache;
+import org.transitclock.core.dataCache.frequency.FrequencyBasedHistoricalAverageCache;
 import org.transitclock.core.predictiongenerator.PredictionComponentElementsGenerator;
-import org.transitclock.core.predictiongenerator.average.scheduled.HistoricalAveragePredictionGeneratorImpl;
+import org.transitclock.core.predictiongenerator.frequency.traveltime.average.HistoricalAveragePredictionGeneratorImpl;
+import org.transitclock.core.predictiongenerator.kalman.KalmanPrediction;
+import org.transitclock.core.predictiongenerator.kalman.KalmanPredictionResult;
+import org.transitclock.core.predictiongenerator.kalman.TripSegment;
+import org.transitclock.core.predictiongenerator.kalman.Vehicle;
+import org.transitclock.core.predictiongenerator.kalman.VehicleStopDetail;
 import org.transitclock.db.structs.AvlReport;
 import org.transitclock.db.structs.PredictionForStopPath;
-import org.transitclock.ipc.data.IpcPrediction;
 
 /**
  * @author Sean Óg Crudden This is a prediction generator that uses a Kalman
- *         filter to provide predictions. It uses historical average while waiting on enough data to support a Kalman filter.
+ *         filter to provide predictions for a frequency based service.
  */
-public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImpl
+public class KalmanPredictionGeneratorImpl extends HistoricalAveragePredictionGeneratorImpl
 		implements PredictionComponentElementsGenerator {
 	
-	private String alternative="PredictionGeneratorDefaultImpl";
+	private String alternative="LastVehiclePredictionGeneratorImpl";
 
 	/*
 	 * TODO I think this needs to be a minimum of three and if just two will use
@@ -56,7 +55,7 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 			"Max number of historical days trips to include in Kalman prediction calculation.");
 
 	private static final IntegerConfigValue maxKalmanDaysToSearch = new IntegerConfigValue(
-			"transitclock.prediction.data.kalman.maxdaystoseach", new Integer(21),
+			"transitclock.prediction.data.kalman.maxdaystoseach", new Integer(30),
 			"Max number of days to look back for data. This will also be effected by how old the data in the cache is.");
 
 	private static final DoubleConfigValue initialErrorValue = new DoubleConfigValue(
@@ -82,7 +81,12 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 	@Override
 	public long getTravelTimeForPath(Indices indices, AvlReport avlReport, VehicleState vehicleState) {
 
-		logger.debug("Calling Kalman prediction algorithm for : "+indices.toString());
+		logger.debug("Calling frequency based Kalman prediction algorithm for : "+indices.toString());
+		
+		
+		Integer time=FrequencyBasedHistoricalAverageCache.secondsFromMidnight(avlReport.getDate(),2);
+		
+		time=FrequencyBasedHistoricalAverageCache.round(time, FrequencyBasedHistoricalAverageCache.getCacheIncrementsForFrequencyService());
 
 		TripDataHistoryCacheInterface tripCache = TripDataHistoryCacheFactory.getInstance();
 
@@ -93,8 +97,8 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 		VehicleState currentVehicleState = vehicleStateManager.getVehicleState(avlReport.getVehicleId());
 
 		TravelTimeDetails travelTimeDetails = this.getLastVehicleTravelTime(currentVehicleState, indices);
-
-
+		
+		
 		/*
 		 * The first vehicle of the day should use schedule or historic data to
 		 * make prediction. Cannot use Kalman as yesterdays vehicle will have
@@ -105,12 +109,12 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 			logger.debug("Kalman has last vehicle info for : " +indices.toString()+ " : "+travelTimeDetails);
 
 			Date nearestDay = DateUtils.truncate(avlReport.getDate(), Calendar.DAY_OF_MONTH);
-
+			
 			List<TravelTimeDetails> lastDaysTimes = lastDaysTimes(tripCache, currentVehicleState.getTrip().getId(),currentVehicleState.getTrip().getDirectionId(),
-					indices.getStopPathIndex(), nearestDay, currentVehicleState.getTrip().getStartTime(),
+					indices.getStopPathIndex(), nearestDay, time,
 					maxKalmanDaysToSearch.getValue(), maxKalmanDays.getValue());
 
-			if(lastDaysTimes!=null)
+			if(lastDaysTimes!=null&&lastDaysTimes.size()>0)
 			{
 				logger.debug("Kalman has " +lastDaysTimes.size()+ " historical values for : " +indices.toString());
 			}
@@ -214,7 +218,7 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 	private Double lastVehiclePredictionError(ErrorCache cache, Indices indices) {
 
 		Double result = cache.getErrorValue(indices);
-		if(result!=null)
+		if(result!=null&&!result.isNaN())
 		{
 			logger.debug("Kalman Error value : "+result +" for key: "+new KalmanErrorCacheKey(indices).toString());
 		}

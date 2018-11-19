@@ -1,4 +1,4 @@
-package org.transitclock.core.predictiongenerator.rls.dwell;
+package org.transitclock.core.predictiongenerator.scheduled.dwell.rls;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +8,9 @@ import org.transitclock.core.Indices;
 import org.transitclock.core.TemporalDifference;
 import org.transitclock.core.VehicleState;
 import org.transitclock.core.dataCache.DwellTimeModelCacheFactory;
+import org.transitclock.core.dataCache.StopPathCacheKey;
 import org.transitclock.core.dataCache.VehicleStateManager;
-import org.transitclock.core.predictiongenerator.kalman.KalmanPredictionGeneratorImpl;
+import org.transitclock.core.predictiongenerator.scheduled.traveltime.kalman.KalmanPredictionGeneratorImpl;
 import org.transitclock.db.structs.AvlReport;
 import org.transitclock.db.structs.Headway;
 import org.transitclock.ipc.data.IpcPrediction;
@@ -41,7 +42,11 @@ public class DwellTimePredictionGeneratorImpl extends KalmanPredictionGeneratorI
 				*/																		
 				if(super.getStopTimeForPath(indices, avlReport, vehicleState)>0)
 				{																		
-					result = DwellTimeModelCacheFactory.getInstance().predictDwellTime(indices, headway);
+					
+					StopPathCacheKey cacheKey=new StopPathCacheKey(indices.getTrip().getId(), indices.getStopPathIndex(),  false); 
+					
+					
+					result = DwellTimeModelCacheFactory.getInstance().predictDwellTime(cacheKey, headway);
 					
 					if(result==null)
 					{

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.transitclock.core.dataCache.ehcache;
+package org.transitclock.core.dataCache.ehcache.frequency;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -30,6 +30,7 @@ import org.transitclock.core.dataCache.ArrivalDepartureComparator;
 import org.transitclock.core.dataCache.TripDataHistoryCacheFactory;
 import org.transitclock.core.dataCache.TripDataHistoryCacheInterface;
 import org.transitclock.core.dataCache.TripKey;
+import org.transitclock.core.dataCache.frequency.FrequencyBasedHistoricalAverageCache;
 import org.transitclock.db.structs.ArrivalDeparture;
 import org.transitclock.db.structs.Block;
 import org.transitclock.db.structs.Trip;
@@ -78,7 +79,7 @@ public class TripDataHistoryCache implements TripDataHistoryCacheInterface{
 		return singleton;
 	}
 
-	private TripDataHistoryCache() {
+	public TripDataHistoryCache() {
 		CacheManager cm = CacheManager.getInstance();
 		EvictionAgePolicy evictionPolicy = null;
 		if(tripDataCacheMaxAgeSec!=null)
@@ -123,14 +124,14 @@ public class TripDataHistoryCache implements TripDataHistoryCacheInterface{
 			Element result=cache.get(key);
 			if(result!=null)
 			{
-				logger.debug("Key: "+key.toString());
+				logger.info("Key: "+key.toString());
 				@SuppressWarnings("unchecked")
 				
 				List<ArrivalDeparture> ads=(List<ArrivalDeparture>) result.getObjectValue();
 												
 				for(ArrivalDeparture ad : ads)
 				{
-					logger.debug(ad.toString());
+					logger.info(ad.toString());
 				}
 			}
 		}
@@ -145,11 +146,13 @@ public class TripDataHistoryCache implements TripDataHistoryCacheInterface{
 	public List<ArrivalDeparture> getTripHistory(TripKey tripKey) {
 
 		//logger.debug(cache.toString());
-
+		logger.debug("Looking for TripDataHistoryCache cache element using key {}.", tripKey);
+		
 		Element result = cache.get(tripKey);
 
 		if(result!=null)
 		{						
+			logger.debug("Found TripDataHistoryCache cache element using key {}.", tripKey);
 			return (List<ArrivalDeparture>) result.getObjectValue();
 		}
 		else
@@ -165,7 +168,16 @@ public class TripDataHistoryCache implements TripDataHistoryCacheInterface{
 	@SuppressWarnings("unchecked")
 	synchronized public TripKey putArrivalDeparture(ArrivalDeparture arrivalDeparture) {
 		
-		logger.debug("Putting :"+arrivalDeparture.toString() + " in TripDataHistoryCache cache.");
+		Block block=null;
+		if(arrivalDeparture.getBlock()==null)
+		{
+			DbConfig dbConfig = Core.getInstance().getDbConfig();
+			block=dbConfig.getBlock(arrivalDeparture.getServiceId(), arrivalDeparture.getBlockId());								
+		}else
+		{
+			block=arrivalDeparture.getBlock();
+		}
+		
 		/* just put todays time in for last three days to aid development. This means it will kick in in 1 days rather than 3. Perhaps be a good way to start rather than using default transiTime method but I doubt it. */
 		int days_back=1;
 		if(debug)
@@ -182,32 +194,44 @@ public class TripDataHistoryCache implements TripDataHistoryCacheInterface{
 			
 			Trip trip=dbConfig.getTrip(arrivalDeparture.getTripId());
 			
-			if(trip!=null)
+			// TODO need to set start time based on start of bucket
+			if(arrivalDeparture.getFreqStartTime()!=null)
 			{
+				Integer time=FrequencyBasedHistoricalAverageCache.secondsFromMidnight(arrivalDeparture.getFreqStartTime(),2);
 				
-				tripKey = new TripKey(arrivalDeparture.getTripId(),
-						nearestDay,
-						trip.getStartTime());
+				time=FrequencyBasedHistoricalAverageCache.round(time, FrequencyBasedHistoricalAverageCache.getCacheIncrementsForFrequencyService());
 				
-				List<ArrivalDeparture> list = null;
-		
-				Element result = cache.get(tripKey);
-		
-				if (result != null && result.getObjectValue() != null) {
-					list = (List<ArrivalDeparture>) result.getObjectValue();
-					cache.remove(tripKey);
-				} else {
-					list = new ArrayList<ArrivalDeparture>();
-				}
-				
-				list.add(arrivalDeparture);									
-				
-				Element arrivalDepartures = new Element(tripKey, Collections.synchronizedList(list));
-							
-				cache.put(arrivalDepartures);
-			}
-											
+				if(trip!=null)							
+				{			
+										
+					tripKey = new TripKey(arrivalDeparture.getTripId(),
+							nearestDay,
+							time);
+					
+					logger.debug("Putting :{} in TripDataHistoryCache cache using key {}.", arrivalDeparture, tripKey);
+					
+					List<ArrivalDeparture> list = null;						
+					
+					Element result = cache.get(tripKey);
 			
+					if (result != null && result.getObjectValue() != null) {
+						list = (List<ArrivalDeparture>) result.getObjectValue();
+						cache.remove(tripKey);
+					} else {
+						list = new ArrayList<ArrivalDeparture>();
+					}
+					
+					list.add(arrivalDeparture);									
+					
+					Element arrivalDepartures = new Element(tripKey, Collections.synchronizedList(list));
+								
+					cache.put(arrivalDepartures);
+				}
+			}								
+			else
+			{
+				logger.error("Cannot add event to TripDataHistoryCache as it has no freqStartTime set. {}", arrivalDeparture);
+			}
 		}				
 		return tripKey;
 	}
@@ -260,8 +284,11 @@ public class TripDataHistoryCache implements TripDataHistoryCacheInterface{
 		for (ArrivalDeparture tocheck : emptyIfNull(arrivalDepartures)) 
 		{
 			try {
-				if(tocheck.getStopPathIndex()==(current.getStopPathIndex()-1) && (current.isArrival() && tocheck.isDeparture()))
-				{
+				
+				if(tocheck.getStopPathIndex()==(current.getStopPathIndex()-1) 
+						&& (current.isArrival() && tocheck.isDeparture())
+							&& current.getFreqStartTime().equals(tocheck.getFreqStartTime()))
+				{					
 					return tocheck;
 				}
 			} catch (Exception e) {
