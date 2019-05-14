@@ -236,6 +236,8 @@ function vehicleUpdate(vehicleDetail, status)
 		console.log("i: "+i);
 		vehicle=vehicleDetail.vehicles[i];
 		console.log(vehicle);
+		if(vehicle.direction==undefined)
+			vehicle.direction=="0";
 		var directionVehicle=(vehicle.direction=="0")?0:1;
 		var gpsTimeStr = dateFormat(vehicle.loc.time);
 		buses.push({id:vehicle.id, projection:vehicle.distanceAlongTrip/getShapeLength(vehicle.tripPattern),identifier:vehicle.licensePlate,direction:directionVehicle,gpsTimeStr:gpsTimeStr,nextStopName:vehicle.nextStopName,schAdhStr:vehicle.schAdhStr,trip:vehicle.trip,schAdh:vehicle.schAdh,headway:vehicle.headway});
@@ -267,8 +269,11 @@ function routeConfigCallback(routeDetail, status)
 	setShortNameParam(routeDetail.routes[0].shortName);
 	for(var i  in routeDetail.routes[0].direction)
 	{
+		//console.log(routeDetail.routes[0].direction[i]);
 		console.log("Direction "+routeDetail.routes[0].direction[i].id);
 		console.log(routeDetail.routes[0].direction[i]);
+		if(routeDetail.routes[0].direction[i]==undefined)
+			routeDetail.routes[0].direction[i]="0";
 		var distanceOverPath=0.0;
 
 		var routeLenght=-1;
@@ -291,6 +296,8 @@ function routeConfigCallback(routeDetail, status)
 			var stop=routeDetail.routes[0].direction[i].stop[j];
 			distanceOverPath+=stop.pathLength;
 			var projectionStop=distanceOverPath/routeLenght;
+			if(stop.direction==undefined)
+				stop.direction="0";
 			var directionStop=(stop.direction==routeDetail.routes[0].direction[i].id=="0")?0:1;
 			stops.push({id: stop.id, identifier: stop.name,projection:projectionStop,direction:directionStop,distance:distanceOverPath});
 		}
@@ -302,7 +309,11 @@ function routeConfigCallback(routeDetail, status)
 	}
 	setShapeMapLenght(shapeMap);
 	synoptic=null;
+	
 	var canvas = document.getElementById("synoptic");
+	while (canvas.firstChild) {
+		canvas.removeChild(canvas.firstChild);
+	}
 	var params={container:canvas,
 			onVehiClick:testFunc,
 			infoStop:function(data) {console.log(data.identifier);return "<table class=\"table\"><th >"+data.identifier+"</th><tr><td>distance: "+parseFloat(data.distance).toFixed(2) +" m. </td></tr></table>"},
@@ -313,6 +324,7 @@ function routeConfigCallback(routeDetail, status)
 			predictionFunction:getPredictionsJson,
 			vehicleAlternColorCallBack:vehicleAlternColorCallBack
 	}
+	
 	synoptic=new Sinoptico(params);
 	synoptic.setStops(stops);
 	synoptic.setBuses(buses);
