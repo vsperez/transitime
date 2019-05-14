@@ -826,11 +826,6 @@ public class GtfsData {
 		// For returning results
 		List<GtfsStopTime> processedGtfsStopTimesForTrip =
 				new ArrayList<GtfsStopTime>();
-		//List for keeping GtfsStopTimes  with null value. They will be
-		//interplolate. This is to fix issues when the time at some busStop
-		//is needed in the interface.
-		List<GtfsStopTime> processedGtfsStopTimesForTripWithNullTime =
-				new ArrayList<GtfsStopTime>();
 		
 		// Sort the list so that the stop times are in sequence order.
 		// This way can treat first and last stop times for a trip
@@ -980,26 +975,12 @@ public class GtfsData {
 						Time.timeOfDayStr(previousTimeForTrip), 
 						gtfsStopTime.getLineNumber());				
 			}
-		
-			//TODO: INTERPOLTE
-			//Given the condition that first stop has departure time and the last
-			// has arrival time, it is possible to interpolate
-			if(arr==null)
-			{
-				
-				
-			}
-			else
-			{
-				
-			}
-			
 			// Update previous time so can check the next stop for the trip
 			if (arr != null)
 				previousTimeForTrip = arr;
 			if (dep != null)
 				previousTimeForTrip = dep;
-			
+
 			// The GtfsStopTime is acceptable so add it to list to be returned
 			processedGtfsStopTimesForTrip.add(gtfsStopTime);
 			
