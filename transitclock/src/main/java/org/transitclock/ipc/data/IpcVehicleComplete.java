@@ -296,15 +296,15 @@ public class IpcVehicleComplete extends IpcVehicleGtfsRealtime {
 		return destinationId;
 	}
 
-	public double getDistanceToNextStop() {
+	public Double getDistanceToNextStop() {
 		return distanceToNextStop;
 	}
 
-	public double getDistanceOfNextStopFromTripStart() {
+	public Double getDistanceOfNextStopFromTripStart() {
 		return distanceOfNextStopFromTripStart;
 	}
 	
-	public double getDistanceAlongTrip() {
+	public Double getDistanceAlongTrip() {
 		return distanceAlongTrip;
 	}
 	public double getHeadway()
@@ -346,11 +346,11 @@ public class IpcVehicleComplete extends IpcVehicleGtfsRealtime {
 				+ ", originStopId="	+ originStopId 
 				+ ", headway=" + headway
 				+ ", distanceToNextStop=" 
-					+ Geo.distanceFormat(distanceToNextStop)
+					+ distanceToNextStop!=null?Geo.distanceFormat(distanceToNextStop):"null"
 				+ ", distanceOfNextStopFromTripStart=" 
-					+ Geo.distanceFormat(distanceOfNextStopFromTripStart)
+					+ distanceOfNextStopFromTripStart!=null?Geo.distanceFormat(distanceOfNextStopFromTripStart):"null"
 				+ ", distanceAlongTrip=" 
-					+ Geo.distanceFormat(distanceAlongTrip) 
+					+ distanceAlongTrip!=null?Geo.distanceFormat(distanceAlongTrip):"null" 
 				+ "]";
 	}
 

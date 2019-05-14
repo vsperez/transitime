@@ -236,11 +236,13 @@ function vehicleUpdate(vehicleDetail, status)
 		console.log("i: "+i);
 		vehicle=vehicleDetail.vehicles[i];
 		console.log(vehicle);
-		if(vehicle.direction==undefined)
-			vehicle.direction=="0";
-		var directionVehicle=(vehicle.direction=="0")?0:1;
+		//if(vehicle.direction==undefined)
+		//	vehicle.direction=="0";
+		
+		var directionVehicle=(vehicle.direction=="0" || vehicle.direction==undefined)?0:1;
+		var _identifier=(vehicle.licensePlate==undefined)?vehicle.id:vehicle.licensePlate;
 		var gpsTimeStr = dateFormat(vehicle.loc.time);
-		buses.push({id:vehicle.id, projection:vehicle.distanceAlongTrip/getShapeLength(vehicle.tripPattern),identifier:vehicle.licensePlate,direction:directionVehicle,gpsTimeStr:gpsTimeStr,nextStopName:vehicle.nextStopName,schAdhStr:vehicle.schAdhStr,trip:vehicle.trip,schAdh:vehicle.schAdh,headway:vehicle.headway});
+		buses.push({id:vehicle.id, projection:vehicle.distanceAlongTrip/getShapeLength(vehicle.tripPattern),identifier:_identifier,direction:directionVehicle,gpsTimeStr:gpsTimeStr,nextStopName:vehicle.nextStopName,schAdhStr:vehicle.schAdhStr,trip:vehicle.trip,schAdh:vehicle.schAdh,headway:vehicle.headway});
 	}
 	synoptic.setBuses(buses);
 	synoptic.steps=100;

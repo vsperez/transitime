@@ -799,20 +799,16 @@ public class TransitimeApi {
 
 			// Get agency info so can also return agency name
 			List<Agency> agencies = inter.getAgencies();
-			System.out.println("agencies" +agencies);
 			List<IpcRoute> ipcRoutes;
 
 			// If single route specified
 			if (routeIdsOrShortNames != null && routeIdsOrShortNames.size() == 1) {
 				String routeIdOrShortName = routeIdsOrShortNames.get(0);
-				System.out.println("inter" +inter);
 				IpcRoute route = inter.getRoute(routeIdOrShortName, directionId, stopId, tripPatternId);
-				System.out.println("route" +route);
 				// If the route doesn't exist then throw exception such that
 				// Bad Request with an appropriate message is returned.
 				if (route == null)
 				{
-					System.out.println("Route is null");
 					throw WebUtils.badRequestException("Route for route=" + routeIdOrShortName + " does not exist.");
 				}
 
