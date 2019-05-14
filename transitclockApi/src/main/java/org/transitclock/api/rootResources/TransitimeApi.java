@@ -295,7 +295,7 @@ public class TransitimeApi {
 			+ " adherence and driver IDs.",tags= {"vehicle"})
 	@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public Response getVehiclesDetails(@BeanParam StandardParameters stdParameters,
-			@Parameter(description="Specifies which vehicles to get data for",required=false) 
+			@Parameter(description="Specifies which vehicles to get data for",required=true) 
 			@QueryParam(value = "v") List<String> vehicleIds,
 			@Parameter(description="Specifies which routes to get data for",required=false) 
 			@QueryParam(value = "r") List<String> routesIdOrShortNames, 
