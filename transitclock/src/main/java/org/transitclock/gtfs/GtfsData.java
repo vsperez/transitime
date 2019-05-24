@@ -97,6 +97,8 @@ import org.transitclock.utils.MapKey;
 import org.transitclock.utils.StringUtils;
 import org.transitclock.utils.Time;
 
+import javassist.expr.NewArray;
+
 /**
  * Contains all the GTFS data processed into Java lists and such. Also combines
  * in info from supplemental routes.txt file if there is one.
@@ -881,6 +883,7 @@ public class GtfsData {
 			// Make sure arrival/departure times OK.
 			Integer arr = gtfsStopTime.getArrivalTimeSecs();
 			Integer dep = gtfsStopTime.getDepartureTimeSecs();
+			//System.out.println("ARR "+arr+ " "+dep +" "+gtfsStopTime.getShapeDistTraveled());
 			// Make sure that first stop has a departure time and the
 			// last one has an arrival time.
 			if (firstStopInTrip && dep == null) {
@@ -1481,6 +1484,7 @@ public class GtfsData {
 			// times list, trip patterns, paths, etc and so it is much simpler
 			// to have getScheduleTimesForTrip() update an already existing 
 			// Trip object.
+			//TODO:==>MOVE TO INTERPOLATE??
 			List<ScheduleTime> scheduleTimesList = getScheduleTimesForTrip(trip);
 			trip.addScheduleTimes(scheduleTimesList); 
 						
@@ -2671,7 +2675,106 @@ public class GtfsData {
 		boolean matches = routeIdFilterRegExPattern.matcher(routeId.trim()).matches();
 		return matches;
 	}
-	
+	private void  interpolateNullTimes()
+	{
+		for(String str:gtfsStopTimesForTripMap.keySet())
+		{
+			TripPattern tripPattern = tripPatternsByTripIdMap.get(str);
+			//System.out.println("Trip: "+str);
+			
+			List<GtfsStopTime> stopTimes = gtfsStopTimesForTripMap.get(str);
+			List<GtfsStopTime> toInterpolate = new ArrayList<>();
+			//I don't think it is necesary, just to be sure. TODO
+			Collections.sort(stopTimes);
+			Integer lastDepartureTime=null;
+			boolean interpolating=false;
+			Double distance=0.0;
+			if(tripPattern==null)
+			{
+				logger.error("TripPattern null for trip {} when interpolating. This shoud not be.",str);
+				
+				continue;
+			}
+// To check input			
+//			for(GtfsStopTime stopTime:stopTimes)
+//			{
+//				System.out.println("PRE: "+stopTime.getStopSequence()+" "+ " at "+stopTime.getArrivalTimeSecs()+ " "+stopTime.isTimepointStop());
+//			}
+			
+			
+			for(GtfsStopTime stopTime:stopTimes)
+			{
+			try {	
+				if(stopTime==null || stopTime.getStopId()==null) System.exit(0);
+				if(tripPattern.getStopPath(stopTime.getStopId())==null)
+				{
+					logger.error("GtfsStopTime without pattern for stopId {}. This should not be.",stopTime.getStopId());
+					continue;				
+				}
+				
+				if(interpolating && (stopTime.getArrivalTimeSecs()!=null ||  stopTime.getDepartureTimeSecs()!=null))
+				{
+					//add distance to the point with time
+				
+					distance+=tripPattern.getStopPath(stopTime.getStopId()).getLength();
+					//System.out.println("deltaTime "+stopTime.getArrivalTimeSecs()+ " "+lastDepartureTime);
+					//System.out.println("distance "+distance);
+					double deltaTime=(stopTime.getArrivalTimeSecs()==null?stopTime.getDepartureTimeSecs():stopTime.getArrivalTimeSecs())-lastDepartureTime;
+					Double distanceSinceFound=0.0;
+					for(GtfsStopTime obj:toInterpolate)
+					{
+						distanceSinceFound+=tripPattern.getStopPath(obj.getStopId()).getLength();
+					//	System.out.println("distanceSinceFound "+distanceSinceFound);
+						Integer newArivalTime=lastDepartureTime+(int)((deltaTime/distance)*(distanceSinceFound));
+					//	System.out.println("newArivalTime "+newArivalTime);
+						obj.setArrivalTimeSec(newArivalTime);
+					}
+					//newStopTime.add(stopTime);
+					interpolating=false;
+				}
+			
+				else if(!interpolating && (stopTime.getArrivalTimeSecs()!=null || stopTime.getDepartureTimeSecs()!=null) )
+				{
+					distance=0.0;
+					
+					//newStopTime.add(stopTime);
+					lastDepartureTime=(stopTime.getDepartureTimeSecs()==null)?stopTime.getArrivalTimeSecs():stopTime.getDepartureTimeSecs();
+					//distance=tripPattern.getStopPath(stopTime.getStopId()).getLength();
+					//continue;
+				}
+				else
+				{
+					toInterpolate.add(stopTime);
+					interpolating=true;
+				}
+				if(interpolating)
+					distance+=tripPattern.getStopPath(stopTime.getStopId()).getLength();
+				//StopPath path = tripPattern.getStopPath(stopTime.getStopId());
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			}
+			// To check output
+//			double dintance=0;
+//			for(GtfsStopTime stopTime:stopTimes)
+//			{
+//				dintance+=tripPattern.getStopPath(stopTime.getStopId()).getLength();
+//				System.out.println("Resutl: "+stopTime.getStopSequence()+" "+dintance+ " at "+stopTime.getArrivalTimeSecs()+ " "+stopTime.isTimepointStop());
+//			}
+//			System.out.println(stopTimes);
+//			System.exit(0);
+		}
+		/**
+		 * Configure schedTime for trips
+		 */
+		for(Trip trip: tripsCollection)
+		{
+			trip.getScheduleTimes().clear();//remove previuos info.
+			List<ScheduleTime> scheduleTimesList = getScheduleTimesForTrip(trip);
+			trip.addScheduleTimes(scheduleTimesList); 
+		}
+	}
 	/**
 	 * Does all the work. Processes the data and store it in internal structures
 	 */
@@ -2694,7 +2797,8 @@ public class GtfsData {
 		processServiceIds();
 		processTripsData();	
 		processFrequencies();
-		processStopTimesData();		
+		processStopTimesData();	
+		//System.exit(0);
 		processRouteMaps(); 
 		processBlocks();
 		processPaths();
@@ -2718,17 +2822,20 @@ public class GtfsData {
 		// useful when processing just part of an agency config, like
 		// MBTA commuter rail.
 		trimCalendars();
-		
+		System.out.println("Interpolating");
+		this.interpolateNullTimes();
+		System.out.println("Interpolating done");
 		// Optionally output routes for debug graphing		
 		outputRoutesForGraphing();
-		
+		System.out.println("Pre done ");
 		// Now process travel times and update the Trip objects. 
 		TravelTimesProcessorForGtfsUpdates travelTimesProcesssor =
 				new TravelTimesProcessorForGtfsUpdates(revs,
 						originalTravelTimesRev, maxTravelTimeSegmentLength,
 						defaultWaitTimeAtStopMsec, maxSpeedKph);
 		travelTimesProcesssor.process(session, this);
-		
+		System.out.println("PROCESSING done ");
+		//System.exit(0);
     // Try allowing garbage collector to free up some memory since
     // don't need the GTFS structures anymore.
     gtfsRoutesMap = null;

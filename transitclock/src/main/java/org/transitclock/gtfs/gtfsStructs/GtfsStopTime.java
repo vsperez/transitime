@@ -30,7 +30,8 @@ public class GtfsStopTime extends CsvBase implements Comparable<GtfsStopTime> {
 
 	private final String tripId;
 	// arrivalTimeSecs is in seconds into day. Can be null
-	private final Integer arrivalTimeSecs;
+	// It is not final because it  might be change if it is needed to interpolate
+	private Integer arrivalTimeSecs;
 	// departureTimeSecs is in seconds into day. Can be null
 	private final Integer departureTimeSecs;
 	private final String stopId;
@@ -38,7 +39,8 @@ public class GtfsStopTime extends CsvBase implements Comparable<GtfsStopTime> {
 	private final String stopHeadsign;
 	private final String pickupType;
 	private final String dropOffType;
-	private final Boolean timepointStop;
+	// It is not final because it  might be change if it is needed to interpolate
+	private Boolean timepointStop;
 	// For when a special GtfsStopTime is created using special constructor. 
 	// Currently not configured in GTFS file
 	private final Boolean isWaitStop;
@@ -331,7 +333,7 @@ public class GtfsStopTime extends CsvBase implements Comparable<GtfsStopTime> {
 	 * @return
 	 */
 	public boolean isTimepointStop() {
-		return timepointStop != null && timepointStop;
+		return timepointStop == null || timepointStop;
 	}
 	
 	/**
@@ -390,6 +392,17 @@ public class GtfsStopTime extends CsvBase implements Comparable<GtfsStopTime> {
 	@Override
 	public int compareTo(GtfsStopTime arg0) {
 		return getStopSequence() - arg0.getStopSequence();
+	}
+	/**
+	 * It is needed if we want to interpolate the value.
+	 * We set timepointStop to false because is is interpolated. 
+	 * From GTFS: timepoint="Indicates if arrival and departure times for a stop are strictly adhered to by the vehicle or if they are instead approximate and/or interpolated times." 
+	 * @param newArivalTime
+	 */
+	public void setArrivalTimeSec(Integer newArivalTime) {
+		this.arrivalTimeSecs=newArivalTime;
+		this.timepointStop=false;
+		
 	}
 
 }
