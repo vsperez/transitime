@@ -13,11 +13,11 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryo.serializers.FieldSerializer;
 
-public class TripEventKyroSerializer implements Serializer<TripEvents> {
+public class TripEventsKyroSerializer implements Serializer<TripEvents> {
 
 	  private static final Kryo kryo = new Kryo();
 
-	  public TripEventKyroSerializer(ClassLoader loader) {
+	  public TripEventsKyroSerializer(ClassLoader loader) {
 	    //no-op
 		kryo.register(IpcArrivalDeparture.class);
 		

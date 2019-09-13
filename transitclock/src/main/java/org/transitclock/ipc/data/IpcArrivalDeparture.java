@@ -18,6 +18,11 @@ import org.transitclock.db.structs.ArrivalDeparture;
 public class IpcArrivalDeparture implements Serializable {
 
 	
+	
+
+
+
+
 	/**
 	 * 
 	 */
@@ -75,8 +80,10 @@ public class IpcArrivalDeparture implements Serializable {
 		this.blockId=arrivalDepature.getBlockId();
 		this.serviceId=arrivalDepature.getServiceId();
 	}
-	
-	
+	/* needed for kyro serializer */
+	public IpcArrivalDeparture() {
+		super();		
+	}
 	
 
 	public String getVehicleId() {
