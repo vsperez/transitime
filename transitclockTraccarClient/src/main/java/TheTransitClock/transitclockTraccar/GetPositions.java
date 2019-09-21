@@ -31,7 +31,7 @@ public class GetPositions
         try {
 			User user=api.sessionPost(email, password);
 			
-			List<Position> results = api.positionsGet(null, null, null, user.getId());
+			List<Position> results = api.positionsGet(null, null, null, null);
 			
 			for(Position result:results)
 			{
