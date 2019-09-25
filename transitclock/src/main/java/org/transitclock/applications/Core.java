@@ -43,6 +43,7 @@ import org.transitclock.core.dataCache.PredictionDataCache;
 import org.transitclock.core.dataCache.StopArrivalDepartureCacheFactory;
 import org.transitclock.core.dataCache.TripDataHistoryCacheFactory;
 import org.transitclock.core.dataCache.VehicleDataCache;
+import org.transitclock.core.dataCache.ehcache.CacheManagerFactory;
 import org.transitclock.core.dataCache.ehcache.StopArrivalDepartureCache;
 import org.transitclock.core.dataCache.ehcache.scheduled.TripDataHistoryCache;
 import org.transitclock.core.dataCache.frequency.FrequencyBasedHistoricalAverageCache;
@@ -510,7 +511,7 @@ public class Core {
 				e1.printStackTrace();
 				System.exit(-1);
 			}
-
+			
 			// Write pid file so that monit can automatically start
 			// or restart this application
 			PidFile.createPidFile(CoreConfig.getPidFileDirectory()
@@ -523,6 +524,7 @@ public class Core {
 
 			Date endDate=Calendar.getInstance().getTime();
 
+
 			// populate caches to be used by prediction methods.
 			try {
 				populateCaches();								
@@ -530,6 +532,23 @@ public class Core {
 				logger.error("Failed to populate cache.", e);
 			}
 
+			// Close cache if shutting down.
+			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() 
+			{
+		            public void run() 
+		            {
+		            	try {
+							logger.info("Closing cache.");
+							CacheManagerFactory.getInstance().close();
+							logger.info("Cache closed.");
+						} catch (Exception e) {
+							logger.error("Cache close failed.");
+							logger.error(e.getMessage(),e);
+						}
+		            	System.exit(0);		            	
+		            }
+		    }));
+			
 			// Initialize the core now
 			createCore();
 
