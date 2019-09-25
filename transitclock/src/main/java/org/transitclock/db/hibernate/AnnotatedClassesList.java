@@ -37,6 +37,7 @@ import org.transitclock.db.structs.MeasuredArrivalTime;
 import org.transitclock.db.structs.MonitoringEvent;
 import org.transitclock.db.structs.Prediction;
 import org.transitclock.db.structs.PredictionAccuracy;
+import org.transitclock.db.structs.PredictionEvent;
 import org.transitclock.db.structs.PredictionForStopPath;
 import org.transitclock.db.structs.Route;
 import org.transitclock.db.structs.Stop;
@@ -101,6 +102,7 @@ public class AnnotatedClassesList {
 		Trip.class,
 		TripPattern.class,
 		VehicleEvent.class,
+		PredictionEvent.class,
 		VehicleConfig.class,
 		VehicleState.class,
 		HoldingTime.class,

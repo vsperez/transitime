@@ -37,7 +37,9 @@ import org.transitclock.core.predictiongenerator.kalman.Vehicle;
 import org.transitclock.core.predictiongenerator.kalman.VehicleStopDetail;
 import org.transitclock.core.predictiongenerator.scheduled.average.HistoricalAveragePredictionGeneratorImpl;
 import org.transitclock.db.structs.AvlReport;
+import org.transitclock.db.structs.PredictionEvent;
 import org.transitclock.db.structs.PredictionForStopPath;
+import org.transitclock.db.structs.VehicleEvent;
 import org.transitclock.ipc.data.IpcPrediction;
 
 /**
@@ -75,7 +77,14 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 			"Will use Kalman prediction to get to first stop of prediction."
 	);
 			
-
+	private static final IntegerConfigValue percentagePredictionMethodDifferenceneEventLog=new IntegerConfigValue(
+			"transitclock.prediction.data.kalman.percentagePredictionMethodDifferencene", new Integer(50),
+			"If the difference in prediction method estimates is greater than this percentage log a Vehicle Event");
+	
+	private static final IntegerConfigValue tresholdForDifferenceEventLog=new IntegerConfigValue(
+			"transitclock.prediction.data.kalman.tresholdForDifferenceEventLog", new Integer(60000),
+			"This is the threshold in milliseconds that the difference has to be over before it will consider the percentage difference.");
+				
 	private static final Logger logger = LoggerFactory.getLogger(KalmanPredictionGeneratorImpl.class);
 
 	/*
@@ -90,6 +99,9 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 
 		logger.debug("Calling Kalman prediction algorithm for : "+indices.toString());
 
+		long alternatePrediction = super.getTravelTimeForPath(indices, avlReport, vehicleState);
+		
+		
 		TripDataHistoryCacheInterface tripCache = TripDataHistoryCacheFactory.getInstance();
 
 		ErrorCache kalmanErrorCache = ErrorCacheFactory.getInstance();
@@ -171,9 +183,23 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 						logger.debug("Setting Kalman error value: " + kalmanPredictionResult.getFilterError() + " for : "+ new KalmanErrorCacheKey(indices).toString());
 
 						kalmanErrorCache.putErrorValue(indices, kalmanPredictionResult.getFilterError());
+						
+						double percentageDifferecence = Math.abs(100 * ((predictionTime - alternatePrediction) / (double)alternatePrediction));
+						
+						if(((percentageDifferecence *  alternatePrediction)/100) > tresholdForDifferenceEventLog.getValue())
+						{						
+							if(percentageDifferecence > percentagePredictionMethodDifferenceneEventLog.getValue())
+							{
+								String description="Predictions for "+ indices.toString()+ " have more than a "+percentagePredictionMethodDifferenceneEventLog.getValue() + "% difference. Kalman predicts : "+predictionTime+" Super predicts : "+alternatePrediction;
+
+								logger.warn(description);
+								
+								PredictionEvent.create(avlReport, vehicleState.getMatch(), PredictionEvent.PREDICTION_VARIATION, description);
+							}
+						}
 
 						logger.debug("Using Kalman prediction: " + predictionTime + " instead of "+alternative+" prediction: "
-								+ super.getTravelTimeForPath(indices, avlReport, vehicleState) +" for : " + indices.toString());
+								+ alternatePrediction +" for : " + indices.toString());
 
 						if(storeTravelTimeStopPathPredictions.getValue())
 						{
@@ -192,7 +218,7 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return super.getTravelTimeForPath(indices, avlReport, vehicleState);
+		return alternatePrediction;
 	}
 
 	@Override
