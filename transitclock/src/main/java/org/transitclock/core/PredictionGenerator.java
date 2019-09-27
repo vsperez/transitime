@@ -130,7 +130,14 @@ public abstract class PredictionGenerator {
 							}else
 							{								
 								String description=found + " : " + currentArrivalDeparture;
-								PredictionEvent.create(currentVehicleState.getAvlReport(), currentVehicleState.getMatch(), PredictionEvent.TRAVELTIME_EXCEPTION, description);
+								PredictionEvent.create(currentVehicleState.getAvlReport(), currentVehicleState.getMatch(), PredictionEvent.TRAVELTIME_EXCEPTION, 
+										description, 
+										travelTimeDetails.getArrival().getStopId(), 
+										travelTimeDetails.getDeparture().getStopId(),
+										travelTimeDetails.getArrival().getVehicleId(),
+										travelTimeDetails.getArrival().getTime(),
+										travelTimeDetails.getDeparture().getTime()
+										);
 								return null;
 							}
 						}else
