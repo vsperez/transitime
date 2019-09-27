@@ -157,7 +157,7 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 
 							VehicleStopDetail destinationDetail = new VehicleStopDetail(null, lastDaysTimes.get(i).getTravelTime(),
 									vehicle);
-							historical_segments_k[i] = new TripSegment(originDetail, destinationDetail);
+							historical_segments_k[lastDaysTimes.size()-i-1] = new TripSegment(originDetail, destinationDetail);
 						}
 
 						VehicleStopDetail destinationDetail_0_k_1 = new VehicleStopDetail(null, travelTimeDetails.getTravelTime(), vehicle);
@@ -190,11 +190,16 @@ public class KalmanPredictionGeneratorImpl extends PredictionGeneratorDefaultImp
 						{						
 							if(percentageDifferecence > percentagePredictionMethodDifferenceneEventLog.getValue())
 							{
-								String description="Predictions for "+ indices.toString()+ " have more than a "+percentagePredictionMethodDifferenceneEventLog.getValue() + "% difference. Kalman predicts : "+predictionTime+" Super predicts : "+alternatePrediction;
+								String description="Kalman predicts : "+predictionTime+" Super predicts : "+alternatePrediction;
 
 								logger.warn(description);
 								
-								PredictionEvent.create(avlReport, vehicleState.getMatch(), PredictionEvent.PREDICTION_VARIATION, description);
+								PredictionEvent.create(avlReport, vehicleState.getMatch(), PredictionEvent.PREDICTION_VARIATION, description, 
+										travelTimeDetails.getArrival().getStopId(), 
+										travelTimeDetails.getDeparture().getStopId(),
+										travelTimeDetails.getArrival().getVehicleId(),
+										travelTimeDetails.getArrival().getTime(),
+										travelTimeDetails.getDeparture().getTime());
 							}
 						}
 
