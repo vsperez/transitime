@@ -17,6 +17,7 @@ import org.transitclock.core.TravelTimeDetails;
 import org.transitclock.core.VehicleState;
 import org.transitclock.core.dataCache.ErrorCache;
 import org.transitclock.core.dataCache.ErrorCacheFactory;
+import org.transitclock.core.dataCache.KalmanError;
 import org.transitclock.core.dataCache.KalmanErrorCacheKey;
 import org.transitclock.core.dataCache.StopPathPredictionCache;
 import org.transitclock.core.dataCache.TripDataHistoryCacheFactory;
@@ -159,15 +160,12 @@ public class KalmanPredictionGeneratorImpl extends HistoricalAveragePredictionGe
 
 						Indices previousVehicleIndices = new Indices(travelTimeDetails.getArrival());
 
-						Double last_prediction_error = lastVehiclePredictionError(kalmanErrorCache, previousVehicleIndices);
+						KalmanError last_prediction_error = lastVehiclePredictionError(kalmanErrorCache, previousVehicleIndices);
 
-						logger.debug("Using error value: " + last_prediction_error +" found with vehicle id "+travelTimeDetails.getArrival().getVehicleId()+ " from: "+new KalmanErrorCacheKey(previousVehicleIndices).toString());
-
-						//TODO this should also display the detail of which vehicle it choose as the last one.
-						logger.debug("Using last vehicle value: " + travelTimeDetails + " for : "+ indices.toString());
+						logger.debug("Using error value: " + last_prediction_error +" found with vehicle id "+travelTimeDetails.getArrival().getVehicleId()+ " from: "+new KalmanErrorCacheKey(previousVehicleIndices).toString());											
 
 						kalmanPredictionResult = kalmanPrediction.predict(last_vehicle_segment, historical_segments_k,
-								last_prediction_error);
+								last_prediction_error.getError());
 
 						long predictionTime = (long) kalmanPredictionResult.getResult();
 
@@ -239,17 +237,15 @@ public class KalmanPredictionGeneratorImpl extends HistoricalAveragePredictionGe
 		}
 	}
 
-	private Double lastVehiclePredictionError(ErrorCache cache, Indices indices) {
+	
+	
+	private KalmanError lastVehiclePredictionError(ErrorCache cache, Indices indices) {
 
-		Double result = cache.getErrorValue(indices);
-		if(result!=null&&!result.isNaN())
-		{
-			logger.debug("Kalman Error value : "+result +" for key: "+new KalmanErrorCacheKey(indices).toString());
-		}
-		else
+		KalmanError result = cache.getErrorValue(indices);
+		if(result==null)
 		{
 			logger.debug("Kalman Error value set to default: "+initialErrorValue.getValue() +" for key: "+new KalmanErrorCacheKey(indices).toString());
-			return initialErrorValue.getValue();
+			result=new KalmanError(initialErrorValue.getValue());
 		}
 		return result;
 	}
