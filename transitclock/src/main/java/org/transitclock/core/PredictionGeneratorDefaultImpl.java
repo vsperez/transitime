@@ -33,6 +33,8 @@ import org.transitclock.core.dataCache.StopPathPredictionCache;
 import org.transitclock.core.dataCache.VehicleStateManager;
 import org.transitclock.core.holdingmethod.HoldingTimeGeneratorFactory;
 import org.transitclock.core.predictiongenerator.PredictionComponentElementsGenerator;
+import org.transitclock.core.predictiongenerator.bias.BiasAdjuster;
+import org.transitclock.core.predictiongenerator.bias.BiasAdjusterFactory;
 import org.transitclock.db.structs.AvlReport;
 import org.transitclock.db.structs.HoldingTime;
 import org.transitclock.db.structs.PredictionForStopPath;
@@ -166,6 +168,11 @@ public class PredictionGeneratorDefaultImpl extends PredictionGenerator implemen
 		String stopId = path.getStopId();
 		int gtfsStopSeq = path.getGtfsStopSeq();
 		
+		if(BiasAdjusterFactory.getInstance()!=null)
+		{
+			BiasAdjuster adjuster = BiasAdjusterFactory.getInstance();
+			predictionTime=avlReport.getTime()+adjuster.adjustPrediction(predictionTime-avlReport.getTime());			
+		}
 		
 		Trip trip = indices.getTrip();
 		
@@ -550,6 +557,8 @@ public class PredictionGeneratorDefaultImpl extends PredictionGenerator implemen
 		
 		for(IpcPrediction prediction : filteredPredictions.values()){
 			newPredictions.add(prediction);
+			
+			
 		}
 		
 		// Return the results
