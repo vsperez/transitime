@@ -49,7 +49,8 @@ public class DwellTimePredictionGeneratorImpl extends KalmanPredictionGeneratorI
 															
 					StopPathCacheKey cacheKey=new StopPathCacheKey(indices.getTrip().getId(), indices.getStopPathIndex(),  false, new Long(time));
 					
-					result = DwellTimeModelCacheFactory.getInstance().predictDwellTime(cacheKey, headway);
+					if(DwellTimeModelCacheFactory.getInstance()!=null)
+						result = DwellTimeModelCacheFactory.getInstance().predictDwellTime(cacheKey, headway);
 					
 					if(result==null)
 					{
