@@ -156,7 +156,8 @@ public class StopArrivalDepartureCache extends StopArrivalDepartureCacheInterfac
 			//TODO might be better with its own populateCacheFromdb
 			try
 			{
-			DwellTimeModelCacheFactory.getInstance().addSample(result);
+				if(DwellTimeModelCacheFactory.getInstance()!=null)
+					DwellTimeModelCacheFactory.getInstance().addSample(result);
 			}catch(Exception Ex)
 			{
 				Ex.printStackTrace();

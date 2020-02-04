@@ -66,6 +66,10 @@ public class ClassInstantiator {
 				| IllegalArgumentException e) {
 			logger.error("Could not instantiate class {}. ", className, e);
 			return null;
+		} catch (Exception e)
+		{
+			logger.error(e.getMessage(),e);
+			return null;
 		}
 	}
 }
