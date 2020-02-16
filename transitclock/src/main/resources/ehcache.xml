@@ -29,9 +29,9 @@
 			<ehcache:tti unit="days">7</ehcache:tti>
 		</ehcache:expiry>
 		<ehcache:resources>
-			<ehcache:heap unit="entries">1000</ehcache:heap>
-			<ehcache:offheap unit="MB">100</ehcache:offheap>
-			<ehcache:disk unit="MB">200</ehcache:disk>
+			<ehcache:heap unit="entries">63000</ehcache:heap>
+			<ehcache:offheap unit="GB">2</ehcache:offheap>
+			<ehcache:disk persistent="true" unit="GB">40</ehcache:disk>
 		</ehcache:resources>
 		<ehcache:disk-store-settings thread-pool="pool-disk"
 			writer-concurrency="1" />
@@ -44,9 +44,9 @@
 			<ehcache:ttl unit="days">1</ehcache:ttl>
 		</ehcache:expiry>
 		<ehcache:resources>
-			<ehcache:heap unit="entries">2000</ehcache:heap>
-			<ehcache:offheap unit="MB">100</ehcache:offheap>
-			<ehcache:disk unit="MB">200</ehcache:disk>
+			<ehcache:heap unit="entries">15000</ehcache:heap>
+			<ehcache:offheap unit="GB">2</ehcache:offheap>
+			<ehcache:disk persistent="true" unit="GB">40</ehcache:disk>
 		</ehcache:resources>
 		<ehcache:disk-store-settings thread-pool="pool-disk"
 			writer-concurrency="1" />
@@ -56,11 +56,12 @@
 		<ehcache:key-type>org.transitclock.core.dataCache.KalmanErrorCacheKey</ehcache:key-type>
 		<ehcache:value-type>org.transitclock.core.dataCache.KalmanError</ehcache:value-type>
 		<ehcache:expiry>
-			<ehcache:ttl unit="hours">24</ehcache:ttl>
+			<ehcache:tti unit="days">21</ehcache:tti>
 		</ehcache:expiry>
 		<ehcache:resources>
-			<ehcache:heap unit="entries">10000</ehcache:heap>
-			<ehcache:offheap unit="MB">5</ehcache:offheap>
+			<ehcache:heap unit="entries">100000</ehcache:heap>
+			<ehcache:offheap unit="GB">2</ehcache:offheap>
+			<ehcache:disk persistent="true" unit="GB">15</ehcache:disk>
 		</ehcache:resources>
 	</ehcache:cache>
 
@@ -71,33 +72,29 @@
 			<ehcache:tti unit="days">14</ehcache:tti>
 		</ehcache:expiry>
 		<ehcache:resources>
-			<ehcache:heap unit="entries">10000</ehcache:heap>
-			<ehcache:offheap unit="MB">100</ehcache:offheap>
-
+			<ehcache:heap unit="entries">1</ehcache:heap>	
 		</ehcache:resources>
-	</ehcache:cache>
+	 </ehcache:cache>
 
-	<ehcache:cache alias="StopPathPredictionCache">
-		<ehcache:key-type>java.lang.Long</ehcache:key-type>
-		<ehcache:value-type>java.lang.String</ehcache:value-type>
-		<ehcache:expiry>
-			<ehcache:ttl unit="hours">1</ehcache:ttl>
-		</ehcache:expiry>
-		<ehcache:resources>
-			<ehcache:heap unit="entries">100</ehcache:heap>
-			<ehcache:offheap unit="MB">1</ehcache:offheap>
-		</ehcache:resources>
-	</ehcache:cache>
+	 <ehcache:cache alias="StopPathPredictionCache">
+		 <ehcache:key-type>java.lang.Long</ehcache:key-type>
+		 <ehcache:value-type>java.lang.String</ehcache:value-type>
+		 <ehcache:expiry>
+			 <ehcache:ttl unit="hours">1</ehcache:ttl>
+		 </ehcache:expiry>
+		 <ehcache:resources>
+			 <ehcache:heap unit="entries">1</ehcache:heap>	
+		 </ehcache:resources>
+ 	</ehcache:cache>
 
-	<ehcache:cache alias="HoldingTimeCache">
+ 	<ehcache:cache alias="HoldingTimeCache">
 		<ehcache:key-type>org.transitclock.core.dataCache.HoldingTimeCacheKey</ehcache:key-type>
 		<ehcache:value-type>org.transitclock.db.structs.HoldingTime</ehcache:value-type>
 		<ehcache:expiry>
-			<ehcache:ttl unit="hours">2</ehcache:ttl>
+			<ehcache:ttl unit="hours">1</ehcache:ttl>
 		</ehcache:expiry>
-		<ehcache:resources>
-			<ehcache:heap unit="entries">100</ehcache:heap>
-			<ehcache:offheap unit="MB">1</ehcache:offheap>
+		 <ehcache:resources>
+			<ehcache:heap unit="entries">1</ehcache:heap>
 		</ehcache:resources>
 	</ehcache:cache>
 </ehcache:config>
