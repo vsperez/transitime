@@ -1,70 +1,52 @@
 package org.transitclock.core.dataCache.ehcache;
-
+import java.net.URL;
 import java.util.List;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.config.CacheConfiguration;
-
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.Status;
+import org.ehcache.config.CacheConfiguration;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.config.units.MemoryUnit;
+import org.ehcache.xml.XmlConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitclock.core.Indices;
 import org.transitclock.core.dataCache.ErrorCache;
-
+import org.transitclock.core.dataCache.KalmanError;
 import org.transitclock.core.dataCache.KalmanErrorCacheKey;
 /**
  * @author Sean Óg Crudden
  * 
  */
-public class KalmanErrorCache implements ErrorCache  {
+public class KalmanErrorCache implements ErrorCache {
 	final private static String cacheName = "KalmanErrorCache";
+	
+	final URL xmlConfigUrl = getClass().getResource("/ehcache.xml");
 
 	private static final Logger logger = LoggerFactory
 			.getLogger(KalmanErrorCache.class);
 
-	private Cache cache = null;
+	private Cache<KalmanErrorCacheKey, KalmanError> cache = null;
 	/**
 	 * Gets the singleton instance of this class.
 	 * 
 	 * @return
 	 */
 	
-	KalmanErrorCache() {
-		CacheManager cm = CacheManager.getInstance();
-		
-		if (cm.getCache(cacheName) == null) {
-			cm.addCache(cacheName);
-		}
-		cache = cm.getCache(cacheName);
-		
-		CacheConfiguration config = cache.getCacheConfiguration();
-		
-		config.setEternal(true);
-		
-		config.setMaxEntriesLocalHeap(1000000);
-		
-		config.setMaxEntriesLocalDisk(1000000);								
+	public KalmanErrorCache() {
+					
+		CacheManager cm = CacheManagerFactory.getInstance();
+									
+		cache = cm.getCache(cacheName, KalmanErrorCacheKey.class, KalmanError.class);									
 	}
 	
 	public void logCache(Logger logger)
 	{
-		logger.debug("Cache content log.");
-		@SuppressWarnings("unchecked")
-		List<KalmanErrorCacheKey> keys = cache.getKeys();
+		logger.debug("Cache content log. Not implemented.");
 		
-		for(KalmanErrorCacheKey key : keys)
-		{
-			Element result=cache.get(key);
-			if(result!=null)
-			{
-				logger.debug("Key: "+key.toString());
-								
-				Double value=(Double) result.getObjectValue();
-												
-				logger.debug("Error value: "+value);
-			}
-		}		
 	}
 	
 	/* (non-Javadoc)
@@ -72,58 +54,62 @@ public class KalmanErrorCache implements ErrorCache  {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	synchronized public Double getErrorValue(Indices indices) {		
+	synchronized public KalmanError getErrorValue(Indices indices) {		
 		
 		KalmanErrorCacheKey key=new KalmanErrorCacheKey(indices);
 		
-		Element result = cache.get(key);
+		KalmanError result = (KalmanError)cache.get(key);
 		
 		if(result==null)
 			return null;
 		else
-			return (Double)result.getObjectValue();		
+			return result;		
 	}
 	/* (non-Javadoc)
 	 * @see org.transitime.core.dataCache.ErrorCache#getErrorValue(org.transitime.core.dataCache.KalmanErrorCacheKey)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	synchronized public Double getErrorValue(KalmanErrorCacheKey key) {		
+	synchronized public KalmanError getErrorValue(KalmanErrorCacheKey key) {		
 						
-		Element result = cache.get(key);
+		KalmanError result = (KalmanError)cache.get(key);
 		
 		if(result==null)
 			return null;
 		else
-			return (Double)result.getObjectValue();		
+			return result;				
 	}
 	/* (non-Javadoc)
 	 * @see org.transitime.core.dataCache.ErrorCache#putErrorValue(org.transitime.core.Indices, java.lang.Double)
 	 */
-	@Override
-	@SuppressWarnings("unchecked")
+	@Override	
 	synchronized public void putErrorValue(Indices indices,  Double value) {
 		
-		KalmanErrorCacheKey key=new KalmanErrorCacheKey(indices);
-		Element errorElement = new Element(key, value);
-		
-		cache.put(errorElement);
+		KalmanErrorCacheKey key=new KalmanErrorCacheKey(indices);		
+		putErrorValue(key,value);		
 	}				
-
-	public List<KalmanErrorCacheKey> getKeys()
-	{
-		@SuppressWarnings("unchecked")
-		List<KalmanErrorCacheKey> keys = cache.getKeys();
-		return keys;
-	}
-
+		
 	@Override
 	public void putErrorValue(KalmanErrorCacheKey key, Double value) {
 		
+		KalmanError error= (KalmanError)cache.get(key);
 		
-		Element errorElement = new Element(key, value);
-		
-		cache.put(errorElement);
+		if(error==null)
+		{
+			error=new KalmanError(value);			
+		}else
+		{
+			error.setError(value);	
+		}
+			
+								
+		cache.put(key,error);
+	}
+
+	@Override
+	public List<KalmanErrorCacheKey> getKeys() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	
