@@ -80,7 +80,7 @@ public class TraccarAVLModule extends PollUrlAvlModule {
 
 		Collection<AvlReport> avlReportsReadIn = new ArrayList<AvlReport>();
 		if (api != null && user != null) {
-			List<Position> results = api.positionsGet(null, null, null, user.getId());
+			List<Position> results = api.positionsGet(null, null, null, null);
 			for (Position result : results) {
 				logger.debug(result.toString());
 
