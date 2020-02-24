@@ -472,7 +472,7 @@ function initializeLoadAllData(routes) {
 	var routeNames = routes.routes.map(function(d) { return d.name })
 	
 	function getDataForRoute(i) {
-		$.getJSON(apiUrlPrefix + "/command/activeBlockByRouteNameWithVehicles?r=" + routeNames[i], updateAjaxData)
+		$.getJSON(apiUrlPrefix + "/command/activeBlockByRouteNameWithVehicles?r=" + encodeURI(routeNames[i]), updateAjaxData)
         	.fail(function() {
             	console.log( "Could not access /command/activeBlockByRouteNameWithVehicles" );
         	})
@@ -502,7 +502,7 @@ $(function() {
                 if(headerId){
                 	// route name is header title without summary
                 	var routeName = $('#'+headerId).clone().find('*').remove().end().text();                	
-                    $.getJSON(apiUrlPrefix + "/command/activeBlockByRouteNameWithVehicles?r=" + routeName, updateAjaxData)
+                    $.getJSON(apiUrlPrefix + "/command/activeBlockByRouteNameWithVehicles?r=" + encodeURI(routeName), updateAjaxData)
                             .fail(function() {
                                 console.log( "Could not access /command/activeBlockByRouteNameWithVehicles" );
                             });
