@@ -35,7 +35,10 @@ import com.google.protobuf.CodedInputStream;
 import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.Position;
+import com.google.transit.realtime.GtfsRealtime.Shape;
 import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
+import com.google.transit.realtime.GtfsRealtime.TripProperties;
+import com.google.transit.realtime.GtfsRealtime.TripUpdate;
 import com.google.transit.realtime.GtfsRealtime.VehicleDescriptor;
 import com.google.transit.realtime.GtfsRealtime.VehiclePosition;
 
@@ -125,6 +128,30 @@ public abstract class GtfsRtVehiclePositionsReaderBase {
 		int counter = 0;
 		for (FeedEntity entity : message.getEntityList()) {
 			// If no vehicles in the entity then nothing to process 
+			
+			if(entity.hasTripUpdate())
+			{
+				TripUpdate tripUpdate = entity.getTripUpdate();
+				if(tripUpdate.hasTripProperties())
+				{
+					TripProperties tripProperties = tripUpdate.getTripProperties();
+					if(tripProperties.hasShapeId())
+					{
+						tripProperties.getShapeId();
+						
+						if(entity.hasShape())
+						{
+							Shape shape = entity.getShape();
+							shape.getShapeId();
+							if(tripProperties.getShapeId().equals(shape.getShapeId()))
+							{								
+								logger.debug("Have found shape update to process.",tripUpdate.toString());
+							}
+						}							
+					}					
+				}								
+			}
+			
 			if (!entity.hasVehicle())
 				continue;
 			
@@ -263,6 +290,7 @@ public abstract class GtfsRtVehiclePositionsReaderBase {
 			// it never seemed to complete, even for just a single call to
 			// parseFrom(). Therefore loading in entire file at once.
 			FeedMessage feed = FeedMessage.parseFrom(codedStream);
+			
 			logger.info("Parsing GTFS-realtime file into a FeedMessage took " +
 					"{} msec", timer.elapsedMsec());
 			
