@@ -25,8 +25,11 @@ import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.transitclock.core.diversion.cache.DiversionsCacheFactory;
+import org.transitclock.core.diversion.model.Diversion;
 import org.transitclock.db.structs.AvlReport;
 import org.transitclock.db.structs.AvlReport.AssignmentType;
+import org.transitclock.db.structs.Location;
 import org.transitclock.utils.IntervalTimer;
 import org.transitclock.utils.MathUtils;
 import org.transitclock.utils.Time;
@@ -36,6 +39,7 @@ import com.google.transit.realtime.GtfsRealtime.FeedEntity;
 import com.google.transit.realtime.GtfsRealtime.FeedMessage;
 import com.google.transit.realtime.GtfsRealtime.Position;
 import com.google.transit.realtime.GtfsRealtime.Shape;
+import com.google.transit.realtime.GtfsRealtime.ShapePoint;
 import com.google.transit.realtime.GtfsRealtime.TripDescriptor;
 import com.google.transit.realtime.GtfsRealtime.TripProperties;
 import com.google.transit.realtime.GtfsRealtime.TripUpdate;
@@ -143,8 +147,22 @@ public abstract class GtfsRtVehiclePositionsReaderBase {
 						{
 							Shape shape = entity.getShape();
 							shape.getShapeId();
-							if(tripProperties.getShapeId().equals(shape.getShapeId()))
-							{								
+
+							if(tripProperties.getShapeId().equals(shape.getShapeId()))								
+							{																								
+								Diversion detour=new Diversion();
+								detour.setTripId(tripUpdate.getTrip().getTripId());
+								detour.setRouteId(tripUpdate.getTrip().getRouteId());
+																
+								for(ShapePoint shapePoint : shape.getShapePointList())
+								{
+									Location location=new Location(shapePoint.getShapePtLat(), shapePoint.getShapePtLon());
+									detour.getStopLocations().add(location);
+								}
+								
+								if(DiversionsCacheFactory.getInstance()!=null)
+									DiversionsCacheFactory.getInstance().putDiversion(detour);
+								
 								logger.debug("Have found shape update to process.",tripUpdate.toString());
 							}
 						}							
