@@ -1,59 +1,59 @@
-package org.transitclock.api.data;
+package org.transitclock.ipc.data;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-
 import org.transitclock.db.structs.Location;
-import org.transitclock.ipc.data.IpcDiversion;
-@XmlRootElement(name = "diversion")
-public class ApiDiversion {
-	@XmlAttribute
-	private String routeId;
-	@XmlAttribute
-	private String tripId;
-	@XmlAttribute
-	private String shapeId;
-	@XmlAttribute
-	private int startStopSeq;
-	@XmlAttribute
-	private int distanceStartAlongSegment;
-	@XmlAttribute
-	private int returnStopSeq;
-	@XmlAttribute
-	private int distanceEndAlongSegment;
-	@XmlAttribute
-	private List<Location> detourPath;
-	@XmlAttribute
-	private List<Location> stopLocations;
-	@XmlAttribute
-	private Date startTime;
-	@XmlAttribute
-	private Date  endTime;
-	
+
+public class IpcDiversion implements Serializable{
 	/**
-	 * Need a no-arg constructor for Jersey. Otherwise get really obtuse
-	 * "MessageBodyWriter not found for media type=application/json" exception.
+	 * 
 	 */
-	public ApiDiversion() {
-		
+	private static final long serialVersionUID = 2548744289428304091L;
+
+	private String routeId;
+	
+	private String tripId;
+	
+	private String shapeId;
+	
+	private int startStopSeq;
+	
+	private int distanceStartAlongSegment;
+	
+	private int returnStopSeq;
+	
+	private int distanceEndAlongSegment;
+	
+	private List<Location> detourPath;
+	
+	private List<Location> stopLocations;
+	
+	private Date startTime;
+	
+	private Date  endTime;
+
+	public IpcDiversion() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public ApiDiversion(IpcDiversion diversion)
-	{
-		this.startStopSeq=diversion.getStartStopSeq();
-		this.returnStopSeq=diversion.getReturnStopSeq();
-		this.routeId=diversion.getRouteId();
-		this.shapeId=diversion.getShapeId();
-		this.tripId=diversion.getTripId();	
-		this.distanceStartAlongSegment=diversion.getDistanceStartAlongSegment();
-		this.distanceStartAlongSegment=diversion.getDistanceStartAlongSegment();	
-		this.detourPath=diversion.getDetourPath();
-		this.stopLocations=diversion.getStopLocations();
-		this.startTime=diversion.getStartTime();
-		this.endTime=diversion.getEndTime();		
+	public IpcDiversion(String routeId, String tripId, String shapeId, int startStopSeq, int distanceStartAlongSegment,
+			int returnStopSeq, int distanceEndAlongSegment, List<Location> detourPath, List<Location> stopLocations,
+			Date startTime, Date endTime) {
+		super();
+		this.routeId = routeId;
+		this.tripId = tripId;
+		this.shapeId = shapeId;
+		this.startStopSeq = startStopSeq;
+		this.distanceStartAlongSegment = distanceStartAlongSegment;
+		this.returnStopSeq = returnStopSeq;
+		this.distanceEndAlongSegment = distanceEndAlongSegment;
+		this.detourPath = detourPath;
+		this.stopLocations = stopLocations;
+		this.startTime = startTime;
+		this.endTime = endTime;
 	}
 
 	public String getRouteId() {

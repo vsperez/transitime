@@ -1,5 +1,35 @@
 package org.transitclock.api.data;
 
-public class ApiDiversions {
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.transitclock.ipc.data.IpcDiversion;
+
+@XmlRootElement(name = "diversions")
+public class ApiDiversions {
+	
+	public ApiDiversions() {
+				
+	}
+
+	public ApiDiversions(List<IpcDiversion> ipcDiversions) {
+		diversions=new ArrayList<ApiDiversion>();
+		for(IpcDiversion ipcDiversion:ipcDiversions)
+		{
+			diversions.add(new ApiDiversion(ipcDiversion));
+		}		
+	}
+	@XmlElement
+	private List<ApiDiversion> diversions;
+	public List<ApiDiversion> getDiversions() {
+		return diversions;
+	}
+
+	public void setDiversions(List<ApiDiversion> diversions) {
+		this.diversions = diversions;
+	}
+	
 }
