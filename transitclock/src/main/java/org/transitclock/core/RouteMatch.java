@@ -38,11 +38,8 @@ import org.slf4j.Logger;
  * @author SkiBu Smith
  * 
  */
-public class SpatialMatch {
+public class RouteMatch extends SpatialMatch {
 
-	protected final long avlTime;
-	protected final Block block;
-	protected final int tripIndex;
 	protected final int stopPathIndex;
 	protected final int segmentIndex;
 	protected final double distanceToSegment;
@@ -51,17 +48,17 @@ public class SpatialMatch {
 	protected final Location predictedLocation;
 	
 	private static final Logger logger = 
-			LoggerFactory.getLogger(SpatialMatch.class);
+			LoggerFactory.getLogger(RouteMatch.class);
 
 
 	/********************** Member Functions **************************/
 
-	public SpatialMatch(long avlTime, Block block,
+	public RouteMatch(long avlTime, Block block,
 			int tripIndex, int stopPathIndex, int segmentIndex,
 			double distanceToSegment, double distanceAlongSegment) {
-		this.avlTime = avlTime;
-		this.block = block;
-		this.tripIndex = tripIndex;
+		
+		super(avlTime, block, tripIndex);
+		
 		this.stopPathIndex = stopPathIndex;
 		this.segmentIndex = segmentIndex;
 		this.distanceToSegment = distanceToSegment;
@@ -116,19 +113,15 @@ public class SpatialMatch {
 	 *            The new trip to use for the copy. It is assumed to be for the
 	 *            same trip pattern. It can be for a separate block.
 	 */
-	public SpatialMatch(SpatialMatch toCopy, Trip newTrip) {
+	public RouteMatch(RouteMatch toCopy, Trip newTrip) {
+		// Use the new block and trip index info
+		super(toCopy.avlTime, newTrip.getBlock(), newTrip.getBlock().getTripIndex(newTrip));
 		if (toCopy.getTrip().getTripPattern() != newTrip.getTripPattern())
 			logger.error("Trying to create a copy of a SpatialMatch using a "
 					+ "new trip but they have different trip patterns. "
 					+ "toCopy={} toCopy.tripPattern={} newTrip.tripPattern={}",
 					toCopy, toCopy.getTrip().getTripPattern().toShortString(),
-					newTrip.getTripPattern().toShortString());
-		this.avlTime = toCopy.avlTime;
-		
-		// Use the new block and trip index info
-		this.block = newTrip.getBlock();
-		this.tripIndex = newTrip.getBlock().getTripIndex(newTrip);
-		
+					newTrip.getTripPattern().toShortString());			
 		this.stopPathIndex = toCopy.stopPathIndex;
 		this.segmentIndex = toCopy.segmentIndex;
 		this.distanceToSegment = toCopy.distanceToSegment;
@@ -156,11 +149,9 @@ public class SpatialMatch {
 	 * @param newIndices
 	 * @param distanceAlongSegment
 	 */
-	public SpatialMatch(SpatialMatch toCopy, Indices newIndices, 
-			double distanceAlongSegment) {
-		this.avlTime = toCopy.avlTime;
-		this.block = toCopy.block;
-		this.tripIndex = newIndices.getTripIndex();
+	public RouteMatch(RouteMatch toCopy, Indices newIndices, 
+			double distanceAlongSegment) {		
+		super(toCopy.avlTime, toCopy.block, newIndices.getTripIndex());
 		this.stopPathIndex = newIndices.getStopPathIndex();
 		this.segmentIndex = newIndices.getSegmentIndex();
 		this.distanceToSegment = toCopy.distanceToSegment;
@@ -174,10 +165,8 @@ public class SpatialMatch {
 	 * 
 	 * @param toCopy
 	 */
-	protected SpatialMatch(SpatialMatch toCopy) {
-		this.avlTime = toCopy.avlTime;
-		this.block = toCopy.block;
-		this.tripIndex = toCopy.tripIndex;
+	protected RouteMatch(RouteMatch toCopy) {
+		super(toCopy.getAvlTime(), toCopy.getBlock(), toCopy.getTripIndex());
 		this.stopPathIndex = toCopy.stopPathIndex;
 		this.segmentIndex = toCopy.segmentIndex;
 		this.distanceToSegment = toCopy.distanceToSegment;
@@ -295,7 +284,7 @@ public class SpatialMatch {
 	 * 
 	 * @return SpatialMatch adjusted so it is at end of path for the stop
 	 */
-	public SpatialMatch getMatchAdjustedToEndOfPath() {
+	public RouteMatch getMatchAdjustedToEndOfPath() {
 		// If not at a stop then we have a problem
 		if (atStop == null) {
 			logger.error("Wrongly called " +
@@ -321,7 +310,7 @@ public class SpatialMatch {
 		Indices endOfStopPathIndices = new Indices(block,
 				indices.getTripIndex(), indices.getStopPathIndex(),
 				segmentIndex);
-		return new SpatialMatch(this, endOfStopPathIndices,
+		return new RouteMatch(this, endOfStopPathIndices,
 				distanceAlongSegment);
 	}
 	
@@ -331,7 +320,7 @@ public class SpatialMatch {
 	 * 
 	 * @return
 	 */
-	public SpatialMatch getMatchAtNextStopWithScheduleTime() {
+	public RouteMatch getMatchAtNextStopWithScheduleTime() {
 		// Determine next stop with a schedule time (arrival or departure)		
 		// If there is no such stop then return null. 
 		List<StopPath> stopPaths = 
@@ -359,7 +348,7 @@ public class SpatialMatch {
 		int segmentIndex = stopPath.getNumberSegments()-1;
 		Vector segmentVector = stopPath.getSegmentVector(segmentIndex);
 		double distanceAlongSegment = segmentVector.length();
-		SpatialMatch matchAtStopWithScheduleTime = new SpatialMatch(this, 
+		RouteMatch matchAtStopWithScheduleTime = new RouteMatch(this, 
 				indicesAtStopWithScheduleTime,
 				distanceAlongSegment);
 
@@ -376,7 +365,7 @@ public class SpatialMatch {
 	 * 
 	 * @return SpatialMatch adjusted so it is at beginning of path for the stop
 	 */
-	public SpatialMatch getMatchAdjustedToBeginningOfPath() {
+	public RouteMatch getMatchAdjustedToBeginningOfPath() {
 		// If not at a stop then we have a problem
 		if (atStop == null) {
 			logger.error("Wrongly called " +
@@ -400,7 +389,7 @@ public class SpatialMatch {
 		Indices beginningOfStopPathIndices = new Indices(block,
 				indices.getTripIndex(), indices.getStopPathIndex(),
 				segmentIndex);
-		return new SpatialMatch(this, beginningOfStopPathIndices,
+		return new RouteMatch(this, beginningOfStopPathIndices,
 				distanceAlongSegment);
 	}
 	
@@ -414,7 +403,7 @@ public class SpatialMatch {
 	 * 
 	 * @return This match or one after the stop if at end of stop path
 	 */
-	private SpatialMatch getMatchAfterStopIfAtStop() {
+	private RouteMatch getMatchAfterStopIfAtStop() {
 		// If the spatialMatch is not just before a stop then return
 		// spatialMatch. The spatialMatch is just before a stop if
 		// atStop trip and path indices are the same as for the match.
@@ -424,7 +413,7 @@ public class SpatialMatch {
 		// The spatialMatch is just before a stop so create a new spatial
 		// match but use the beginning of the next path.
 		Indices nextPathIndices = getIndices().incrementStopPath();
-		return new SpatialMatch(this, nextPathIndices, 0.0);
+		return new RouteMatch(this, nextPathIndices, 0.0);
 	}
 
 	/**
@@ -433,10 +422,10 @@ public class SpatialMatch {
 	 * 
 	 * @return
 	 */
-	public SpatialMatch getMatchAtJustBeforeNextStop() {
+	public RouteMatch getMatchAtJustBeforeNextStop() {
 		// First need to get on the proper path. If just before a stop
 		// then need to get a match just after that stop.
-		SpatialMatch m = getMatchAfterStopIfAtStop();
+		RouteMatch m = getMatchAfterStopIfAtStop();
 		
 		int segmentIndex = 
 				block.numSegments(m.getTripIndex(), m.getStopPathIndex())-1;
@@ -445,7 +434,7 @@ public class SpatialMatch {
 		double segmentLength = segmentVector.length();
 		
 		// Return a match that is at the end of the path
-		return new SpatialMatch(
+		return new RouteMatch(
 				0, // Don't worry about avlTime for this special case
 				block, 
 				m.getTripIndex(),
@@ -465,7 +454,7 @@ public class SpatialMatch {
 	 * 
 	 * @return This match or one before the stop if at beginning of stop path
 	 */
-	public SpatialMatch getMatchBeforeStopIfAtStop() {
+	public RouteMatch getMatchBeforeStopIfAtStop() {
 		// If the spatialMatch is not just after a stop then return
 		// spatialMatch. 
 		if (!atBeginningOfPathStop())
@@ -474,7 +463,7 @@ public class SpatialMatch {
 		// The spatialMatch is just after a stop so create a new spatial
 		// match but use the end of the previous path.
 		Indices previousPathIndices = getIndices().decrementStopPath();
-		return new SpatialMatch(this, previousPathIndices, 
+		return new RouteMatch(this, previousPathIndices, 
 				previousPathIndices.getSegment().length());
 	}
 
@@ -487,7 +476,7 @@ public class SpatialMatch {
 	 *         previous stop (the current match is for the beginning of the
 	 *         block).
 	 */
-	public SpatialMatch getMatchAtPreviousStop() {
+	public RouteMatch getMatchAtPreviousStop() {
 		// First need to get on the proper path. If just before a stop
 		// then need to get a match just after that stop.
 		Indices indices = 
@@ -504,7 +493,7 @@ public class SpatialMatch {
 				indices.getSegmentIndex());
 		double segmentVectorLength = segmentVector!=null ? 
 				segmentVector.length() : Double.NaN;
-		return new SpatialMatch(
+		return new RouteMatch(
 				0, // Don't worry about avlTime for this special case
 				block, 
 				indices.getTripIndex(),
@@ -656,7 +645,7 @@ public class SpatialMatch {
 	 * @param otherSpatialMatch
 	 * @return Distance in meters between the matches
 	 */
-	public double distanceBetweenMatches(SpatialMatch otherSpatialMatch) {
+	public double distanceBetweenMatches(RouteMatch otherSpatialMatch) {
 		// Determine the distances from the beginning of the stop paths
 		// and the matches
 		double distanceAlongFirstPath = 
@@ -692,7 +681,7 @@ public class SpatialMatch {
 	 * @return true if there is a wait stop between this match and the other
 	 *         match
 	 */
-	public boolean traversedWaitStop(SpatialMatch otherSpatialMatch) {
+	public boolean traversedWaitStop(RouteMatch otherSpatialMatch) {
 		// If either this match or the other match are at a wait stop then
 		// indeed a wait stop is in effect
 		VehicleAtStopInfo atStop = getAtStop();
@@ -745,7 +734,7 @@ public class SpatialMatch {
 	 *            The Spatial Match to compare to
 	 * @return true if this is before or equal to the other SpatialMatch
 	 */
-	public boolean lessThanOrEqualTo(SpatialMatch other) {
+	public boolean lessThanOrEqualTo(RouteMatch other) {
 		if (tripIndex > other.tripIndex)
 			return false;
 		if (tripIndex < other.tripIndex)
@@ -774,7 +763,7 @@ public class SpatialMatch {
 	 *            The Spatial Match to compare to
 	 * @return true if this is before the other SpatialMatch
 	 */
-	public boolean lessThan(SpatialMatch other) {
+	public boolean lessThan(RouteMatch other) {
 		if (tripIndex > other.tripIndex)
 			return false;
 		if (tripIndex < other.tripIndex)
@@ -804,8 +793,8 @@ public class SpatialMatch {
 	 * @param match2
 	 * @return Number of stops
 	 */
-	public static int numberStopsBetweenMatches(SpatialMatch match1,
-			SpatialMatch match2) {
+	public static int numberStopsBetweenMatches(RouteMatch match1,
+			RouteMatch match2) {
 		// Stop index for first trip
 		int stopIdxInFirstTrip = match1.getStopPathIndex();
 

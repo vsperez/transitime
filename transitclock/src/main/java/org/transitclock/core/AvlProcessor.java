@@ -442,7 +442,7 @@ public class AvlProcessor {
 				+ "report. The old spatial match is {}", vehicleState);
 
 		// Find possible spatial matches
-		List<SpatialMatch> spatialMatches = SpatialMatcher
+		List<RouteMatch> spatialMatches = SpatialMatcher
 				.getSpatialMatches(vehicleState);
 		logger.debug("For vehicleId={} found the following {} spatial "
 				+ "matches: {}", vehicleState.getVehicleId(),
@@ -521,7 +521,7 @@ public class AvlProcessor {
 	 * @param match
 	 * @return True if the match can be used when matching vehicle to a route
 	 */
-	private static boolean matchOkForRouteMatching(SpatialMatch match) {
+	private static boolean matchOkForRouteMatching(RouteMatch match) {
 		return match.awayFromTerminals(getTerminalDistanceForRouteMatching());
 	}
 
@@ -684,7 +684,7 @@ public class AvlProcessor {
 			}
 		}
 
-		List<SpatialMatch> allPotentialSpatialMatchesForRoute = new ArrayList<SpatialMatch>();
+		List<RouteMatch> allPotentialSpatialMatchesForRoute = new ArrayList<RouteMatch>();
 
 		// Go through each block and determine best spatial matches
 		for (Block block : allBlocksForRoute) {
@@ -718,12 +718,12 @@ public class AvlProcessor {
 					block.getId(), potentialTrips);
 
 			// Get the potential spatial matches
-			List<SpatialMatch> spatialMatchesForBlock = SpatialMatcher
+			List<RouteMatch> spatialMatchesForBlock = SpatialMatcher
 					.getSpatialMatches(vehicleState.getAvlReport(),
 							block, potentialTrips, MatchingType.AUTO_ASSIGNING_MATCHING);
 
 			// Add appropriate spatial matches to list
-			for (SpatialMatch spatialMatch : spatialMatchesForBlock) {
+			for (RouteMatch spatialMatch : spatialMatchesForBlock) {
 				if (!SpatialMatcher.problemMatchDueToLackOfHeadingInfo(
 						spatialMatch, vehicleState, MatchingType.AUTO_ASSIGNING_MATCHING)
 						&& matchOkForRouteMatching(spatialMatch))
@@ -779,7 +779,7 @@ public class AvlProcessor {
 		// specifying the block assignment so it should find a match even
 		// if it pretty far off.
 		List<Trip> potentialTrips = block.getTripsCurrentlyActive(avlReport);
-		List<SpatialMatch> spatialMatches =
+		List<RouteMatch> spatialMatches =
 				SpatialMatcher.getSpatialMatches(vehicleState.getAvlReport(),
 						block, potentialTrips, MatchingType.STANDARD_MATCHING);
 		logger.debug("For vehicleId={} and blockId={} spatial matches={}",
@@ -819,7 +819,7 @@ public class AvlProcessor {
 				double distanceToSegment = 
 						firstStopInTripLoc.distance(avlReport.getLocation());
 
-				SpatialMatch beginningOfTrip = new SpatialMatch(
+				RouteMatch beginningOfTrip = new RouteMatch(
 						avlReport.getTime(),
 						block, block.getTripIndex(trip), 0, // stopPathIndex
 						0, // segmentIndex

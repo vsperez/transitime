@@ -584,7 +584,7 @@ public class PredictionGeneratorDefaultImpl extends PredictionGenerator implemen
 		return prediction;		
 	}
 	
-	public long expectedTravelTimeFromMatchToEndOfStopPath(AvlReport avlReport, SpatialMatch match)
+	public long expectedTravelTimeFromMatchToEndOfStopPath(AvlReport avlReport, RouteMatch match)
 	{
 		TravelTimes travelTimes = TravelTimes.getInstance();
 		return travelTimes.expectedTravelTimeFromMatchToEndOfStopPath(match);
