@@ -31,3 +31,5 @@ The transitimeWebapp in turn is a web application which uses the transitTimeAPI 
 
 The transitimeQuickStart can be built with mvn install and ran using java -jar transitimeQuickStart it is currently a work in progress but the gui elements can be seen.
 
+[![Build Status](https://zenodo.org/badge/DOI/10.5281/zenodo.3550975.svg)](https://zenodo.org/record/3550975#.XdgmVedKjOQ)
+
