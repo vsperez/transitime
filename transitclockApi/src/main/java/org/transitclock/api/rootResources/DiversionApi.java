@@ -12,6 +12,8 @@ import org.transitclock.api.data.ApiCacheDetails;
 import org.transitclock.api.data.ApiDiversion;
 import org.transitclock.api.data.ApiDiversions;
 import org.transitclock.api.utils.StandardParameters;
+import org.transitclock.ipc.data.IpcDiversions;
+import org.transitclock.ipc.interfaces.DiversionsInterface;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,8 +30,15 @@ public class DiversionApi {
 			@Parameter(description="routeId to get diversions for.",required=true) @PathParam("routeId") String routeId)
 	{
 		stdParameters.validate();
+				
+		DiversionsInterface diverionsInterface = stdParameters.getDiversionInterface();
 		
-		return stdParameters.createResponse(new ApiDiversions());
+		IpcDiversions ipcDiversions = diverionsInterface.getDiversionsForRoute(routeId);
+		
+		ApiDiversions apiDiversions=new ApiDiversions(ipcDiversions.getDiversions());
+			
+		return stdParameters.createResponse(apiDiversions);
+				
 	}
 	@Path("/command/getDiversionsByTrip")
 	@GET
@@ -41,8 +50,13 @@ public class DiversionApi {
 			@Parameter(description="tripId to get diversions for.",required=true) @PathParam("tripId") String tripId)
 	{
 		stdParameters.validate();
-	
 		
-		return stdParameters.createResponse(new ApiDiversions());
+		DiversionsInterface diverionsInterface = stdParameters.getDiversionInterface();
+		
+		IpcDiversions ipcDiversions = diverionsInterface.getDiversionsForTrip(tripId);
+		
+		ApiDiversions apiDiversions=new ApiDiversions(ipcDiversions.getDiversions());
+			
+		return stdParameters.createResponse(apiDiversions);
 	}
 }
