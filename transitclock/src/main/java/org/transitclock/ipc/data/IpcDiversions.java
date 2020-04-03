@@ -3,6 +3,8 @@ package org.transitclock.ipc.data;
 import java.io.Serializable;
 import java.util.List;
 
+import org.transitclock.core.diversion.cache.DiversionsList;
+
 public class IpcDiversions implements Serializable{
 	/**
 	 * 
@@ -15,6 +17,7 @@ public class IpcDiversions implements Serializable{
 		super();
 		this.diversions = diversions;
 	}
+
 	public List<IpcDiversion> getDiversions() {
 		return diversions;
 	}

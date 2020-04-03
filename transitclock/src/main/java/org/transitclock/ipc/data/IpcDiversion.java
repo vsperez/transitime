@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import org.transitclock.core.diversion.model.Diversion;
 import org.transitclock.db.structs.Location;
 
 public class IpcDiversion implements Serializable{
@@ -54,6 +55,22 @@ public class IpcDiversion implements Serializable{
 		this.stopLocations = stopLocations;
 		this.startTime = startTime;
 		this.endTime = endTime;
+	}
+
+	public IpcDiversion(Diversion diversion) {
+
+		this.routeId = diversion.getRouteId();
+		this.tripId = diversion.getTripId();
+		this.shapeId = diversion.getShapeId();				
+		this.startStopSeq = diversion.getStartStopSeq();
+		
+		this.distanceStartAlongSegment = diversion.getDistanceStartAlongSegment();
+		this.returnStopSeq = diversion.getReturnStopSeq();
+		this.distanceEndAlongSegment = diversion.getDistanceEndAlongSegment();
+		this.detourPath = diversion.getDetourPath();
+		this.stopLocations = diversion.getStopLocations();
+		this.startTime = diversion.getStartTime();
+		this.endTime = diversion.getEndTime();
 	}
 
 	public String getRouteId() {
