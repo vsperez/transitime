@@ -160,5 +160,13 @@ public class IpcDiversion implements Serializable{
 	public void setEndTime(Date endTime) {
 		this.endTime = endTime;
 	}
+
+	@Override
+	public String toString() {
+		return "IpcDiversion [routeId=" + routeId + ", tripId=" + tripId + ", shapeId=" + shapeId + ", startStopSeq="
+				+ startStopSeq + ", distanceStartAlongSegment=" + distanceStartAlongSegment + ", returnStopSeq="
+				+ returnStopSeq + ", distanceEndAlongSegment=" + distanceEndAlongSegment + ", detourPath=" + detourPath
+				+ ", stopLocations=" + stopLocations + ", startTime=" + startTime + ", endTime=" + endTime + "]";
+	}
 	
 }

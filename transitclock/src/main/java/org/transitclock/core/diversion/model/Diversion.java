@@ -1,5 +1,7 @@
 package org.transitclock.core.diversion.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,8 +13,13 @@ import org.transitclock.db.structs.Trip;
  * @author Sean Óg Crudden
  * This is the starting point of modeling a detour. 
  */
-public class Diversion {
+public class Diversion implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8573881954740003230L;
+
 	private String routeId;
 	
 	private String tripId;
@@ -27,9 +34,9 @@ public class Diversion {
 	
 	private int distanceEndAlongSegment;
 	
-	private List<Location> detourPath;
+	private List<Location> detourPath=new ArrayList<Location>();
 	
-	private List<Location> stopLocations;
+	private List<Location> stopLocations=new ArrayList<Location>();
 	
 	private Date startTime;
 	

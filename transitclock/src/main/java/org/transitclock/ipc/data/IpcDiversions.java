@@ -21,4 +21,10 @@ public class IpcDiversions implements Serializable{
 	public List<IpcDiversion> getDiversions() {
 		return diversions;
 	}
+
+	@Override
+	public String toString() {
+		return "IpcDiversions [diversions=" + diversions + "]";
+	}
+	
 }

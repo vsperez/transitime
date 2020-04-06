@@ -3,7 +3,6 @@ package org.transitclock.core.diversion.cache;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.transitclock.core.diversion.model.Diversion;
 
 public class DiversionsList implements Serializable {
@@ -13,7 +12,7 @@ public class DiversionsList implements Serializable {
 	 */
 	private static final long serialVersionUID = -6633598451497950140L;
 	
-	List<Diversion> diversions=null;
+	List<Diversion> diversions=new ArrayList<Diversion>();
 	
 	public List<Diversion> getDiversions() {
 		return diversions;
