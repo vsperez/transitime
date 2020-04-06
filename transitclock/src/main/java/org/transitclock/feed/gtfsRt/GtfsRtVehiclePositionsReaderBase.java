@@ -20,8 +20,8 @@ package org.transitclock.feed.gtfsRt;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,11 +128,25 @@ public abstract class GtfsRtVehiclePositionsReaderBase {
 		logger.info("Processing each individual AvlReport...");
 		IntervalTimer timer = new IntervalTimer();
 		
+		Map<String, Shape> shapes=new HashMap<String, Shape>();
+		
 		// For each entity/vehicle process the data
 		int counter = 0;
+		
+		for (FeedEntity entity : message.getEntityList()) 
+		{
+			if(entity.hasShape())
+			{
+				Shape shape = entity.getShape();
+				
+				if(!shapes.containsKey(shape.getShapeId()))
+				{
+					shapes.put(shape.getShapeId(), shape);
+				}
+			}
+		}
 		for (FeedEntity entity : message.getEntityList()) {
-			// If no vehicles in the entity then nothing to process 
-			
+			// If no vehicles in the entity then nothing to process							
 			if(entity.hasTripUpdate())
 			{
 				TripUpdate tripUpdate = entity.getTripUpdate();
@@ -140,31 +154,26 @@ public abstract class GtfsRtVehiclePositionsReaderBase {
 				{
 					TripProperties tripProperties = tripUpdate.getTripProperties();
 					if(tripProperties.hasShapeId())
-					{
-						tripProperties.getShapeId();
-						
-						if(entity.hasShape())
+					{												
+						if(shapes.containsKey(tripProperties.getShapeId()))
 						{
-							Shape shape = entity.getShape();
-							shape.getShapeId();
-
-							if(tripProperties.getShapeId().equals(shape.getShapeId()))								
-							{																								
-								Diversion detour=new Diversion();
-								detour.setTripId(tripUpdate.getTrip().getTripId());
-								detour.setRouteId(tripUpdate.getTrip().getRouteId());
-																
-								for(ShapePoint shapePoint : shape.getShapePointList())
-								{
-									Location location=new Location(shapePoint.getShapePtLat(), shapePoint.getShapePtLon());
-									detour.getStopLocations().add(location);
-								}
-								
-								if(DiversionsCacheFactory.getInstance()!=null)
-									DiversionsCacheFactory.getInstance().putDiversion(detour);
-								
-								logger.debug("Have found shape update to process.",tripUpdate.toString());
+							Shape shape = shapes.get(tripProperties.getShapeId());
+																												
+							Diversion detour=new Diversion();
+							detour.setShapeId(tripProperties.getShapeId());
+							detour.setTripId(tripUpdate.getTrip().getTripId());
+							detour.setRouteId(tripUpdate.getTrip().getRouteId());
+															
+							for(ShapePoint shapePoint : shape.getShapePointList())
+							{
+								Location location=new Location(shapePoint.getShapePtLat(), shapePoint.getShapePtLon());
+								detour.getDetourPath().add(location);
 							}
+							
+							if(DiversionsCacheFactory.getInstance()!=null)
+								DiversionsCacheFactory.getInstance().putDiversion(detour);
+							
+							logger.debug("Have found shape update to process.",tripUpdate.toString());
 						}							
 					}					
 				}								
