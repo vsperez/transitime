@@ -30,44 +30,45 @@ public class DiversionMatcher {
 
 		DiversionsKey key = new DiversionsKey(tripId, routeId);
 
-		DiversionsList diversions = DiversionsCacheFactory.getInstance().getDiversions(key);
+		if (DiversionsCacheFactory.getInstance() != null) {
+			DiversionsList diversions = DiversionsCacheFactory.getInstance().getDiversions(key);
 
-		if (diversions != null && diversions.getDiversions() != null) {
-			for (Diversion diversion : diversions.getDiversions()) {
-				/* Check if diversion applies to this trip. */
-				if (diversion.getTripId().equals(vehicleState.getTrip().getId())) {
+			if (diversions != null && diversions.getDiversions() != null) {
+				for (Diversion diversion : diversions.getDiversions()) {
+					/* Check if diversion applies to this trip. */
+					if (diversion.getTripId().equals(vehicleState.getTrip().getId())) {
 
-					/*
-					 * Check if diversion is currently in place. Null start and end time means in
-					 * place all the time.
-					 */
-					if ((diversion.getStartTime() == null && diversion.getEndTime() == null)
-							|| (diversion.getStartTime().before(new Date(Core.getInstance().getSystemTime()))
-									&& diversion.getEndTime().after(new Date(Core.getInstance().getSystemTime())))) {
-						Double minDistanceToSegment = null;
-						for (VectorWithHeading vector : diversion.getVectors()) {
-							Double distanceToSegment = vector.distance(avlReport.getLocation());
+						/*
+						 * Check if diversion is currently in place. Null start and end time means in
+						 * place all the time.
+						 */
+						if ((diversion.getStartTime() == null && diversion.getEndTime() == null) || (diversion
+								.getStartTime().before(new Date(Core.getInstance().getSystemTime()))
+								&& diversion.getEndTime().after(new Date(Core.getInstance().getSystemTime())))) {
+							Double minDistanceToSegment = null;
+							for (VectorWithHeading vector : diversion.getVectors()) {
+								Double distanceToSegment = vector.distance(avlReport.getLocation());
 
-							if (distanceToSegment < minDistanceToSegment || minDistanceToSegment < 0) {
-								minDistanceToSegment = distanceToSegment;
+								if (minDistanceToSegment == null || distanceToSegment < minDistanceToSegment) {
+									minDistanceToSegment = distanceToSegment;
+								}
 							}
+
+							// Check if within acceptable range of diversion to match to it.
+							if (minDistanceToSegment < CoreConfig.getMaxDistanceFromSegment()) {
+								DiversionMatch diversionMatch = new DiversionMatch(minDistanceToSegment, null,
+										avlReport.getTime(), vehicleState.getBlock(),
+										vehicleState.getTrip().getIndexInBlock(), diversion.getShapeId(),
+										diversion.getTripId(), diversion.getRouteId());
+
+								diversionMatches.add(diversionMatch);
+							}
+
 						}
-
-						// Check if within acceptable range of diversion to match to it.
-						if (minDistanceToSegment < CoreConfig.getMaxDistanceFromSegment()) {
-							DiversionMatch diversionMatch = new DiversionMatch(minDistanceToSegment, null,
-									avlReport.getTime(), vehicleState.getBlock(),
-									vehicleState.getTrip().getIndexInBlock(), diversion.getShapeId(),
-									diversion.getTripId(), diversion.getRouteId());
-
-							diversionMatches.add(diversionMatch);
-						}
-
 					}
 				}
 			}
 		}
-
 		return diversionMatches;
 	}
 }
