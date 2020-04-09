@@ -1,6 +1,7 @@
 package org.transitclock.db.structs;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,12 +11,16 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.hibernate.CallbackException;
+import org.hibernate.Session;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.classic.Lifecycle;
 
 @Entity @DynamicUpdate 
 @Table(name="Diversions")
-public class Diversion implements Serializable{
+public class Diversion implements Serializable, Lifecycle {
 	/**
 	 * 
 	 */
@@ -55,7 +60,13 @@ public class Diversion implements Serializable{
 	@ElementCollection
 	@OrderColumn	
 	private List<Location> stopLocations;
+	
+	@Transient
+	private List<VectorWithHeading> vectors = null;
 
+	public Diversion() {
+		super();		
+	}
 	public Diversion(String routeId, String tripId, String shapeId, Date startTime, Date endTime, int startStopSeq,
 			int distanceStartAlongSegment, int returnStopSeq, int distanceEndAlongSegment, List<Location> detourPath,
 			List<Location> stopLocations) {
@@ -71,6 +82,30 @@ public class Diversion implements Serializable{
 		this.distanceEndAlongSegment = distanceEndAlongSegment;
 		this.detourPath = detourPath;
 		this.stopLocations = stopLocations;
+		
+		vectors = new ArrayList<VectorWithHeading>(detourPath.size()-1);
+		for (int segmentIndex=0; segmentIndex<detourPath.size()-1; ++segmentIndex) {
+			VectorWithHeading v = 
+					new VectorWithHeading(nullSafeLocation(detourPath.get(segmentIndex)), 
+					              		  nullSafeLocation(detourPath.get(segmentIndex+1)));
+			vectors.add(v);
+		}
+	}
+	private Location nullSafeLocation(Location location) {
+		  if (location == null) {
+		    location = new Location(0.0, 0.0);
+		  }
+	    return location;
+	  }
+	@Override
+	public void onLoad(Session arg0, Serializable arg1) {
+		vectors = new ArrayList<VectorWithHeading>(detourPath.size()-1);
+		for (int segmentIndex=0; segmentIndex<detourPath.size()-1; ++segmentIndex) {
+			VectorWithHeading v = 
+					new VectorWithHeading(nullSafeLocation(detourPath.get(segmentIndex)), 
+					              		  nullSafeLocation(detourPath.get(segmentIndex+1)));
+			vectors.add(v);
+		}
 	}
 
 	public String getRouteId() {
@@ -160,7 +195,13 @@ public class Diversion implements Serializable{
 	public void setStopLocations(List<Location> stopLocations) {
 		this.stopLocations = stopLocations;
 	}
+	
+	
 
+	public List<VectorWithHeading> getVectors() {
+		return vectors;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -232,6 +273,21 @@ public class Diversion implements Serializable{
 		} else if (!tripId.equals(other.tripId))
 			return false;
 		return true;
+	}
+	@Override
+	public boolean onSave(Session s) throws CallbackException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean onUpdate(Session s) throws CallbackException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean onDelete(Session s) throws CallbackException {
+		// TODO Auto-generated method stub
+		return false;
 	}
 	
 	

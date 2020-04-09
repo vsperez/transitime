@@ -7,6 +7,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -31,7 +32,7 @@ public class DiversionApi {
 	description="This is to give the means of manually setting a vehicle unpredictable and unassigned so it will be reassigned quickly.",
 	tags= {"command","vehicle"})
 	public Response getDiversionsByRouteId(@BeanParam StandardParameters stdParameters,
-			@Parameter(description="routeId to get diversions for.",required=true) @PathParam("routeId") String routeId)  throws WebApplicationException
+			@Parameter(description="routeId to get diversions for.",required=true) @QueryParam("routeId") String routeId)  throws WebApplicationException
 	{
 		stdParameters.validate();
 		try {							
@@ -55,7 +56,7 @@ public class DiversionApi {
 	description="This is to give the means of manually setting a vehicle unpredictable and unassigned so it will be reassigned quickly.",
 	tags= {"command","vehicle"})
 	public Response getDiversionsByTripId(@BeanParam StandardParameters stdParameters,
-			@Parameter(description="tripId to get diversions for.",required=true) @PathParam("tripId") String tripId) throws WebApplicationException
+			@Parameter(description="tripId to get diversions for.",required=true) @QueryParam("tripId") String tripId) throws WebApplicationException
 	{
 		stdParameters.validate();
 		
@@ -65,8 +66,17 @@ public class DiversionApi {
 			IpcDiversions ipcDiversions = diverionsInterface.getDiversionsForTrip(tripId);
 			
 			ApiDiversions apiDiversions=new ApiDiversions(ipcDiversions.getDiversions());
-				
-			return stdParameters.createResponse(apiDiversions);
+			
+			Response result = null;
+			try {
+				result = stdParameters.createResponse(apiDiversions);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return result;
+							
 			
 		}  catch (Exception e) {
 			// If problem getting data then return a Bad Request

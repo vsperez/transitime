@@ -441,17 +441,24 @@ public class AvlProcessor {
 		logger.debug("Matching already predictable vehicle using new AVL "
 				+ "report. The old spatial match is {}", vehicleState);
 
-		// Find possible spatial matches
+		// Find possible route matches
 		List<RouteMatch> spatialMatches = SpatialMatcher
 				.getSpatialMatches(vehicleState);
 		logger.debug("For vehicleId={} found the following {} spatial "
 				+ "matches: {}", vehicleState.getVehicleId(),
 				spatialMatches.size(), spatialMatches);
+		
+		// Find possible diversion matches.
+		List<DiversionMatch> divesionMatches = DiversionMatcher.getDiversionMatches(vehicleState);
+		logger.debug("For vehicleId={} found the following {} diversion "
+				+ "matches: {}", vehicleState.getVehicleId(),
+				divesionMatches.size(), divesionMatches);
+		
 
 		// Find best temporal match of the spatial matches
 		TemporalMatch bestTemporalMatch = TemporalMatcher.getInstance()
-				.getBestTemporalMatch(vehicleState, spatialMatches);
-				
+				.getBestTemporalMatch(vehicleState, spatialMatches, divesionMatches);
+								
 		// Log this as info since matching is a significant milestone
 		logger.info("For vehicleId={} the best match is {}",
 				vehicleState.getVehicleId(), bestTemporalMatch);

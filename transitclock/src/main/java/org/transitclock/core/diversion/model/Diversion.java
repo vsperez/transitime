@@ -5,50 +5,56 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import org.transitclock.db.structs.Location;
 import org.transitclock.db.structs.Route;
 import org.transitclock.db.structs.Trip;
+import org.transitclock.db.structs.VectorWithHeading;
 
 /**
- * @author Sean Óg Crudden
- * This is the starting point of modeling a detour. 
+ * @author Sean Óg Crudden This is the starting point of modeling a detour.
  */
 public class Diversion implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8573881954740003230L;
 
 	private String routeId;
-	
+
 	private String tripId;
-	
+
 	private String shapeId;
-	
+
 	private int startStopSeq;
-	
+
 	private int distanceStartAlongSegment;
-	
+
 	private int returnStopSeq;
-	
+
 	private int distanceEndAlongSegment;
-	
-	private List<Location> detourPath=new ArrayList<Location>();
-	
-	private List<Location> stopLocations=new ArrayList<Location>();
-	
+
+	private List<Location> detourPath = new ArrayList<Location>();
+
+	private List<Location> stopLocations = new ArrayList<Location>();
+
 	private Date startTime;
-	
-	private Date  endTime;
+
+	private Date endTime;
+
+	private List<VectorWithHeading> vectors = null;
+
 
 	public Diversion() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Diversion(String routeId, String tripId,String shapeId, int startStopSeq, int distanceStartAlongSegment, int returnStopSeq,
-			int distanceEndAlongSegment, List<Location> detourPath, List<Location> stopLocations, Date startTime, Date endTime) {
+	public Diversion(String routeId, String tripId, String shapeId, int startStopSeq, int distanceStartAlongSegment,
+			int returnStopSeq, int distanceEndAlongSegment, List<Location> detourPath, List<Location> stopLocations,
+			Date startTime, Date endTime) {
 		super();
 		this.routeId = routeId;
 		this.tripId = tripId;
@@ -59,8 +65,25 @@ public class Diversion implements Serializable {
 		this.distanceEndAlongSegment = distanceEndAlongSegment;
 		this.detourPath = detourPath;
 		this.stopLocations = stopLocations;
-		this.startTime=startTime;
-		this.endTime=endTime;
+		this.startTime = startTime;
+		this.endTime = endTime;
+
+		initVectors();
+	}
+	private void initVectors()
+	{
+		vectors = new ArrayList<VectorWithHeading>(detourPath.size() - 1);
+		for (int segmentIndex = 0; segmentIndex < detourPath.size() - 1; ++segmentIndex) {
+			VectorWithHeading v = new VectorWithHeading(nullSafeLocation(detourPath.get(segmentIndex)),
+					nullSafeLocation(detourPath.get(segmentIndex + 1)));
+			vectors.add(v);
+		}
+	}
+	private Location nullSafeLocation(Location location) {
+		if (location == null) {
+			location = new Location(0.0, 0.0);
+		}
+		return location;
 	}
 
 	public Date getStartTime() {
@@ -150,6 +173,12 @@ public class Diversion implements Serializable {
 	public void setShapeId(String shapeId) {
 		this.shapeId = shapeId;
 	}
+	
+	public List<VectorWithHeading> getVectors() {
+		if(vectors==null)
+			initVectors();
+		return vectors;
+	}
 
 	@Override
 	public int hashCode() {
@@ -224,7 +253,4 @@ public class Diversion implements Serializable {
 		return true;
 	}
 
-	
-	
-		
 }

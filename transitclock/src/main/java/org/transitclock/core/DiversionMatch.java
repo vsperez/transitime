@@ -6,27 +6,40 @@ import org.transitclock.db.structs.Location;
 
 public class DiversionMatch extends SpatialMatch {
 
-	public DiversionMatch(long avlTime, Block block, int tripIndex) {		
+	public DiversionMatch(Double distanceToDiversion, Double distanceAlongDiversion, long avlTime, Block block, int tripIndex, String shapeId, String tripId, String routeId) {		
 		super(avlTime, block, tripIndex);
+		
+		this.routeId=routeId;
+		this.tripId=tripId;
+		this.shapeId=shapeId;
+		this.distanceAlongDiversion=distanceAlongDiversion;
+		
 	}
 
-	int distanceAlongDiversion;
-	int distanceToDiversion;
+	Double distanceAlongDiversion;
+	Double distanceToDiversion;
+		
 	Location predictedLocation;
+		
+	String routeId;
+	String tripId;	
+	String shapeId;	
 	
-	public int getDistanceAlongDiversion() {
+	
+
+	public Double getDistanceAlongDiversion() {
 		return distanceAlongDiversion;
 	}
 
-	public void setDistanceAlongDiversion(int distanceAlongDiversion) {
+	public void setDistanceAlongDiversion(Double distanceAlongDiversion) {
 		this.distanceAlongDiversion = distanceAlongDiversion;
 	}
 
-	public int getDistanceToDiversion() {
+	public Double getDistanceToDiversion() {
 		return distanceToDiversion;
 	}
 
-	public void setDistanceToDiversion(int distanceToDiversion) {
+	public void setDistanceToDiversion(Double distanceToDiversion) {
 		this.distanceToDiversion = distanceToDiversion;
 	}
 
@@ -36,6 +49,38 @@ public class DiversionMatch extends SpatialMatch {
 
 	public void setDiversion(Diversion diversion) {
 		this.diversion = diversion;
+	}
+	
+	public String getRouteId() {
+		return routeId;
+	}
+
+	public void setRouteId(String routeId) {
+		this.routeId = routeId;
+	}
+
+	public String getTripId() {
+		return tripId;
+	}
+
+	public void setTripId(String tripId) {
+		this.tripId = tripId;
+	}
+
+	public String getShapeId() {
+		return shapeId;
+	}
+
+	public void setShapeId(String shapeId) {
+		this.shapeId = shapeId;
+	}
+
+	public Location getPredictedLocation() {
+		return predictedLocation;
+	}
+
+	public void setPredictedLocation(Location predictedLocation) {
+		this.predictedLocation = predictedLocation;
 	}
 
 	Diversion diversion;

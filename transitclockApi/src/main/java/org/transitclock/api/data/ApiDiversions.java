@@ -22,7 +22,7 @@ public class ApiDiversions {
 			diversions.add(new ApiDiversion(ipcDiversion));
 		}		
 	}
-	@XmlElement
+	@XmlElement(name="diversion")
 	private List<ApiDiversion> diversions;
 	public List<ApiDiversion> getDiversions() {
 		return diversions;

@@ -355,11 +355,12 @@ public class TemporalMatcher {
 	 * 
 	 * @param vehicleState
 	 * @param spatialMatches
+	 * @param divesionMatches 
 	 * @return The best temporal match for the spatial matches passed in. If no
 	 *         valid temporal match found then returns null.
 	 */
 	public TemporalMatch getBestTemporalMatch(VehicleState vehicleState,
-			List<RouteMatch> spatialMatches) {
+			List<RouteMatch> spatialMatches, List<DiversionMatch> divesionMatches) {
 		// Convenience variables		
 		RouteMatch previousMatch = vehicleState.getMatch();
 		Date previousAvlTime =
