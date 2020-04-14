@@ -3,7 +3,9 @@ package org.transitclock.api.rootResources;
 import java.rmi.RemoteException;
 
 import javax.ws.rs.BeanParam;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -17,6 +19,7 @@ import org.transitclock.api.data.ApiDiversion;
 import org.transitclock.api.data.ApiDiversions;
 import org.transitclock.api.utils.StandardParameters;
 import org.transitclock.api.utils.WebUtils;
+import org.transitclock.core.diversion.model.Diversion;
 import org.transitclock.ipc.data.IpcDiversions;
 import org.transitclock.ipc.interfaces.DiversionsInterface;
 
@@ -82,5 +85,12 @@ public class DiversionApi {
 			// If problem getting data then return a Bad Request
 			throw WebUtils.badRequestException(e);
 		}
+	}
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addDiversion(ApiDiversion diversion)
+	{
+		String result = "Diversion added : " + diversion;
+		return Response.status(201).entity(result).build();
 	}
 }

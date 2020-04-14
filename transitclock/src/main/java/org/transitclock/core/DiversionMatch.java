@@ -6,16 +6,22 @@ import org.transitclock.db.structs.Location;
 
 public class DiversionMatch extends SpatialMatch {
 
-	public DiversionMatch(Double distanceToDiversion, Double distanceAlongDiversion, long avlTime, Block block, int tripIndex, String shapeId, String tripId, String routeId) {		
+	public DiversionMatch(Diversion diversion, Integer stopPathIndex, Integer vectorIndex, Double distanceToDiversion, Double distanceAlongDiversion, long avlTime, Block block, int tripIndex, String shapeId, String tripId, String routeId) {		
 		super(avlTime, block, tripIndex);
 		
 		this.routeId=routeId;
 		this.tripId=tripId;
 		this.shapeId=shapeId;
 		this.distanceAlongDiversion=distanceAlongDiversion;
-		
+		this.distanceToDiversion=distanceToDiversion;
+		this.stopPathIndex=stopPathIndex;
+		this.vectorIndex=vectorIndex;
+		this.predictedLocation=computeLocation();
+		this.diversion=diversion;		
 	}
-
+	
+	Diversion diversion;
+	
 	Double distanceAlongDiversion;
 	Double distanceToDiversion;
 		
@@ -24,6 +30,9 @@ public class DiversionMatch extends SpatialMatch {
 	String routeId;
 	String tripId;	
 	String shapeId;	
+	
+	Integer stopPathIndex;
+	Integer vectorIndex;
 	
 	
 
@@ -82,7 +91,28 @@ public class DiversionMatch extends SpatialMatch {
 	public void setPredictedLocation(Location predictedLocation) {
 		this.predictedLocation = predictedLocation;
 	}
+	
+	public Integer getStopPathIndex() {
+		return stopPathIndex;
+	}
 
-	Diversion diversion;
+	public void setStopPathIndex(Integer stopPathIndex) {
+		this.stopPathIndex = stopPathIndex;
+	}
+	
+
+	@Override
+	public String toString() {
+		return "DiversionMatch [diversion=" + diversion + ", distanceAlongDiversion=" + distanceAlongDiversion
+				+ ", distanceToDiversion=" + distanceToDiversion + ", predictedLocation=" + predictedLocation
+				+ ", routeId=" + routeId + ", tripId=" + tripId + ", shapeId=" + shapeId + ", stopPathIndex="
+				+ stopPathIndex + ", vectorIndex=" + vectorIndex + "]";
+	}
+
+	@Override
+	protected Location computeLocation() {
+		/* TODO figure out location */
+		return null;	
+	}
 	
 }

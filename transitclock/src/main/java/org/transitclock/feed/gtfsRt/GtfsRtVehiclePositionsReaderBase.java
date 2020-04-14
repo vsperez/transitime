@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.transitclock.core.diversion.cache.DiversionsCacheFactory;
 import org.transitclock.core.diversion.model.Diversion;
+import org.transitclock.core.diversion.model.DiversionStopPath;
 import org.transitclock.db.structs.AvlReport;
 import org.transitclock.db.structs.AvlReport.AssignmentType;
 import org.transitclock.db.structs.Location;
@@ -163,13 +164,15 @@ public abstract class GtfsRtVehiclePositionsReaderBase {
 							detour.setShapeId(tripProperties.getShapeId());
 							detour.setTripId(tripUpdate.getTrip().getTripId());
 							detour.setRouteId(tripUpdate.getTrip().getRouteId());
-															
+													
+							DiversionStopPath diversionStopPath=new DiversionStopPath();							
 							for(ShapePoint shapePoint : shape.getShapePointList())
 							{
 								Location location=new Location(shapePoint.getShapePtLat(), shapePoint.getShapePtLon());
-								detour.getDetourPath().add(location);
-							}
-							
+								diversionStopPath.getPath().add(location);
+							}						
+							detour.getDiversionStopPaths().add(diversionStopPath);
+																	
 							if(DiversionsCacheFactory.getInstance()!=null)
 								DiversionsCacheFactory.getInstance().putDiversion(detour);
 							

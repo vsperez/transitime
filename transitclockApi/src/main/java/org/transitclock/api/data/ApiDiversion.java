@@ -1,5 +1,6 @@
 package org.transitclock.api.data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.transitclock.db.structs.Location;
 import org.transitclock.ipc.data.IpcDiversion;
+import org.transitclock.ipc.data.IpcDiversionStopPath;
+import org.transitclock.ipc.data.IpcLocation;
 @XmlRootElement(name = "diversion")
 public class ApiDiversion {
 	@XmlAttribute
@@ -24,10 +27,7 @@ public class ApiDiversion {
 	private int returnStopSeq;
 	@XmlAttribute
 	private int distanceEndAlongSegment;
-	@XmlAttribute
-	private List<Location> detourPath;
-	@XmlAttribute
-	private List<Location> stopLocations;
+	private ArrayList<ApiDiversionStopPath> diversionStopPaths=new ArrayList<ApiDiversionStopPath>();
 	@XmlAttribute
 	private Date startTime;
 	@XmlAttribute
@@ -49,11 +49,18 @@ public class ApiDiversion {
 		this.shapeId=diversion.getShapeId();
 		this.tripId=diversion.getTripId();	
 		this.distanceStartAlongSegment=diversion.getDistanceStartAlongSegment();
-		this.distanceStartAlongSegment=diversion.getDistanceStartAlongSegment();	
-		this.detourPath=diversion.getDetourPath();
-		this.stopLocations=diversion.getStopLocations();
+		this.distanceStartAlongSegment=diversion.getDistanceStartAlongSegment();			
+		
 		this.startTime=diversion.getStartTime();
 		this.endTime=diversion.getEndTime();		
+	}
+
+	public ArrayList<ApiDiversionStopPath> getDiversionStopPaths() {
+		return diversionStopPaths;
+	}
+
+	public void setDiversionStopPaths(ArrayList<ApiDiversionStopPath> diversionStopPaths) {
+		this.diversionStopPaths = diversionStopPaths;
 	}
 
 	public String getRouteId() {
@@ -110,22 +117,6 @@ public class ApiDiversion {
 
 	public void setDistanceEndAlongSegment(int distanceEndAlongSegment) {
 		this.distanceEndAlongSegment = distanceEndAlongSegment;
-	}
-
-	public List<Location> getDetourPath() {
-		return detourPath;
-	}
-
-	public void setDetourPath(List<Location> detourPath) {
-		this.detourPath = detourPath;
-	}
-
-	public List<Location> getStopLocations() {
-		return stopLocations;
-	}
-
-	public void setStopLocations(List<Location> stopLocations) {
-		this.stopLocations = stopLocations;
 	}
 
 	public Date getStartTime() {

@@ -1,39 +1,39 @@
 package org.transitclock.ipc.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.transitclock.core.diversion.model.Diversion;
+import org.transitclock.core.diversion.model.DiversionStopPath;
 import org.transitclock.db.structs.Location;
 
-public class IpcDiversion implements Serializable{
+public class IpcDiversion implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 2548744289428304091L;
 
 	private String routeId;
-	
+
 	private String tripId;
-	
+
 	private String shapeId;
-	
+
 	private int startStopSeq;
-	
+
 	private int distanceStartAlongSegment;
-	
+
 	private int returnStopSeq;
-	
+
 	private int distanceEndAlongSegment;
-	
-	private List<Location> detourPath;
-	
-	private List<Location> stopLocations;
-	
+
+	private ArrayList<IpcDiversionStopPath> diversionStopPaths = new ArrayList<IpcDiversionStopPath>();
+
 	private Date startTime;
-	
-	private Date  endTime;
+
+	private Date endTime;
 
 	public IpcDiversion() {
 		super();
@@ -41,8 +41,7 @@ public class IpcDiversion implements Serializable{
 	}
 
 	public IpcDiversion(String routeId, String tripId, String shapeId, int startStopSeq, int distanceStartAlongSegment,
-			int returnStopSeq, int distanceEndAlongSegment, List<Location> detourPath, List<Location> stopLocations,
-			Date startTime, Date endTime) {
+			int returnStopSeq, int distanceEndAlongSegment, Date startTime, Date endTime) {
 		super();
 		this.routeId = routeId;
 		this.tripId = tripId;
@@ -51,8 +50,7 @@ public class IpcDiversion implements Serializable{
 		this.distanceStartAlongSegment = distanceStartAlongSegment;
 		this.returnStopSeq = returnStopSeq;
 		this.distanceEndAlongSegment = distanceEndAlongSegment;
-		this.detourPath = detourPath;
-		this.stopLocations = stopLocations;
+		
 		this.startTime = startTime;
 		this.endTime = endTime;
 	}
@@ -61,17 +59,22 @@ public class IpcDiversion implements Serializable{
 
 		this.routeId = diversion.getRouteId();
 		this.tripId = diversion.getTripId();
-		this.shapeId = diversion.getShapeId();				
+		this.shapeId = diversion.getShapeId();
 		this.startStopSeq = diversion.getStartStopSeq();
-		
+
 		this.distanceStartAlongSegment = diversion.getDistanceStartAlongSegment();
 		this.returnStopSeq = diversion.getReturnStopSeq();
 		this.distanceEndAlongSegment = diversion.getDistanceEndAlongSegment();
-		this.detourPath = diversion.getDetourPath();
-		this.stopLocations = diversion.getStopLocations();
+		
 		this.startTime = diversion.getStartTime();
 		this.endTime = diversion.getEndTime();
+		
+		for(DiversionStopPath stopPath:diversion.getDiversionStopPaths())
+		{
+			this.diversionStopPaths.add(new IpcDiversionStopPath(stopPath));
+		}	
 	}
+
 
 	public String getRouteId() {
 		return routeId;
@@ -129,20 +132,12 @@ public class IpcDiversion implements Serializable{
 		this.distanceEndAlongSegment = distanceEndAlongSegment;
 	}
 
-	public List<Location> getDetourPath() {
-		return detourPath;
+	public ArrayList<IpcDiversionStopPath> getDiversionStopPaths() {
+		return diversionStopPaths;
 	}
 
-	public void setDetourPath(List<Location> detourPath) {
-		this.detourPath = detourPath;
-	}
-
-	public List<Location> getStopLocations() {
-		return stopLocations;
-	}
-
-	public void setStopLocations(List<Location> stopLocations) {
-		this.stopLocations = stopLocations;
+	public void setDiversionStopPaths(ArrayList<IpcDiversionStopPath> diversionStopPaths) {
+		this.diversionStopPaths = diversionStopPaths;
 	}
 
 	public Date getStartTime() {
@@ -161,12 +156,4 @@ public class IpcDiversion implements Serializable{
 		this.endTime = endTime;
 	}
 
-	@Override
-	public String toString() {
-		return "IpcDiversion [routeId=" + routeId + ", tripId=" + tripId + ", shapeId=" + shapeId + ", startStopSeq="
-				+ startStopSeq + ", distanceStartAlongSegment=" + distanceStartAlongSegment + ", returnStopSeq="
-				+ returnStopSeq + ", distanceEndAlongSegment=" + distanceEndAlongSegment + ", detourPath=" + detourPath
-				+ ", stopLocations=" + stopLocations + ", startTime=" + startTime + ", endTime=" + endTime + "]";
-	}
-	
 }

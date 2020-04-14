@@ -11,6 +11,7 @@ import org.transitclock.db.structs.Location;
 import org.transitclock.db.structs.Route;
 import org.transitclock.db.structs.Trip;
 import org.transitclock.db.structs.VectorWithHeading;
+import org.transitclock.ipc.data.IpcDiversion;
 
 /**
  * @author Sean Óg Crudden This is the starting point of modeling a detour.
@@ -36,16 +37,11 @@ public class Diversion implements Serializable {
 
 	private int distanceEndAlongSegment;
 
-	private List<Location> detourPath = new ArrayList<Location>();
-
-	private List<Location> stopLocations = new ArrayList<Location>();
+	private ArrayList<DiversionStopPath> diversionStopPaths = new ArrayList<DiversionStopPath>();
 
 	private Date startTime;
 
 	private Date endTime;
-
-	private List<VectorWithHeading> vectors = null;
-
 
 	public Diversion() {
 		super();
@@ -53,8 +49,7 @@ public class Diversion implements Serializable {
 	}
 
 	public Diversion(String routeId, String tripId, String shapeId, int startStopSeq, int distanceStartAlongSegment,
-			int returnStopSeq, int distanceEndAlongSegment, List<Location> detourPath, List<Location> stopLocations,
-			Date startTime, Date endTime) {
+			int returnStopSeq, int distanceEndAlongSegment, ArrayList<DiversionStopPath> diversionStopPaths,Date startTime, Date endTime) {
 		super();
 		this.routeId = routeId;
 		this.tripId = tripId;
@@ -62,28 +57,38 @@ public class Diversion implements Serializable {
 		this.startStopSeq = startStopSeq;
 		this.distanceStartAlongSegment = distanceStartAlongSegment;
 		this.returnStopSeq = returnStopSeq;
-		this.distanceEndAlongSegment = distanceEndAlongSegment;
-		this.detourPath = detourPath;
-		this.stopLocations = stopLocations;
+		this.distanceEndAlongSegment = distanceEndAlongSegment;		
+		this.diversionStopPaths = diversionStopPaths;
 		this.startTime = startTime;
 		this.endTime = endTime;
 
-		initVectors();
 	}
-	private void initVectors()
-	{
-		vectors = new ArrayList<VectorWithHeading>(detourPath.size() - 1);
-		for (int segmentIndex = 0; segmentIndex < detourPath.size() - 1; ++segmentIndex) {
-			VectorWithHeading v = new VectorWithHeading(nullSafeLocation(detourPath.get(segmentIndex)),
-					nullSafeLocation(detourPath.get(segmentIndex + 1)));
-			vectors.add(v);
-		}
+
+	public Diversion(IpcDiversion diversion) {
+		// TODO Auto-generated constructor stub
+		this.routeId = diversion.getRouteId();
+		this.tripId = diversion.getTripId();
+		this.shapeId = diversion.getShapeId();
+		this.startStopSeq = diversion.getStartStopSeq();
+		this.returnStopSeq = diversion.getReturnStopSeq();
+		this.distanceStartAlongSegment = diversion.getDistanceStartAlongSegment();
+		this.distanceEndAlongSegment = diversion.getDistanceEndAlongSegment();
+		this.startTime = diversion.getStartTime();
+		this.endTime = diversion.getEndTime();
+		copyStopPaths(diversion);
+
 	}
-	private Location nullSafeLocation(Location location) {
-		if (location == null) {
-			location = new Location(0.0, 0.0);
-		}
-		return location;
+
+	void copyStopPaths(IpcDiversion diversion) {
+
+	}
+
+	public ArrayList<DiversionStopPath> getDiversionStopPaths() {
+		return diversionStopPaths;
+	}
+
+	public void setDiversionStopPaths(ArrayList<DiversionStopPath> diversionStopPaths) {
+		this.diversionStopPaths = diversionStopPaths;
 	}
 
 	public Date getStartTime() {
@@ -150,22 +155,6 @@ public class Diversion implements Serializable {
 		this.distanceEndAlongSegment = distanceEndAlongSegment;
 	}
 
-	public List<Location> getDetourPath() {
-		return detourPath;
-	}
-
-	public void setDetourPath(List<Location> detourPath) {
-		this.detourPath = detourPath;
-	}
-
-	public List<Location> getStopLocations() {
-		return stopLocations;
-	}
-
-	public void setStopLocations(List<Location> stopLocations) {
-		this.stopLocations = stopLocations;
-	}
-
 	public String getShapeId() {
 		return shapeId;
 	}
@@ -173,18 +162,19 @@ public class Diversion implements Serializable {
 	public void setShapeId(String shapeId) {
 		this.shapeId = shapeId;
 	}
-	
-	public List<VectorWithHeading> getVectors() {
-		if(vectors==null)
-			initVectors();
-		return vectors;
+
+	@Override
+	public String toString() {
+		return "Diversion [routeId=" + routeId + ", tripId=" + tripId + ", shapeId=" + shapeId + ", startStopSeq="
+				+ startStopSeq + ", distanceStartAlongSegment=" + distanceStartAlongSegment + ", returnStopSeq="
+				+ returnStopSeq + ", distanceEndAlongSegment=" + distanceEndAlongSegment + ", diversionStopPaths="
+				+ diversionStopPaths + ", startTime=" + startTime + ", endTime=" + endTime + "]";
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((detourPath == null) ? 0 : detourPath.hashCode());
 		result = prime * result + distanceEndAlongSegment;
 		result = prime * result + distanceStartAlongSegment;
 		result = prime * result + ((endTime == null) ? 0 : endTime.hashCode());
@@ -193,7 +183,6 @@ public class Diversion implements Serializable {
 		result = prime * result + ((shapeId == null) ? 0 : shapeId.hashCode());
 		result = prime * result + startStopSeq;
 		result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
-		result = prime * result + ((stopLocations == null) ? 0 : stopLocations.hashCode());
 		result = prime * result + ((tripId == null) ? 0 : tripId.hashCode());
 		return result;
 	}
@@ -207,11 +196,6 @@ public class Diversion implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Diversion other = (Diversion) obj;
-		if (detourPath == null) {
-			if (other.detourPath != null)
-				return false;
-		} else if (!detourPath.equals(other.detourPath))
-			return false;
 		if (distanceEndAlongSegment != other.distanceEndAlongSegment)
 			return false;
 		if (distanceStartAlongSegment != other.distanceStartAlongSegment)
@@ -239,11 +223,6 @@ public class Diversion implements Serializable {
 			if (other.startTime != null)
 				return false;
 		} else if (!startTime.equals(other.startTime))
-			return false;
-		if (stopLocations == null) {
-			if (other.stopLocations != null)
-				return false;
-		} else if (!stopLocations.equals(other.stopLocations))
 			return false;
 		if (tripId == null) {
 			if (other.tripId != null)

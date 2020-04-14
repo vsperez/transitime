@@ -20,13 +20,13 @@ import org.transitclock.ipc.rmi.AbstractServer;
 
 public class DiversionsServer extends AbstractServer implements DiversionsInterface {
 	private static DiversionsServer singleton;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(DiversionsServer.class);
-	
+
 	protected DiversionsServer(String agencyId) {
 		super(agencyId, DiversionsInterface.class.getSimpleName());
 	}
-	
+
 	public static DiversionsServer start(String agencyId) {
 		if (singleton == null) {
 			singleton = new DiversionsServer(agencyId);
@@ -37,7 +37,7 @@ public class DiversionsServer extends AbstractServer implements DiversionsInterf
 							+ "agencyId={} but the singleton was created for agencyId={}",
 					agencyId, singleton.getAgencyId());
 			return null;
-		}	
+		}
 		return singleton;
 	}
 
@@ -45,23 +45,20 @@ public class DiversionsServer extends AbstractServer implements DiversionsInterf
 	public IpcDiversions getDiversionsForTrip(String tripId) throws RemoteException {
 		Core core = Core.getInstance();
 		Trip trip = core.getDbConfig().getTrip(tripId);
-		
-		if(trip!=null)
-		{
-			DiversionsKey key=new DiversionsKey(tripId, trip.getRouteId());
-		
+
+		if (trip != null) {
+			DiversionsKey key = new DiversionsKey(tripId, trip.getRouteId());
+
 			DiversionsList diversions = DiversionsCacheFactory.getInstance().getDiversions(key);
-		
-			List<IpcDiversion> ipcDiversions=new ArrayList<IpcDiversion>();
-		
-			for( Diversion diversion:diversions.getDiversions())
-			{
+
+			List<IpcDiversion> ipcDiversions = new ArrayList<IpcDiversion>();
+
+			for (Diversion diversion : diversions.getDiversions()) {
 				ipcDiversions.add(new IpcDiversion(diversion));
 			}
-		
+
 			return new IpcDiversions(ipcDiversions);
-		}else
-		{
+		} else {
 			return null;
 		}
 	}
@@ -69,8 +66,20 @@ public class DiversionsServer extends AbstractServer implements DiversionsInterf
 	@Override
 	public IpcDiversions getDiversionsForRoute(String routeId) throws RemoteException {
 		// TODO Auto-generated method stub
-		DiversionsCacheFactory.getInstance();
 		return null;
+	}
+
+	@Override
+	public void addDiversion(IpcDiversion diversion) throws RemoteException {
+
+		DiversionsCacheFactory.getInstance().putDiversion(new Diversion(diversion));
+
+	}
+
+	@Override
+	public void removeDiversion(IpcDiversion diversion) throws RemoteException {
+		// TODO Auto-generated method stub
+
 	}
 
 }

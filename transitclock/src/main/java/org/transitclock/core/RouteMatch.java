@@ -45,7 +45,7 @@ public class RouteMatch extends SpatialMatch {
 	protected final double distanceToSegment;
 	protected final double distanceAlongSegment;
 	protected final VehicleAtStopInfo atStop;
-	protected final Location predictedLocation;
+
 	
 	private static final Logger logger = 
 			LoggerFactory.getLogger(RouteMatch.class);
@@ -66,14 +66,14 @@ public class RouteMatch extends SpatialMatch {
 		
 		// Determine whether at stop
 		this.atStop = atStop();
-		this.predictedLocation = computeLocation();
+	
 	}
 
 	/**
 	 * based on the current trip/stop path/sgement compute the predicted 
 	 * vehicle location.
 	 */
-	private Location computeLocation() {
+	protected Location computeLocation() {
 		Trip trip = block.getTrip(tripIndex);
 		if (trip != null) {
 			StopPath stopPath = trip.getStopPath(stopPathIndex);

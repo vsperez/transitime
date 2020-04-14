@@ -49,17 +49,21 @@ public class Diversion implements Serializable, Lifecycle {
 	
 	@Column
 	private int returnStopSeq;
-	
+			
 	@Column
 	private int distanceEndAlongSegment;
 			 
-	@ElementCollection
-	@OrderColumn	
-	private List<Location> detourPath;
 	
-	@ElementCollection
 	@OrderColumn	
-	private List<Location> stopLocations;
+	private ArrayList<Location> detourPath;
+	
+	
+	@OrderColumn	
+	private ArrayList<Location> stopLocations;
+	
+	
+	@Column 
+	private ArrayList<Long> expectedTravelTimes;
 	
 	@Transient
 	private List<VectorWithHeading> vectors = null;
@@ -68,8 +72,8 @@ public class Diversion implements Serializable, Lifecycle {
 		super();		
 	}
 	public Diversion(String routeId, String tripId, String shapeId, Date startTime, Date endTime, int startStopSeq,
-			int distanceStartAlongSegment, int returnStopSeq, int distanceEndAlongSegment, List<Location> detourPath,
-			List<Location> stopLocations) {
+			int distanceStartAlongSegment, int returnStopSeq, int distanceEndAlongSegment, ArrayList<Location> detourPath,
+			ArrayList<Location> stopLocations, ArrayList<Long>expectedTravelTimes) {
 		super();
 		this.routeId = routeId;
 		this.tripId = tripId;
@@ -82,6 +86,7 @@ public class Diversion implements Serializable, Lifecycle {
 		this.distanceEndAlongSegment = distanceEndAlongSegment;
 		this.detourPath = detourPath;
 		this.stopLocations = stopLocations;
+		this.expectedTravelTimes = expectedTravelTimes;
 		
 		vectors = new ArrayList<VectorWithHeading>(detourPath.size()-1);
 		for (int segmentIndex=0; segmentIndex<detourPath.size()-1; ++segmentIndex) {
@@ -184,7 +189,7 @@ public class Diversion implements Serializable, Lifecycle {
 		return detourPath;
 	}
 
-	public void setDetourPath(List<Location> detourPath) {
+	public void setDetourPath(ArrayList<Location> detourPath) {
 		this.detourPath = detourPath;
 	}
 
@@ -192,7 +197,7 @@ public class Diversion implements Serializable, Lifecycle {
 		return stopLocations;
 	}
 
-	public void setStopLocations(List<Location> stopLocations) {
+	public void setStopLocations(ArrayList<Location> stopLocations) {
 		this.stopLocations = stopLocations;
 	}
 	
