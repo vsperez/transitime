@@ -538,4 +538,24 @@ public class TravelTimes {
 		return expectedTravelTimeBetweenMatches(vehicleId, timeOfDaySecs, match1, match2);
 	}
 	
+	public int expectedTravelTimesBetweenMatches(String vehicleId, Date time, DiversionMatch match1, DiversionMatch match2)
+	{
+		
+		/* TODO Check if on same diversion */
+		
+		
+		
+		return 0;
+	}
+	
+	public int expectedTravelTimesBetweenMatches(String vehicleId, Date time, RouteMatch match1, DiversionMatch match2)
+	{
+		return 0;
+	}
+	
+	public int expectedTravelTimesBetweenMatches(String vehicleId, Date time, DiversionMatch match1, RouteMatch match2)
+	{
+		return 0;
+	}
+	
 }

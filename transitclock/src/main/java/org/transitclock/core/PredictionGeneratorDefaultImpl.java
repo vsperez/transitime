@@ -338,7 +338,8 @@ public class PredictionGeneratorDefaultImpl extends PredictionGenerator implemen
 	}
 
 	private boolean isDiverted(Indices indices, DiversionsList diversions) {
-		
+		if(diversions==null)
+			return false;
 		for( org.transitclock.core.diversion.model.Diversion diversion:diversions.getDiversions())
 		{
 			if(indices.getStopPath().getGtfsStopSeq()>=diversion.getStartStopSeq() && indices.getStopPath().getGtfsStopSeq()<=diversion.getReturnStopSeq())

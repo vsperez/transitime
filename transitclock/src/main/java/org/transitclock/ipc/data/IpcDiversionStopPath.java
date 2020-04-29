@@ -1,10 +1,15 @@
 package org.transitclock.ipc.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import org.transitclock.core.diversion.model.DiversionStopPath;
 import org.transitclock.db.structs.Location;
 
-public class IpcDiversionStopPath {
+public class IpcDiversionStopPath implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5887640144411684439L;
 	private String stopId;
 	private String stopName;
 	private Integer stopSequence;
@@ -72,6 +77,11 @@ public class IpcDiversionStopPath {
 	}
 	public void setPath(ArrayList<IpcLocation> path) {
 		this.path = path;
+	}
+	@Override
+	public String toString() {
+		return "IpcDiversionStopPath [stopId=" + stopId + ", stopName=" + stopName + ", stopSequence=" + stopSequence
+				+ ", stopLocation=" + stopLocation + ", directionId=" + directionId + ", path=" + path + "]";
 	}
 	
 }

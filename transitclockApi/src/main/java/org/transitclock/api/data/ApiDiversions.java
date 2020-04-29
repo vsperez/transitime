@@ -1,17 +1,21 @@
 package org.transitclock.api.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
 import org.transitclock.ipc.data.IpcDiversion;
 
-@XmlRootElement(name = "diversions")
-public class ApiDiversions {
+@XmlRootElement
+public class ApiDiversions implements Serializable{
 	
-	public ApiDiversions() {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8945488673196807736L;
+	protected ApiDiversions() {
 				
 	}
 
@@ -22,14 +26,6 @@ public class ApiDiversions {
 			diversions.add(new ApiDiversion(ipcDiversion));
 		}		
 	}
-	@XmlElement(name="diversion")
-	private List<ApiDiversion> diversions;
-	public List<ApiDiversion> getDiversions() {
-		return diversions;
-	}
-
-	public void setDiversions(List<ApiDiversion> diversions) {
-		this.diversions = diversions;
-	}
-	
+	@XmlElement(name="diversions")
+	private List<ApiDiversion> diversions;	
 }

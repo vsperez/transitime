@@ -5,36 +5,35 @@ import org.transitclock.db.structs.Block;
 import org.transitclock.db.structs.Location;
 
 public class DiversionMatch extends SpatialMatch {
-
-	public DiversionMatch(Diversion diversion, Integer stopPathIndex, Integer vectorIndex, Double distanceToDiversion, Double distanceAlongDiversion, long avlTime, Block block, int tripIndex, String shapeId, String tripId, String routeId) {		
-		super(avlTime, block, tripIndex);
-		
-		this.routeId=routeId;
-		this.tripId=tripId;
-		this.shapeId=shapeId;
-		this.distanceAlongDiversion=distanceAlongDiversion;
-		this.distanceToDiversion=distanceToDiversion;
-		this.stopPathIndex=stopPathIndex;
-		this.vectorIndex=vectorIndex;
-		this.predictedLocation=computeLocation();
-		this.diversion=diversion;		
-	}
-	
 	Diversion diversion;
-	
+
 	Double distanceAlongDiversion;
 	Double distanceToDiversion;
-		
+
 	Location predictedLocation;
-		
+
 	String routeId;
-	String tripId;	
-	String shapeId;	
-	
+	String tripId;
+	String shapeId;
+
 	Integer stopPathIndex;
 	Integer vectorIndex;
-	
-	
+
+	public DiversionMatch(Diversion diversion, Integer stopPathIndex, Integer vectorIndex, Double distanceToDiversion,
+			Double distanceAlongDiversion, long avlTime, Block block, int tripIndex, String shapeId, String tripId,
+			String routeId) {
+		super(avlTime, block, tripIndex);
+
+		this.routeId = routeId;
+		this.tripId = tripId;
+		this.shapeId = shapeId;
+		this.distanceAlongDiversion = distanceAlongDiversion;
+		this.distanceToDiversion = distanceToDiversion;
+		this.stopPathIndex = stopPathIndex;
+		this.vectorIndex = vectorIndex;
+		this.predictedLocation = computeLocation();
+		this.diversion = diversion;
+	}
 
 	public Double getDistanceAlongDiversion() {
 		return distanceAlongDiversion;
@@ -59,7 +58,7 @@ public class DiversionMatch extends SpatialMatch {
 	public void setDiversion(Diversion diversion) {
 		this.diversion = diversion;
 	}
-	
+
 	public String getRouteId() {
 		return routeId;
 	}
@@ -91,7 +90,7 @@ public class DiversionMatch extends SpatialMatch {
 	public void setPredictedLocation(Location predictedLocation) {
 		this.predictedLocation = predictedLocation;
 	}
-	
+
 	public Integer getStopPathIndex() {
 		return stopPathIndex;
 	}
@@ -99,7 +98,6 @@ public class DiversionMatch extends SpatialMatch {
 	public void setStopPathIndex(Integer stopPathIndex) {
 		this.stopPathIndex = stopPathIndex;
 	}
-	
 
 	@Override
 	public String toString() {
@@ -112,7 +110,7 @@ public class DiversionMatch extends SpatialMatch {
 	@Override
 	protected Location computeLocation() {
 		/* TODO figure out location */
-		return null;	
+		return null;
 	}
-	
+
 }

@@ -33,5 +33,11 @@ public class IpcLocation implements Serializable{
 		this.lat=location.getLat();
 		this.lon=location.getLon();
 	}
+
+
+	@Override
+	public String toString() {
+		return "IpcLocation [lat=" + lat + ", lon=" + lon + "]";
+	}
 	
 }
