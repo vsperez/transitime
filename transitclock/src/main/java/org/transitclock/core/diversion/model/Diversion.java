@@ -12,6 +12,8 @@ import org.transitclock.db.structs.Route;
 import org.transitclock.db.structs.Trip;
 import org.transitclock.db.structs.VectorWithHeading;
 import org.transitclock.ipc.data.IpcDiversion;
+import org.transitclock.ipc.data.IpcDiversionStopPath;
+import org.transitclock.ipc.data.IpcLocation;
 
 /**
  * @author Sean Óg Crudden This is the starting point of modeling a detour.
@@ -80,7 +82,23 @@ public class Diversion implements Serializable {
 	}
 
 	void copyStopPaths(IpcDiversion diversion) {
-
+		for(IpcDiversionStopPath ipcStopPath:diversion.getDiversionStopPaths())
+		{			
+			DiversionStopPath stopPath=new DiversionStopPath();
+			stopPath.setDirectionId(ipcStopPath.getDirectionId());
+			stopPath.setStopId(ipcStopPath.getStopId());
+			stopPath.setStopName(ipcStopPath.getStopName());
+			stopPath.setStopSequence(ipcStopPath.getStopSequence());
+			if(ipcStopPath.getStopLocation()!=null)
+				stopPath.setStopLocation(new Location(ipcStopPath.getStopLocation().getLat(), ipcStopPath.getStopLocation().getLon()));
+			
+			for(IpcLocation point:ipcStopPath.getPath())
+			{
+				stopPath.getPath().add(new Location(point.getLat(), point.getLon()));
+			}
+						
+			diversionStopPaths.add(stopPath);
+		}
 	}
 
 	public ArrayList<DiversionStopPath> getDiversionStopPaths() {

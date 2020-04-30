@@ -56,5 +56,29 @@ public class ApiDiversionStopPath implements Serializable{
 		}
 	}
 
+	public String getStopId() {
+		return stopId;
+	}
+
+	public String getStopName() {
+		return stopName;
+	}
+
+	public Integer getStopSequence() {
+		return stopSequence;
+	}
+
+	public ApiLocation getStopLocation() {
+		return stopLocation;
+	}
+
+	public String getDirectionId() {
+		return directionId;
+	}
+
+	public ArrayList<ApiLocation> getPath() {
+		return path;
+	}
+
 	
 }

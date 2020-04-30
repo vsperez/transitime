@@ -69,5 +69,45 @@ public class ApiDiversion implements Serializable {
 		}
 	}
 
+	public String getRouteId() {
+		return routeId;
+	}
+
+	public String getTripId() {
+		return tripId;
+	}
+
+	public String getShapeId() {
+		return shapeId;
+	}
+
+	public int getStartStopSeq() {
+		return startStopSeq;
+	}
+
+	public int getDistanceStartAlongSegment() {
+		return distanceStartAlongSegment;
+	}
+
+	public int getReturnStopSeq() {
+		return returnStopSeq;
+	}
+
+	public int getDistanceEndAlongSegment() {
+		return distanceEndAlongSegment;
+	}
+
+	public List<ApiDiversionStopPath> getDiversionStopPaths() {
+		return diversionStopPaths;
+	}
+
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	public Date getEndTime() {
+		return endTime;
+	}
+
 	
 }

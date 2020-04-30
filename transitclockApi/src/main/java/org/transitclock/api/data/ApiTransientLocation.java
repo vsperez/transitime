@@ -70,4 +70,13 @@ public class ApiTransientLocation implements Serializable{
 		// Output only 5 digits past decimal point
 		this.lon = MathUtils.round(latLon.getLon(), 5);
 	}
+
+	public double getLat() {
+		return lat;
+	}
+
+	public double getLon() {
+		return lon;
+	}
+	
 }
