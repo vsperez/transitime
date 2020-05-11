@@ -60,6 +60,7 @@ for (WebAgency webAgency : webAgencies) {
 	<tr>
 	  <td><div id=agencyName><%= webAgency.getAgencyName() %></div></td>
 	  <td><a href="<%= request.getContextPath() %>/maps/index.jsp?a=<%= webAgency.getAgencyId() %>" title="Real-time maps">Maps</a></td>
+	   <td><a href="<%= request.getContextPath() %>/detours/detourBuilder.jsp?a=<%= webAgency.getAgencyId() %>" title="Real-time synoptic">Detours</a></td>
 	  <td><a href="<%= request.getContextPath() %>/reports/index.jsp?a=<%= webAgency.getAgencyId() %>" title="Reports on historic information">Reports</a></td>
 	  <td><a href="<%= request.getContextPath() %>/reports/apiCalls/index.jsp?a=<%= webAgency.getAgencyId() %>" title="API calls">API</a></td>
 	  <td><a href="<%= request.getContextPath() %>/status/index.jsp?a=<%= webAgency.getAgencyId() %>" title="Pages showing current status of system">Status</a></td>

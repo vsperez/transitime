@@ -45,6 +45,7 @@
 </head>
 
 <body>
+  <%@include file="/template/header.jsp" %>
   
   <div id="routesContainer">
     <div id="routesDiv">
@@ -52,11 +53,12 @@
       <input type="hidden" id="routes" style="width:380px" />
     </div>
   </div>
+ 
   <!-- For testing purpose 
   <input type="button" onclick="myFunction()" value="test"/> 
   -->
   <div id="synoptic"
-		style="width: 100%; height: 480px; left: 0px; top: 50px; position: absolute;' "></div>
+		style="width: 100%; height: 480px; left: 0px; top: 100px; position: absolute;' "></div>
 </body>
 	<script type="text/javascript">
 
