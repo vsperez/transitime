@@ -30,8 +30,8 @@
 		</ehcache:expiry>
 		<ehcache:resources>
 			<ehcache:heap unit="entries">63000</ehcache:heap>
-			<ehcache:offheap unit="GB">2</ehcache:offheap>
-			<ehcache:disk persistent="true" unit="GB">40</ehcache:disk>
+			<ehcache:offheap unit="GB">1</ehcache:offheap>
+			<ehcache:disk persistent="true" unit="GB">10</ehcache:disk>
 		</ehcache:resources>
 		<ehcache:disk-store-settings thread-pool="pool-disk"
 			writer-concurrency="1" />
@@ -45,8 +45,8 @@
 		</ehcache:expiry>
 		<ehcache:resources>
 			<ehcache:heap unit="entries">15000</ehcache:heap>
-			<ehcache:offheap unit="GB">2</ehcache:offheap>
-			<ehcache:disk persistent="true" unit="GB">40</ehcache:disk>
+			<ehcache:offheap unit="GB">1</ehcache:offheap>
+			<ehcache:disk persistent="true" unit="GB">10</ehcache:disk>
 		</ehcache:resources>
 		<ehcache:disk-store-settings thread-pool="pool-disk"
 			writer-concurrency="1" />
@@ -60,8 +60,8 @@
 		</ehcache:expiry>
 		<ehcache:resources>
 			<ehcache:heap unit="entries">100000</ehcache:heap>
-			<ehcache:offheap unit="GB">2</ehcache:offheap>
-			<ehcache:disk persistent="true" unit="GB">15</ehcache:disk>
+			<ehcache:offheap unit="GB">1</ehcache:offheap>
+			<ehcache:disk persistent="true" unit="GB">1</ehcache:disk>
 		</ehcache:resources>
 	</ehcache:cache>
 
