@@ -48,6 +48,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover. Compress the file when rolling it over. -->
 			<fileNamePattern>${LOG_FILE_ROOT}/core.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>			
 		</rollingPolicy>
 
 		<!-- Only want this appender to take effect if not DEBUG level. This way
@@ -75,6 +78,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover. Compress the file when rolling it over. -->
 			<fileNamePattern>${LOG_FILE_ROOT}/core.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 
 		<!-- Only want this appender to take effect if DEBUG level. This way when
@@ -161,6 +167,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/avl.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -172,6 +181,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/matcher.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -185,6 +197,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/frequency.log.gz
 			</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -198,6 +213,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/arrivalDeparture.log.gz
 			</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -211,6 +229,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/vehicleEvents.log.gz
 			</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -223,6 +244,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/cache.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -234,6 +258,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/holding.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -245,6 +272,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/prediction.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -258,6 +288,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/schedBasedPreds.log.gz
 			</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -271,6 +304,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/predAccuracy.log.gz
 			</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -284,6 +320,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/externalPredAccuracy.log.gz
 			</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -296,6 +335,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/match.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -308,6 +350,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/monitoring.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -321,6 +366,9 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/autoAssigner.log.gz
 			</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -333,6 +381,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/sql.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
@@ -353,6 +404,9 @@
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>${LOG_FILE_ROOT}/mapmatch.log.gz</fileNamePattern>
+			<!-- keep 3 days' worth of history capped at 1GB total size -->
+      		<maxHistory>3</maxHistory>
+      		<totalSizeCap>1GB</totalSizeCap>
 		</rollingPolicy>
 		<encoder>
 			<charset>UTF-8</charset>
