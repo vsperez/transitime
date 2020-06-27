@@ -14,7 +14,6 @@ class TTCMap /*extends L.map*/ {
 //	happen to be drawn first.
 
 	constructor(mapElement,params)
-	//constructor(canvas,onclick,menu)
 	{
 		
 		this.map=L.map(mapElement,params);
@@ -138,8 +137,16 @@ class TTCMap /*extends L.map*/ {
          var layers = e.layers;
          if(this.editableLayers.getLayers().length>0)
          {
+        	 console.log(this.editableLayers.getLayers()[0]);
         	 alert("Ya hay dibujada una polyline");
+        	 if(this.editableLayers.getLayers()[0] instanceof L.Polyline)
+        	{
+        			 alert("POLYLINE");
+        	}
+        	 console.log(this.editableLayers.getLayers()[0].getLatLngs())
         }
+         
+         
 //         layers.eachLayer(function (layer) {
 //             //do whatever you want; most likely save back to db
 //         });
@@ -1077,7 +1084,7 @@ class TTCMap /*extends L.map*/ {
 	
 
 	 createMap(mapTileUrl, mapTileCopyright) {
-		 console.log("CREATING MAP");
+		 console.log("CREATING MAP "+ mapTileUrl);
 		// Create map. Don't use default zoom control so can set it's position
 		this.map = L.map('map', {zoomControl: false,  center: [51.505, -0.09],
 		    zoom: 13});
