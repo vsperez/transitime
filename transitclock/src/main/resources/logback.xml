@@ -443,22 +443,22 @@
 
 	<logger
 		name="org.transitclock.core.VehicleState"
-		level="debug" additivity="false">
+		level="info" additivity="false">
 		<appender-ref ref="FREQUENCY" />
 	</logger>
 
 	<logger name="org.transitclock.core.PredictionGeneratorDefaultImpl"
-		level="debug" additivity="false">
+		level="info" additivity="false">
 		<appender-ref ref="PREDICTION" />
 	</logger>
 
 	<logger
 		name="org.transitclock.core.predictiongenerator"
-		level="debug" additivity="false">
+		level="info" additivity="false">
 		<appender-ref ref="PREDICTION" />
 	</logger>
 	
-	<logger name="org.transitclock.core.schedBasedPreds" level="debug"
+	<logger name="org.transitclock.core.schedBasedPreds" level="info"
 		additivity="false">
 		<appender-ref ref="SCHED_BASED_PREDS" />
 	</logger>
