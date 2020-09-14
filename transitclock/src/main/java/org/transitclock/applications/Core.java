@@ -538,14 +538,18 @@ public class Core {
 		            public void run() 
 		            {
 		            	try {
+		            		System.out.println("Calling shutdown hook.");
 							logger.info("Closing cache.");
+							System.out.println("Closing cache...");
 							CacheManagerFactory.getInstance().close();
 							logger.info("Cache closed.");
+							System.out.println("Cache closed.");
 						} catch (Exception e) {
-							logger.error("Cache close failed.");
+							System.out.println("Cache close failed.");
+							e.printStackTrace();
+							logger.error("Cache close failed...");
 							logger.error(e.getMessage(),e);
-						}
-		            	System.exit(0);		            	
+						}		            	
 		            }
 		    }));
 			
