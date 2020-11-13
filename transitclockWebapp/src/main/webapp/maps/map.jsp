@@ -21,8 +21,11 @@
  
   <!-- Load javascript and css files -->
   <%@include file="/template/includes.jsp" %>
-  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+ <!--  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script> -->
+  <link rel="stylesheet" href="<%= request.getContextPath() %>/css/leaflet.css" />
+  <script src="<%= request.getContextPath() %>/javascript/leaflet.js" />
+  
   <script src="javascript/leafletRotatedMarker.js"></script>
   <script src="javascript/mapUiOptions.js"></script>
   <script src="<%= request.getContextPath() %>/javascript/jquery-dateFormat.min.js"></script>
@@ -74,7 +77,7 @@
         when tried to use fancy position absolute and relative css.
         Also, found that only way to set width of route selector is
         to set the css width here. Yes, strange! -->  
-  <div id="routesContainer">
+  <div id="routesContainer" style="z-index:1000">
     <div id="routesDiv">
       <select id="routes"></select>	
     </div>
