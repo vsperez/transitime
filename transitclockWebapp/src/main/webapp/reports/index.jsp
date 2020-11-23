@@ -1,7 +1,7 @@
 <%@page import="org.transitclock.db.webstructs.WebAgency"%>
 
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>    
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>    
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%
 String agencyId = request.getParameter("a");
@@ -15,29 +15,29 @@ if (agencyId == null || agencyId.isEmpty()) {
   <%@include file="/template/includes.jsp" %>
     
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Historical Reports</title>
+<title><fmt:message key="div.historical" /></title>
 </head>
 <body>
 <%@include file="/template/header.jsp" %>
 <div id="mainDiv">
-<div id="title">Historical Reports for <%= WebAgency.getCachedWebAgency(agencyId).getAgencyName() %></div>
+<div id="title"><fmt:message key="div.hrf" /> <%= WebAgency.getCachedWebAgency(agencyId).getAgencyName() %></div>
 
-<div id="subtitle">Prediction Accuracy<br/><span style="font-size: small">(only for agencies where prediction accuracy stored to database)</span></div>
+<div id="subtitle"><fmt:message key="div.pa" /><br/><span style="font-size: small"><fmt:message key="div.ofa" /></span></div>
 <ul class="choicesList">
   <li><a href="predAccuracyRangeParams.jsp?a=<%= agencyId %>"
     title="Shows percentage of predictions that were accurate
     to within the specified limits.">
-      Prediction Accuracy Range Chart</a></li>
+      <fmt:message key="div.prediction" /></a></li>
   <li><a href="predAccuracyIntervalsParams.jsp?a=<%= agencyId %>"
     title="Shows average prediction accuracy for each prediction length. Also 
 hows upper and lower bounds. Allows one to see for a specified percentage 
 what the prediction accuracy is for predictions that lie between the 
 specified accuracy range.">
-      Prediction Accuracy Interval Chart</a></li>
+      <fmt:message key="div.predictionaccuracy" /></a></li>
   <li><a href="predAccuracyScatterParams.jsp?a=<%= agencyId %>" 
     title="Shows each individual datapoint for prediction accuracy. Useful for 
 finding specific issues with predictions.">
-      Prediction Accuracy Scatter Plot</a></li>
+      <fmt:message key="div.predictionscatter" /></a></li>
   <li><a href="predAccuracyCsvParams.jsp?a=<%= agencyId %>"
     title="For downloading prediction accuracy data in CSV format.">
       Prediction Accuracy CSV Download</a></li>
@@ -58,7 +58,7 @@ finding specific issues with predictions.">
       AVL Data in Map (parameters page)</a></li>
   <li><a href="lastAvlReport.jsp?a=<%= agencyId %>"
     title="Displays the last time each vehicle reported its GPS position over the last 24 hours.">
-      Last GPS Report by Vehicle</a></li>
+      <fmt:message key="div.csv" /></a></li>
 </ul>
 
 <div id="subtitle">Event Reports</div>
@@ -69,33 +69,33 @@ finding specific issues with predictions.">
 	</ul>
 </div>
 
-<div id="subtitle">Schedule Adherence Reports</div>
+<div id="subtitle"><fmt:message key="div.sar" /></div>
 <ul class="choicesList">
   <li><a href="schAdhByRouteParams.jsp?a=<%= agencyId %>"
     title="Displays historic schedule adherence data by route in a bar chart. 
     Can compare schedule adherence for multiple routes.">
-      Schedule Adherence by Route</a></li>
+      <fmt:message key="div.scheduleroutr" /></a></li>
   <li><a href="schAdhByStopParams.jsp?a=<%= agencyId %>"
     title="Displays historic schedule adherence data for each stop for a 
     route in a bar chart. ">
-      Schedule Adherence by Stop</a></li>
+      <fmt:message key="div.schedulebystop" /></a></li>
   <li><a href="schAdhByTimeParams.jsp?a=<%= agencyId %>"
     title="Displays historic schedule adherence data for a route grouped by 
     how early/late. The resulting bell curve shows the distribution of 
     early/late times. ">
-      Schedule Adherence by how Early/Late</a></li>
+      <fmt:message key="div.earlylate" /></a></li>
 </ul>
 
 
-<div id="subtitle">Miscellaneous Reports</div>
+<div id="subtitle"><fmt:message key="div.mr" /></div>
 <ul class="choicesList">
   <li><a href="scheduleHorizStopsParams.jsp?a=<%= agencyId %>"
     title="Displays in a table the schedule for a specified route.">
-      Schedule for Route</a></li>
+      <fmt:message key="div.schedulefor" /></a></li>
   <li><a href="scheduleVertStopsParams.jsp?a=<%= agencyId %>"
     title="Displays in a table the schedule for a specified route. Stops listed 
     vertically which is useful for when there are not that many trips per day.">
-      Schedule for Route (vertical stops)</a></li>
+      <fmt:message key="div.sfrvss" /></a></li>
 </ul>
 
 <div id="subtitle">Status Reports</div>

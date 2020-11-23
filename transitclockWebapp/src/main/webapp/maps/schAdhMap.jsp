@@ -1,13 +1,13 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <%-- Shows real-time schedule adherence, for all vehicles, in a map.  --%>    
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@page import="org.transitclock.web.WebConfigParams"%>
 
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Schedule Adherence Map</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title><fmt:message key="div.scheduleadherencemaps" /></title>
 
   <!-- So that get proper sized map on iOS mobile device -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -47,16 +47,16 @@ var vehicleLayer;
  */
 function getVehiclePopupContent(vehicle) {
 	var content =
-		"<b>Vehicle:</b> " + vehicle.id 
-		+ "<br/><b>Route:</b> " + vehicle.routeName;
+		"<b><fmt:message key="div.dvehicle" />:</b> " + vehicle.id 
+		+ "<br/><b><fmt:message key="div.droute" />:</b> " + vehicle.routeName;
 	if (vehicle.headsign)
-		content += "<br/><b>To:</b> " + vehicle.headsign;
+		content += "<br/><b><fmt:message key="div.dto" />:</b> " + vehicle.headsign;
 	if (vehicle.schAdhStr)
-		content += "<br/><b>SchAhd:</b> " + vehicle.schAdhStr;
+		content += "<br/><b><fmt:message key="div.dschadh" />:</b> " + vehicle.schAdhStr;
 	if (vehicle.block)
-		content += "<br/><b>Block:</b> " + vehicle.block;
+		content += "<br/><b><fmt:message key="div.dblock" />:</b> " + vehicle.block;
 	if (vehicle.driver)
-		content += "<br/><b>Driver:</b> " + vehicle.driver;
+		content += "<br/><b><fmt:message key="div.ddriver" />:</b> " + vehicle.driver;
 	
 	return content;
 }
