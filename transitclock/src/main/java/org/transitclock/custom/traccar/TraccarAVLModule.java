@@ -60,7 +60,7 @@ public class TraccarAVLModule extends PollUrlAvlModule {
 			"http://127.0.0.1:8082/api", "This is the url for the traccar server api.");
 
 	private static StringConfigValue traccarSource = new StringConfigValue("transitclock.avl.traccar.source",
-			"This is the value recorded in the source for the AVL Report." + "is used.", "Traccar");
+			"Traccar", "This is the value recorded in the source for the AVL Report.");
 
 	private static final Logger logger = LoggerFactory.getLogger(TraccarAVLModule.class);
 
