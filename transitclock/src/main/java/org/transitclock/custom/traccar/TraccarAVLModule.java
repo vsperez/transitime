@@ -73,6 +73,7 @@ public class TraccarAVLModule extends PollUrlAvlModule {
 		client.setPassword(traccarPassword.getValue());
 		api.setApiClient(client);
 		user = api.sessionPost(traccarEmail.getValue(), traccarPassword.getValue());
+		user.getId();
 		if (user != null)
 			logger.debug("Traccar login succeeded.");
 	}
@@ -82,7 +83,7 @@ public class TraccarAVLModule extends PollUrlAvlModule {
 
 		Collection<AvlReport> avlReportsReadIn = new ArrayList<AvlReport>();
 		
-		List<Device> devices = api.devicesGet(true, null, null, null);
+		List<Device> devices = api.devicesGet(true, user.getId(), null, null);
 		
 		if (api != null && user != null) {
 			List<Position> results = api.positionsGet(null, null, null, null);
