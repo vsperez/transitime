@@ -41,13 +41,12 @@
   </style>
     
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<div id="title"><fmt:message key="div.agencies" /></div>
 </head>
 
 <body>
 <%@include file="/template/header.jsp" %>
 <div id="mainDiv">
-<div id="title">Agencies</div>
+<div id="title"><fmt:message key="div.agencies" /></div>
 <table id="agencyList">
 <%
 // Output links for all the agencies
