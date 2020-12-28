@@ -921,7 +921,7 @@ if (!getRouteQueryStrParam()) {
 	 		// Configure the selector to be a select2 one that has
 	 		// search capability
  			$("#routes").select2({
- 				placeholder: "Select Route", 				
+ 				placeholder: "<fmt:message key='div.selectroute'/>", 				
  				data : selectorData})
  				// Called when user selects route. Draws route and associated vehicles on map.
  				.on("select2:select", function(e) {
