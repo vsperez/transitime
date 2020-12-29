@@ -40,32 +40,32 @@ finding specific issues with predictions.">
       <fmt:message key="div.predictionscatter" /></a></li>
   <li><a href="predAccuracyCsvParams.jsp?a=<%= agencyId %>"
     title="For downloading prediction accuracy data in CSV format.">
-      Prediction Accuracy CSV Download</a></li>
+      <fmt:message key="div.csv" /></a></li>
   <li><a href="routePerformanceTable.jsp?a=<%= agencyId %>"
     title="Shows route performance, where performance is defined as the 
     number of ontime predictions over the total number of predicitons for a
     given route.">
-      Route Performance Table</a></li>
+      <fmt:message key="div.RoutePerformanceTable" /></a></li>
 </ul>
 
-<div id="subtitle">AVL Reports</div>
+<div id="subtitle"><fmt:message key="div.ar" /></div>
 <ul class="choicesList">
   <li><a href="avlMap.jsp?a=<%= agencyId %>"
     title="Displays historic AVL data for a vehicle in a map.">
-      AVL Data in Map</a></li>
+      <fmt:message key="div.AVLDataInMap" /></a></li>
   <li><a href="avlMapParams.jsp?a=<%= agencyId %>"
     title="Displays historic AVL data for a vehicle in a map.">
-      AVL Data in Map (parameters page)</a></li>
+     <fmt:message key="div.AVLDataInMapParametersPage" /></a></li>
   <li><a href="lastAvlReport.jsp?a=<%= agencyId %>"
     title="Displays the last time each vehicle reported its GPS position over the last 24 hours.">
       <fmt:message key="div.csv" /></a></li>
 </ul>
 
-<div id="subtitle">Event Reports</div>
+<div id="subtitle"><fmt:message key="div.EventReports" /></div>
 	<ul class="choicesList">
 	  <li><a href="vehicleEventParams.jsp?a=<%= agencyId %>"
 	    title="Check that all Events for vehicle.">
-	      Event for vehicle</a></li>	  
+	      <fmt:message key="div.EventForVehicle" /></a></li>	  
 	</ul>
 </div>
 
@@ -98,14 +98,14 @@ finding specific issues with predictions.">
       <fmt:message key="div.sfrvss" /></a></li>
 </ul>
 
-<div id="subtitle">Status Reports</div>
+<div id="subtitle"><fmt:message key="div.sr" /></div>
 <ul class="choicesList">
   <li><a href="../status/activeBlocks.jsp?a=<%= agencyId %>"
     title="Shows how many block assignments are currently active and if they have assigned vehicles">
-      Active Blocks</a></li>
+      <fmt:message key="div.ab" /></a></li>
   <li><a href="../status/serverStatus.jsp?a=<%= agencyId %>"
     title="Shows how well system is running, including the AVL feed">
-      Server Status</a></li>
+      <fmt:message key="div.ss" /></a></li>
 </ul>
 
 </div>

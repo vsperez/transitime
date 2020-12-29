@@ -38,8 +38,8 @@
   	<jsp:include page="params/vehicle.jsp" />
   	<jsp:include page="params/fromDateNumDaysTime.jsp" />
     <jsp:include page="params/routeSingle.jsp" /> <br>
-    <input type="button" id="submit" value="Submit">
-    <a href="#" id="exportData">Export</a>
+    <input type="button" id="submit" value='<fmt:message key="div.Submit" />'>
+    <a href="#" id="exportData"><fmt:message key="div.Export" /></a>
   </div>
   <div id="playbackContainer">
 	  <div id="playback">

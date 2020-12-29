@@ -28,7 +28,7 @@ $.getJSON(apiUrlPrefix + "/command/routes",
 	        // string because then it returns the text 'All Routes'.
 	        // So need to use a blank string that can be determined
 	        // to be empty when trimmed.
-	 		var selectorData = [{id: ' ', text: 'All Routes'}];
+	 		var selectorData = [{id: ' ', text: '<fmt:message key="div.AllRoutes" />'}];
 	 		for (var i in routes.routes) {
 	 			var route = routes.routes[i];
 	 			var name = route.shortName + " " + route.longName

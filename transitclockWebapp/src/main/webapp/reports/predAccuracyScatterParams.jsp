@@ -31,7 +31,7 @@
    <jsp:include page="params/fromDateNumDaysTime.jsp" />
    
    <jsp:include page="params/boolean.jsp">
-    <jsp:param name="label" value="Provide tooltip info"/>
+    <jsp:param name="label" value='<fmt:message key="div.ProvideTooltipInfo" />'/>
     <jsp:param name="name" value="tooltips"/>
     <jsp:param name="default" value="true"/>
     <jsp:param name="tooltip" value="If set to True then provides detailed 

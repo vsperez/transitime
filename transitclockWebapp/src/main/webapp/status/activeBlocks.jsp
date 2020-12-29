@@ -213,7 +213,7 @@ function baseHandleAjaxData(routes, removeAll) {
  				     "  <span class='routeLabel' id='routeVehiclesLabel' title='Number of vehicles assigned to blocks and predictable for the route'>Assigned:</span>" +
                      "</span>" +
  				     "  <span class='routeValue' id='routeBlocks' title='Number of blocks currently active for the route'></span>" + 
- 				     "  <span class='routeLabel' id='routeBlocksLabel' title='Number of blocks currently active for the route'>Blocks:</span>" +
+ 				     "  <span class='routeLabel' id='routeBlocksLabel' title='Number of blocks currently active for the route'>"+'<fmt:message key="div.block" />' +"</span>" +
 					 " </h3>" +
  					 " <div id='blocksDiv'><table id='blocksTable'></table></div>" +
  					 "</div>");	
@@ -542,7 +542,7 @@ $(function() {
 
 <div id="title"><fmt:message key="div.ab" /></div>
 <div id="menu">
-	<button id="loadAllData">Load all data</button>
+	<button id="loadAllData"><fmt:message key="div.LoadAllData" /></button>
 </div>
 <div id="accordion"></div>
 <div id="summary">

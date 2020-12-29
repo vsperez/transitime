@@ -31,7 +31,7 @@
    <jsp:include page="params/predictionSource.jsp" />
  
    <div class="param">
-     <label for="predictionType"><fmt:message key="div.psource" />:</label> 
+     <label for="predictionType"><fmt:message key="div.ptype" />:</label> 
      <select id="predictionType" name="predictionType" 
      	title="Specifies whether or not to show prediction accuracy for 
      	predictions that were affected by a layover. Select 'All' to show
