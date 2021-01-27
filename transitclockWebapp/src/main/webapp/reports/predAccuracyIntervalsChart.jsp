@@ -52,7 +52,7 @@ if ((beginTime != null && !beginTime.isEmpty()) || (endTime != null && !endTime.
     <%@include file="/template/includes.jsp" %>
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title><fmt:message key="div.predictionaccuracy2" /></title>
+    <title><fmt:message key="div.PredictionAccuracy" /></title>
     
     <style>
        #loading {

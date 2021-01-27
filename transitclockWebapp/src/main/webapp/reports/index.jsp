@@ -33,7 +33,7 @@ if (agencyId == null || agencyId.isEmpty()) {
 hows upper and lower bounds. Allows one to see for a specified percentage 
 what the prediction accuracy is for predictions that lie between the 
 specified accuracy range.">
-      <fmt:message key="div.predictionaccuracy" /></a></li>
+      <fmt:message key="div.PredictionAccuracyIntervalChart" /></a></li>
   <li><a href="predAccuracyScatterParams.jsp?a=<%= agencyId %>" 
     title="Shows each individual datapoint for prediction accuracy. Useful for 
 finding specific issues with predictions.">
@@ -102,7 +102,7 @@ finding specific issues with predictions.">
 <ul class="choicesList">
   <li><a href="../status/activeBlocks.jsp?a=<%= agencyId %>"
     title="Shows how many block assignments are currently active and if they have assigned vehicles">
-      <fmt:message key="div.ab" /></a></li>
+      <fmt:message key="div.acbiveblock" /></a></li>
   <li><a href="../status/serverStatus.jsp?a=<%= agencyId %>"
     title="Shows how well system is running, including the AVL feed">
       <fmt:message key="div.ss" /></a></li>

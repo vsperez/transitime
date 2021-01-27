@@ -23,10 +23,10 @@ if (agencyId == null || agencyId.isEmpty()) {
 <ul class="choicesList">
   <li><a href="activeBlocks.jsp?a=<%= agencyId %>"
     title="Shows how many block assignments are currently active and if they have assigned vehicles">
-      <fmt:message key="div.ab" /></a></li>
+      <fmt:message key="div.acbiveblock" /></a></li>
   <li><a href="../maps/schAdhMap.jsp?a=<%= agencyId %>"
     title="Shows current real-time schedule adherence of vehicles in map">
-      <fmt:message key="div.sam" /></a></li>
+      <fmt:message key="div.ScheduleAdherenceMap" /></a></li>
   <li><a href="serverStatus.jsp?a=<%= agencyId %>"
     title="Shows how well system is running, including the AVL feed">
       <fmt:message key="div.ss" /></a></li>

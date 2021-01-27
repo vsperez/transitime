@@ -51,7 +51,7 @@ $.getJSON(apiUrlPrefix + "/command/vehicleIds",
 </script>
 
     <div id="vehicleDiv"  class="param">
-      <label for="vehicle"><fmt:message key="div.v" /></label>
+      <label for="vehicle"><fmt:message key="div.Vehicle" />:</label>
       <input id="vehicle" name="v" style="width: 200px" 
       	title="Select which vehicle you want data for. "/>
     </div>

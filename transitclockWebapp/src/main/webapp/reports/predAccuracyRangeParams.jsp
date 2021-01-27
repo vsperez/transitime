@@ -5,7 +5,7 @@
 <head>
 <%@include file="/template/includes.jsp" %>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title><fmt:message key="div.specifyparametrs4" /></title>
+<title><fmt:message key="div.SpecifyParameters" /></title>
 
   <!-- Load in Select2 files so can create fancy route selector -->
   <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
@@ -16,7 +16,7 @@
 <body>
 <%@include file="/template/header.jsp" %>
 <div id="title">
-   <fmt:message key="div.specifyparametrs4" />
+   <fmt:message key="div.SpecifyParameters" />
 </div>
 
 <div id="mainDiv">

@@ -204,7 +204,7 @@ function predictionCallback(preds, status) {
 				*/
 				// If in verbose mode add vehicle info
 				if (verbose)
-					content += ' <span class="vehicle">(<fmt:message key="div.dvehicle" /> ' + pred.vehicle + ')</span>';
+					content += ' <span class="vehicle">(<fmt:message key="div.Vehicle" /> ' + pred.vehicle + ')</span>';
 			}
 			content += ' <fmt:message key="div.dminutes" />';
 			
@@ -322,7 +322,7 @@ function routeConfigCallback(routesData, status) {
 		if (verbose) {
 			polyline.on('click', function(e) {
 				var content = "<b><fmt:message key="div.dtrippattern" />:</b> " + this.shape.tripPattern 
-					+ "<br/><b><fmt:message key="div.dheadsign" />:</b> " + this.shape.headsign;
+					+ "<br/><b><fmt:message key="div.Headsign" />:</b> " + this.shape.headsign;
 				L.popup(tripPatternPopupOptions)
 					.setLatLng(e.latlng)
 					.setContent(content)
@@ -400,7 +400,7 @@ function getVehiclePopupContent(vehicleData) {
     		"<br/><b><fmt:message key="div.ddriver" />:</b> " + vehicleData.driver : "";
     var latLonHeadingStr = verbose ? "<br/><b>Lat:</b> " + vehicleData.loc.lat
     			+ "<br/><b><fmt:message key="div.dlon" />:</b> " + vehicleData.loc.lon 
-    			+ "<br/><b><fmt:message key="div.dheading" />:</b> " + vehicleData.loc.heading 
+    			+ "<br/><b><fmt:message key="div.Heading" />:</b> " + vehicleData.loc.heading 
     			+ "<br/><b><fmt:message key="div.dspeed" />:</b> " + formatSpeed(vehicleData.loc.speed)
     			: "";
 	var gpsTimeStr = dateFormat(vehicleData.loc.time);
@@ -408,11 +408,11 @@ function getVehiclePopupContent(vehicleData) {
     var tripPatternStr = verbose ? "<br/><b><fmt:message key="div.dtrippattern" />:</b> " + vehicleData.tripPattern : "";
     var startTimeStr = vehicleData.isScheduledService ? "" : "<br/><b><fmt:message key="div.dstarttime" />:</b> "+dateFormat(vehicleData.freqStartTime/1000);
     var schAdhStr = vehicleData.isScheduledService ? "<br/><b><fmt:message key="div.dschadh" />:</b> " + vehicleData.schAdhStr : ""
-    var content = "<b><fmt:message key="div.dvehicle" />:</b> " + vehicleData.id 
+    var content = "<b><fmt:message key="div.Vehicle" />:</b> " + vehicleData.id 
     	+ "<br/><b><fmt:message key="div.droute" />: </b> " + vehicleData.routeShortName
 		+ latLonHeadingStr
 		+ "<br/><b><fmt:message key="div.dgpstime" />:</b> " + gpsTimeStr
-		+ "<br/><b><fmt:message key="div.dheadsign" />:</b> " + vehicleData.headsign
+		+ "<br/><b><fmt:message key="div.Headsign" />:</b> " + vehicleData.headsign
 		+ directionStr 
 		+ schAdhStr 
 		+ "<br/><b><fmt:message key="div.dblock" />:</b> " + vehicleData.block

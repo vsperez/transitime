@@ -5,7 +5,7 @@
 <head>
 <%@include file="/template/includes.jsp" %>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title><fmt:message key="div.specifyparametrs16" /></title>
+<title><fmt:message key="div.SpecifyParameters" /></title>
 
   <!-- Load in Select2 files so can create fancy route selector -->
   <link href="../../select2/select2.css" rel="stylesheet"/>

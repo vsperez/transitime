@@ -8,7 +8,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@include file="/template/includes.jsp" %>
-<title><fmt:message key="div.scheduleadherencemaps" /></title>
+<title><fmt:message key="div.ScheduleAdherenceMap" /></title>
 
   <!-- So that get proper sized map on iOS mobile device -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -46,7 +46,7 @@ var vehicleLayer;
  */
 function getVehiclePopupContent(vehicle) {
 	var content =
-		"<b><fmt:message key="div.dvehicle" />:</b> " + vehicle.id 
+		"<b><fmt:message key="div.Vehicle" />:</b> " + vehicle.id 
 		+ "<br/><b><fmt:message key="div.droute" />:</b> " + vehicle.routeName;
 	if (vehicle.headsign)
 		content += "<br/><b><fmt:message key="div.dto" />:</b> " + vehicle.headsign;

@@ -48,13 +48,13 @@ if (agencyId == null || agencyId.isEmpty()) {
       <fmt:message key="div.pbl" /></a></li>
   <li><a href="tripApiParams.jsp?a=<%= agencyId %>"
     title="Data for a single trip. Includes trip pattern and schedule info.">
-      <fmt:message key="div.t" /></a></li>
+      <fmt:message key="div.dtrip" /></a></li>
   <li><a href="tripWithTravelTimesApiParams.jsp?a=<%= agencyId %>"
     title="Data for a single trip. Includes trip pattern and schedule info as well as historic travel times used for generating predictions.">
       <fmt:message key="div.twtt" /></a></li>
   <li><a href="blocksTerseApiParams.jsp?a=<%= agencyId %>"
     title="Data for a block assignment. Shows each trip that makes up the block in a terse format, without trip pattern or schedule info.">
-      <fmt:message key="div.b" /></a></li>
+      <fmt:message key="div.dblock" /></a></li>
   <li><a href="blocksApiParams.jsp?a=<%= agencyId %>"
     title="Data for a block assignment. Shows each trip that makes up the block in a verbose format, including trip pattern and schedule info.">
       <fmt:message key="div.bd" /></a></li>

@@ -5,7 +5,7 @@
 <head>
 <%@include file="/template/includes.jsp" %>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title><fmt:message key="div.specifyparametrs26" /></title>
+<title><fmt:message key="div.SpecifyParameters" /></title>
 
   <link href="../params/reportParams.css" rel="stylesheet"/>
 
@@ -34,7 +34,7 @@
    
 <div id="mainDiv">   
   <div class="param">
-    <label for="trip"><fmt:message key="div.trip" /></label>
+    <label for="trip"><fmt:message key="div.dtrip" />:</label>
     <input type="text" id="tripId" size="35" />
   </div>
    

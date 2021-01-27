@@ -49,7 +49,7 @@ if ((beginTime != null && !beginTime.isEmpty()) || (endTime != null && !endTime.
 <head>
   <%@include file="/template/includes.jsp" %>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title><fmt:message key="div.predictionaccuracy4" /></title>
+  <title><fmt:message key="div.PredictionAccuracy" /></title>
 
     <style>
       .google-visualization-tooltip {

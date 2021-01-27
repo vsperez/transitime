@@ -29,7 +29,7 @@ if (agencyId == null || agencyId.isEmpty()) {
       <fmt:message key="div.mapincluding" /></a></li>
   <li><a href="../maps/schAdhMap.jsp?a=<%= agencyId %>"
     title="Shows current real-time schedule adherence of vehicles in map">
-      <fmt:message key="div.scheduleadherence" /></a></li>
+      <fmt:message key="div.ScheduleAdherenceMap" /></a></li>
 </ul>
 </div>
 </body>
