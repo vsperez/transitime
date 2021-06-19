@@ -86,6 +86,7 @@ public class HibernateUtils {
 		// a File object for that file name and pass in the File object
 		// to configure().
 		String fileName = DbSetupConfig.getHibernateConfigFileName();
+		
 		logger.info("Configuring Hibernate for dbName={} using config file={}",
 				dbName, fileName);
 		File f = new File(fileName);
@@ -114,6 +115,7 @@ public class HibernateUtils {
 		// uses values from DbSetupConfig if set. If they are not set then the 
 		// values will be obtained from the hibernate.cfg.xml config file.
 		String dbUrl = config.getProperty("hibernate.connection.url");
+		String extraURL=config.getProperty("hibernate.connection.url.extraParams");
 		if (readOnly) {
 			dbUrl = config.getProperty("hibernate.ro.connection.url");
 			// override the configured url so its picked up by the driver
@@ -123,7 +125,7 @@ public class HibernateUtils {
 		if (dbUrl == null || dbUrl.isEmpty()) {
 			dbUrl = "jdbc:" + DbSetupConfig.getDbType() + "://" +
 					DbSetupConfig.getDbHost() +
-					"/" + dbName;
+					"/" + dbName+(extraURL==null?"":extraURL);
 			
 			// If socket timeout specified then add that to the URL
 			Integer timeout = DbSetupConfig.getSocketTimeoutSec();

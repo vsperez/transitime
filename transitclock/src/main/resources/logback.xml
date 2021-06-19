@@ -48,6 +48,8 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<!-- daily rollover. Compress the file when rolling it over. -->
 			<fileNamePattern>${LOG_FILE_ROOT}/core.log.gz</fileNamePattern>
+			 <maxHistory>1</maxHistory>
+      	    <totalSizeCap>3GB</totalSizeCap>
 		</rollingPolicy>
 
 		<!-- Only want this appender to take effect if not DEBUG level. This way
@@ -59,12 +61,15 @@
 			<onMismatch>ACCEPT</onMismatch>
 		</filter>
 
+ 		
+       
 		<encoder>
 			<!-- Info on possible patterns is at http://logback.qos.ch/manual/layouts.html#ClassicPatternLayout -->
 			<charset>UTF-8</charset>
 			<pattern>${DEFAULT_PATTERN}</pattern>
 		</encoder>
 	</appender>
+
 
 
 

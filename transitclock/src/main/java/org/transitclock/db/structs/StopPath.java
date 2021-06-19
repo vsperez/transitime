@@ -54,6 +54,14 @@ public class StopPath implements Serializable, Lifecycle {
 	@Id
 	private final int configRev;
 	
+	public Double getShapeDistanceTraveled() {
+		return shapeDistanceTraveled;
+	}
+
+	public void setShapeDistanceTraveled(Double shapeDistanceTraveled) {
+		this.shapeDistanceTraveled = shapeDistanceTraveled;
+	}
+
 	// Using size of
 	// 2 * DEFAULT_ID_SIZE since stop path names are stop1_to_stop2 so can
 	// be twice as long as other IDs. And when using GTFS Editor the IDs
@@ -128,6 +136,13 @@ public class StopPath implements Serializable, Lifecycle {
 	@Transient
 	private List<VectorWithHeading> vectors = null;
 	
+	/**
+	 * This is used just to get better location of the bustop
+	 * where bestmatch is done.
+	 */
+	@Transient
+	private Double shapeDistanceTraveled;
+	
 	// Because Hibernate requires objects with composite IDs to be Serializable
 	private static final long serialVersionUID = 8170734640228933095L;
 
@@ -149,6 +164,7 @@ public class StopPath implements Serializable, Lifecycle {
 	 * @param waitStop
 	 * @param scheduleAdherenceStop
 	 * @param breakTime
+	 * @param shapeDistanceTraveled 
 	 */
 	public StopPath(int configRev,
 			String pathId, 
@@ -161,7 +177,7 @@ public class StopPath implements Serializable, Lifecycle {
 			boolean scheduleAdherenceStop,
 			Integer breakTime,
 			Double maxDistance,
-			Double maxSpeed) {
+			Double maxSpeed, Double shapeDistanceTraveled) {
 		this.configRev = configRev;
 		this.stopPathId = pathId;
 		this.stopId = stopId;
@@ -177,6 +193,7 @@ public class StopPath implements Serializable, Lifecycle {
 		this.breakTime = breakTime;
 		this.maxDistance = maxDistance;
 		this.maxSpeed = maxSpeed;
+		this.shapeDistanceTraveled=shapeDistanceTraveled;
 	}
 
 	/**
@@ -198,6 +215,7 @@ public class StopPath implements Serializable, Lifecycle {
 		this.breakTime = null;
 		this.maxDistance = null;
 		this.maxSpeed = null;
+		
 		
 	}
 	
